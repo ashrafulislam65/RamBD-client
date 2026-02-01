@@ -17,7 +17,15 @@ const nextConfig = {
         hostname: "admin.felnatech.com"
       }
     ]
-  }
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/remote-api/:path*",
+        destination: "https://admin.felnatech.com/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

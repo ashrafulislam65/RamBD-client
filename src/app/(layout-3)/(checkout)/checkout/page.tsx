@@ -57,6 +57,7 @@ export default function Checkout() {
     setLoading(true);
     const otpResponse = await checkoutApi.generateOtp(values.phone);
     setLoading(false);
+    console.log("OTP Response received in Page:", otpResponse);
 
     if (otpResponse && (otpResponse.status || otpResponse.success)) {
       setIsOtpModalOpen(true);
@@ -114,8 +115,25 @@ export default function Checkout() {
     const response = await checkoutApi.placeOrder(finalPayload);
 
     if (response && response.success) {
+      console.log("✅ Order placed successfully! Response:", response);
       dispatch({ type: "RESTORE_CART", payload: [] });
       localStorage.removeItem("cart");
+
+      // Store both the order response AND the form data for the invoice page
+      console.log("finalPayload structure:", finalPayload);
+      const completeOrderData = {
+        ...response,
+        form_data: {
+          phone: finalPayload?.order_details?.ord_phone || "",
+          address: finalPayload?.order_details?.ord_address || "",
+          customer_name: finalPayload?.order_details?.ord_name || "",
+          district_id: finalPayload?.order_details?.district_id || "",
+          thana_id: finalPayload?.order_details?.thana_id || "",
+          special_note: finalPayload?.order_details?.ord_note || "",
+        }
+      };
+      sessionStorage.setItem("lastOrderData", JSON.stringify(completeOrderData));
+      console.log("✅ Stored order data in localStorage");
 
       setIsOtpModalOpen(false);
 
@@ -125,19 +143,8 @@ export default function Checkout() {
         text: 'Your order has been successfully placed.',
         showConfirmButton: true,
         confirmButtonText: 'View Invoice'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Assuming response contains order_id or id. Adjust based on actual API response.
-          // If ID is not in response, redirect to generic orders page.
-          const orderId = response.order_id || response.id || response.data?.id;
-          if (orderId) {
-            router.push(`/orders/${orderId}`);
-          } else {
-            router.push("/orders");
-          }
-        } else {
-          router.push("/orders");
-        }
+      }).then(() => {
+        router.push("/order-success");
       });
 
     } else {

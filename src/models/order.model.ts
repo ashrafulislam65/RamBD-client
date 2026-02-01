@@ -18,6 +18,9 @@ interface Order {
   totalPrice: number;
   isDelivered: boolean;
   shippingAddress: string;
+  district?: string;
+  thana?: string;
+  specialNote?: string;
   status: "Pending" | "Processing" | "Delivered" | "Cancelled";
 }
 

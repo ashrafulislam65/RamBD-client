@@ -26,7 +26,7 @@ export default function PaymentForm() {
 
   const handleFormSubmit = async (values: any) => {
     console.log(values);
-    router.push("/payment");
+    router.push("/order-success");
   };
 
   const handlePaymentMethodChange = ({ target: { name } }: ChangeEvent<HTMLInputElement>) => {
@@ -111,8 +111,8 @@ export default function PaymentForm() {
                   </Grid>
                 </Box>
 
-                <Button variant="outlined" color="primary" mb="30px">
-                  Submit
+                <Button variant="contained" color="primary" type="submit" mb="30px">
+                  Confirm Payment
                 </Button>
 
                 <Divider mb="1.5rem" mx="-2rem" />
@@ -145,8 +145,8 @@ export default function PaymentForm() {
                 label="Paypal Email"
                 mr={isMobile ? "1rem" : "30px"}
               />
-              <Button variant="outlined" color="primary" type="button">
-                Submit
+              <Button variant="contained" color="primary" type="button" onClick={() => handleFormSubmit({})}>
+                Confirm Paypal
               </Button>
             </FlexBox>
 
@@ -177,11 +177,9 @@ export default function PaymentForm() {
         </Grid>
 
         <Grid item sm={6} xs={12}>
-          <Link href="/orders">
-            <Button variant="contained" color="primary" type="submit" fullwidth>
-              Review
-            </Button>
-          </Link>
+          <Button variant="contained" color="primary" type="submit" fullwidth onClick={() => handleFormSubmit({})}>
+            Review
+          </Button>
         </Grid>
       </Grid>
     </Fragment>
