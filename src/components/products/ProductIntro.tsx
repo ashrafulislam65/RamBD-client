@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 // REACT ICONS
@@ -68,6 +68,13 @@ export default function ProductIntro({
 
   const routerId = param.slug as string;
   const cartItem = state.cart.find((item) => item.id === id || item.id === routerId);
+
+  // Sync quantity with cart
+  useEffect(() => {
+    if (cartItem?.qty) {
+      setQuantity(cartItem.qty);
+    }
+  }, [cartItem?.qty]);
 
   const handleImageClick = (ind: number) => () => setSelectedImage(ind);
 
@@ -218,11 +225,29 @@ export default function ProductIntro({
                     p="4px"
                     borderRadius="4px"
                     style={{ border: `1px solid ${theme.colors.gray[300]}`, width: 120, height: 44 }}>
-                    <Button variant="text" size="small" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                    <Button
+                      variant="text"
+                      size="small"
+                      onClick={() => {
+                        const newQty = Math.max(1, (cartItem?.qty || quantity) - 1);
+                        setQuantity(newQty);
+                        if (cartItem) {
+                          handleCartAmountChange(newQty);
+                        }
+                      }}>
                       <FaMinus size={14} />
                     </Button>
-                    <H3 fontWeight="600">{quantity}</H3>
-                    <Button variant="text" size="small" onClick={() => setQuantity(quantity + 1)}>
+                    <H3 fontWeight="600">{cartItem?.qty || quantity}</H3>
+                    <Button
+                      variant="text"
+                      size="small"
+                      onClick={() => {
+                        const newQty = (cartItem?.qty || quantity) + 1;
+                        setQuantity(newQty);
+                        if (cartItem) {
+                          handleCartAmountChange(newQty);
+                        }
+                      }}>
                       <FaPlus size={14} />
                     </Button>
                   </FlexBox>
@@ -234,7 +259,7 @@ export default function ProductIntro({
                       size="medium"
                       color="primary"
                       variant="contained"
-                      onClick={() => handleCartAmountChange(quantity)}
+                      onClick={() => handleCartAmountChange(cartItem?.qty || quantity)}
                       style={{ minWidth: 160, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <IoCartOutline size={22} style={{ marginRight: 8 }} />
                       ADD TO CART

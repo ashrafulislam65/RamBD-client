@@ -47,7 +47,7 @@ export default function Header({ isFixed, className }: HeaderProps) {
           position="absolute"
           justifyContent="center">
           <Tiny color="white" fontWeight="600" lineHeight={1}>
-            {state.cart.length}
+            {state.cart.reduce((acc, item) => acc + item.qty, 0)}
           </Tiny>
         </FlexBox>
       )}

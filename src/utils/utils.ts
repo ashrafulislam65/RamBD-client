@@ -80,12 +80,11 @@ export function currency(price: number, fraction: number = 2) {
   // const { publicRuntimeConfig } = getConfig();
   // currency: publicRuntimeConfig.currency,
 
-  const formatCurrency = new Intl.NumberFormat(undefined, {
-    currency: "USD",
-    style: "currency",
+  const formatCurrency = new Intl.NumberFormat("en-US", {
+    style: "decimal",
     maximumFractionDigits: fraction,
     minimumFractionDigits: fraction
   });
 
-  return formatCurrency.format(price);
+  return `৳${formatCurrency.format(price)}`;
 }

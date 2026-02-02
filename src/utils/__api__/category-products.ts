@@ -58,8 +58,11 @@ const getProductsByCategory = async (
         }).filter((p: any) => p !== null);
 
         return products;
-    } catch (error) {
-        console.error("Failed to fetch products by category:", error);
+    } catch (error: any) {
+        console.error("Failed to fetch products by category.");
+        console.error("URL:", `${process.env.NEXT_PUBLIC_CATEGORY_ITEMS_URL}/${slug}`);
+        console.error("Error details:", error);
+        if (error.cause) console.error("Error cause:", error.cause);
         return [];
     }
 };

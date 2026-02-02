@@ -68,7 +68,7 @@ export default function MobileNavigationBar() {
                 position="absolute"
                 color="primary.text"
                 left="calc(50% + 8px)">
-                {state.cart.length}
+                {state.cart.reduce((acc, item) => acc + item.qty, 0)}
               </Chip>
             )}
           </NavLink>

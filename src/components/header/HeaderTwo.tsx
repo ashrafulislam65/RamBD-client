@@ -43,7 +43,7 @@ export default function HeaderTwo({ className }: HeaderProps) {
           borderRadius="300px"
           justifyContent="center">
           <Tiny color="white" fontWeight="600">
-            {state.cart.length}
+            {state.cart.reduce((acc, item) => acc + item.qty, 0)}
           </Tiny>
         </FlexBox>
       )}

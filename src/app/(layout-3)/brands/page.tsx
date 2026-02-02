@@ -31,14 +31,11 @@ export default async function BrandsPage() {
                             alignItems="center"
                             justifyContent="center"
                             height="120px"
+                            className="brand-card"
                             style={{
                                 transition: "all 0.3s ease",
                                 cursor: "pointer",
                                 border: "1px solid #f3f5f9"
-                            }}
-                            hoverStyle={{
-                                boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
-                                transform: "translateY(-4px)"
                             }}
                         >
                             <FlexBox
