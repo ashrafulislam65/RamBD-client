@@ -1,8 +1,11 @@
 import { getTheme } from "@utils/utils";
 import styled from "styled-components";
+import { layoutConstant } from "utils/constants";
 
 const StyledNavbar = styled.div`
-  position: relative;
+  position: sticky;
+  top: ${layoutConstant.headerHeight};
+  z-index: 998;
   height: 60px;
   background: ${getTheme("colors.secondary.main")};
   box-shadow: ${getTheme("shadows.regular")};

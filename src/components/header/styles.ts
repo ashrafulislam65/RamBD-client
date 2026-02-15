@@ -3,8 +3,9 @@ import { layoutConstant } from "utils/constants";
 import { getTheme } from "@utils/utils";
 
 const StyledHeader = styled.header`
-  z-index: 111;
-  position: relative;
+  z-index: 999;
+  position: sticky;
+  top: 0;
   height: ${layoutConstant.headerHeight};
   background: ${getTheme("colors.body.paper")};
 

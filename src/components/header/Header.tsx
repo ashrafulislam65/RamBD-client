@@ -11,7 +11,7 @@ import Icon from "@component/icon/Icon";
 import FlexBox from "@component/FlexBox";
 import MiniCart from "@component/mini-cart";
 import Container from "@component/Container";
-import Typography, { H3, Tiny } from "@component/Typography";
+import Typography, { H2, H3, Tiny } from "@component/Typography";
 import { IconButton } from "@component/buttons";
 import Sidenav from "@component/sidenav/Sidenav";
 import Categories from "@component/categories/Categories";
@@ -67,9 +67,9 @@ export default function Header({ isFixed, className }: HeaderProps) {
           <Link href="/">
             <FlexBox alignItems="center">
               <Image src="/assets/images/rambd_logo.webp" alt="RamBD Logo" height={44} />
-              <H3 fontWeight="700" ml="10px" color="primary.main">
+              <H2 fontWeight="700" ml="10px" color="primary.main" fontSize="40px">
                 Ram<span style={{ color: "#27ae60" }}>BD</span>
-              </H3>
+              </H2>
             </FlexBox>
           </Link>
 

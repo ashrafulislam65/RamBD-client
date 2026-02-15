@@ -17,12 +17,9 @@ export default function ShopLayout({ navbar, children }: Props) {
   return (
     <StyledAppLayout>
       <Topbar />
+      <Header />
 
-      <Sticky fixedOn={0} scrollDistance={300}>
-        <Header />
-      </Sticky>
-
-      {navbar ? <div className="section-after-sticky">{navbar}</div> : null}
+      {navbar}
       {navbar ? children : <div className="section-after-sticky">{children}</div>}
 
       <MobileNavigationBar />

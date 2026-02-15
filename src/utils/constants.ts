@@ -6,7 +6,7 @@ export const deviceSize = {
 };
 
 export const layoutConstant = {
-  headerHeight: "80px",
+  headerHeight: "110px",
   mobileNavHeight: "64px",
   containerWidth: "1200px",
   mobileHeaderHeight: "64px",
