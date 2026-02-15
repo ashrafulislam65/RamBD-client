@@ -1,0 +1,76 @@
+SearchPro Root keys: ["status","products"]
+SearchPro products is Object. Keys: ["current_page","data","first_page_url","from","last_page","last_page_url","links","next_page_url","path","per_page","prev_page_url","to","total"]
+SearchPro products.data is Array. Len: 100
+First Product Sample: {
+  "id": 14,
+  "pro_title": "Intel 10th Gen Comet Lake Core i3 10100 Desktop Processor (Bundle with PC)",
+  "pro_model": "INTEL-CORE-I3-10100",
+  "category_id": 3,
+  "pro_slug": "intel-10th-gen-comet-lake-core-i3-10100-desktop-processor-bundle-with-pc",
+  "pro_code": "12232701",
+  "pro_price": "10800",
+  "pro_discount": null,
+  "short_description": null,
+  "pro_meta_key": "intel 10th gen core i3 desktop processor",
+  "pro_meta_description": "The latest Intel Core i3 10100 Processor price is reasonable in felna tech BDT: 11880tk, Speed 3.60 up to 4.30 GHz, Cores- 4 & Threads- 8, Intel UHD Graphics 630.",
+  "video_link": null,
+  "pro_dis_exp_date": null,
+  "offer_status": 0,
+  "pro_status": 1,
+  "visitors": 550,
+  "product_detail_id": null,
+  "brand_id": 134,
+  "type": "processor",
+  "user_id": 7,
+  "created_at": "2024-09-25T01:14:11.000000Z",
+  "updated_at": "2025-02-09T01:30:55.000000Z",
+  "subcategory_id": 43,
+  "sub_sub_category_id": 53,
+  "update_user_id": null,
+  "product_description": "<p>Brand: Intel</p><p>Title: Intel 10th Gen Comet Lake Core i3 10100 Desktop Processor (Bundle with PC)</p><p>Model: INTEL-CORE-I3-10100</p><p>Code: 12232701</p><p>Category: Component</p><p>Sub Category: Processor</p><p>Sub-Sub Category: Intel</p><p>Price: 11880</p><p>Offer Status: 0</p><p>Description: <p>Specification<p>Basic Information<p>Base Frequency</p>3.60 GHz<br>&nbsp;</p>&nbsp;</p><p>Maximum Turbo Frequency</p>4.30 GHz<br>&nbsp;</p>&nbsp;</p><p>Cache</p>6 MB SmartCache</p>&nbsp;</p><p>Cores</p>4</p>&nbsp;</p><p>Threads</p>8</p>&nbsp;</p><p>Default TDP</p>65 W</p>&nbsp;</p><p>Memory Specifications</p><p>Maximum Size</p>128 GB</p>&nbsp;</p><p>Maximum Speed</p>41.6 GB/s<br>&nbsp;</p>&nbsp;</p><p>Type</p>DDR4-2666<br>&nbsp;</p>&nbsp;</p><p>Max Number of Channels</p>2</p>&nbsp;</p><p>Graphics Specifications</p><p>Processor Graphics</p>Intel UHD Graphics 630<br>&nbsp;</p>&nbsp;</p><p>Base Frequency</p>350 MHz</p>&nbsp;</p><p>Max Dynamic Frequency</p>1.10 GHz</p>&nbsp;</p><p>Max Video Memory</p>64 GB<br>&nbsp;</p>&nbsp;</p><p>Max Resolution</p>Max Resolution (HDMI 1.4): 4096 x 2160 @30Hz<br>Max Resolution (DP): 4096 x 2304 @60Hz<br>Max Resolution (eDP - Integrated Flat Panel): 4096 x 2304 @60Hz<br>&nbsp;</p>&nbsp;</p><p>Warranty Information</p><p>Manufacturing Warranty</p>03 Years (No Warranty for Fan or Cooler)</p>&nbsp;</p></p></p>",
+  "special_keywords": null,
+  "meta_title": null,
+  "discount_percentage": null,
+  "buy_price": null,
+  "delivery_charge": 0,
+  "special_discount_id": null,
+  "sp_discount_group_name_id": null,
+  "special_discount_amount": null,
+  "has_buy_get_offer": 0,
+  "buy_get_offer_id": null,
+  "images": [
+    {
+      "id": 39,
+      "img_name": "intel-felnatech-14-1.png",
+      "product_id": 14,
+      "img_status": 1,
+      "img_position": 0,
+      "created_at": "2024-09-25T01:14:11.000000Z",
+      "updated_at": "2024-09-25T01:14:11.000000Z"
+    },
+    {
+      "id": 40,
+      "img_name": "intel-felnatech-14-ftpng",
+      "product_id": 14,
+      "img_status": 1,
+      "img_position": 1,
+      "created_at": "2024-09-25T01:14:11.000000Z",
+      "updated_at": "2024-09-25T01:14:11.000000Z"
+    }
+  ],
+  "details": {
+    "id": 14,
+    "product_id": 14,
+    "pro_description": "<h2><strong>Specification</strong></h2><figure class=\"table\"><table><thead><tr><th colspan=\"3\"><strong>Basic Information</strong></th></tr></thead><tbody><tr><td>Base Frequency</td><td>3.60 GHz<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Maximum Turbo Frequency</td><td>4.30 GHz<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Cache</td><td>6 MB SmartCache</td><td>&nbsp;</td></tr><tr><td>Cores</td><td>4</td><td>&nbsp;</td></tr><tr><td>Threads</td><td>8</td><td>&nbsp;</td></tr><tr><td>Default TDP</td><td>65 W</td><td>&nbsp;</td></tr><tr><td colspan=\"3\"><strong>Memory Specifications</strong></td></tr><tr><td>Maximum Size</td><td>128 GB</td><td>&nbsp;</td></tr><tr><td>Maximum Speed</td><td>41.6 GB/s<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Type</td><td>DDR4-2666<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Max Number of Channels</td><td>2</td><td>&nbsp;</td></tr><tr><td colspan=\"3\"><strong>Graphics Specifications</strong></td></tr><tr><td>Processor Graphics</td><td>Intel UHD Graphics 630<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Base Frequency</td><td>350 MHz</td><td>&nbsp;</td></tr><tr><td>Max Dynamic Frequency</td><td>1.10 GHz</td><td>&nbsp;</td></tr><tr><td>Max Video Memory</td><td>64 GB<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Max Resolution</td><td>Max Resolution (HDMI 1.4): 4096 x 2160 @30Hz<br>Max Resolution (DP): 4096 x 2304 @60Hz<br>Max Resolution (eDP - Integrated Flat Panel): 4096 x 2304 @60Hz<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td colspan=\"3\"><strong>Warranty Information</strong></td></tr><tr><td>Manufacturing Warranty</td><td>03 Years (No Warranty for Fan or Cooler)</td><td>&nbsp;</td></tr></tbody></table></figure>",
+    "search_description": "Intel 10th Gen Comet Lake Core i3 10100 Desktop Processor (Bundle with PC) INTEL-CORE-I3-10100  <h2><strong>Specification</strong></h2><figure class=\"table\"><table><thead><tr><th colspan=\"3\"><strong>Basic Information</strong></th></tr></thead><tbody><tr><td>Base Frequency</td><td>3.60 GHz<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Maximum Turbo Frequency</td><td>4.30 GHz<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Cache</td><td>6 MB SmartCache</td><td>&nbsp;</td></tr><tr><td>Cores</td><td>4</td><td>&nbsp;</td></tr><tr><td>Threads</td><td>8</td><td>&nbsp;</td></tr><tr><td>Default TDP</td><td>65 W</td><td>&nbsp;</td></tr><tr><td colspan=\"3\"><strong>Memory Specifications</strong></td></tr><tr><td>Maximum Size</td><td>128 GB</td><td>&nbsp;</td></tr><tr><td>Maximum Speed</td><td>41.6 GB/s<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Type</td><td>DDR4-2666<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Max Number of Channels</td><td>2</td><td>&nbsp;</td></tr><tr><td colspan=\"3\"><strong>Graphics Specifications</strong></td></tr><tr><td>Processor Graphics</td><td>Intel UHD Graphics 630<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Base Frequency</td><td>350 MHz</td><td>&nbsp;</td></tr><tr><td>Max Dynamic Frequency</td><td>1.10 GHz</td><td>&nbsp;</td></tr><tr><td>Max Video Memory</td><td>64 GB<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td>Max Resolution</td><td>Max Resolution (HDMI 1.4): 4096 x 2160 @30Hz<br>Max Resolution (DP): 4096 x 2304 @60Hz<br>Max Resolution (eDP - Integrated Flat Panel): 4096 x 2304 @60Hz<br>&nbsp;</td><td>&nbsp;</td></tr><tr><td colspan=\"3\"><strong>Warranty Information</strong></td></tr><tr><td>Manufacturing Warranty</td><td>03 Years (No Warranty for Fan or Cooler)</td><td>&nbsp;</td></tr></tbody></table></figure> 12232701",
+    "pro_warranty": 3,
+    "pro_code": null,
+    "pro_model": null,
+    "created_at": "2024-09-25T01:14:11.000000Z",
+    "updated_at": "2024-10-22T04:09:45.000000Z"
+  }
+}
+Image check https://admin.felnatech.com/public/uploads/all/desktop-felnatech-1474-1.png: false
+Image check https://admin.felnatech.com/uploads/all/desktop-felnatech-1474-1.png: false
+Image check https://admin.felnatech.com/storage/app/public/products/desktop-felnatech-1474-1.png: true
+Image check https://admin.felnatech.com/images/desktop-felnatech-1474-1.png: false

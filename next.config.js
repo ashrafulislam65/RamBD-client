@@ -13,6 +13,10 @@ const nextConfig = {
             {
                 protocol: "https",
                 hostname: "admin.unicodeconverter.info"
+            },
+            {
+                protocol: "https",
+                hostname: "admin.felnatech.com"
             }
             // Add other image domains if needed
         ]

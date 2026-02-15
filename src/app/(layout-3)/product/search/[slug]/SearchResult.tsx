@@ -17,7 +17,7 @@ import ProductGridView from "@component/products/ProductCard1List";
 import ProductListView from "@component/products/ProductCard9List";
 import ProductFilterCard from "@component/products/ProductFilterCard";
 import useWindowSize from "@hook/useWindowSize";
-import db from "@data/db";
+// import db from "@data/db";
 
 // ==============================================================
 type Props = {
@@ -25,7 +25,7 @@ type Props = {
 };
 // ==============================================================
 
-export default function SearchResult({ sortOptions }: Props) {
+export default function SearchResult({ sortOptions, products }: { sortOptions: { label: string; value: string }[], products: any[] }) {
   const width = useWindowSize();
   const [view, setView] = useState<"grid" | "list">("grid");
 
@@ -44,8 +44,8 @@ export default function SearchResult({ sortOptions }: Props) {
         alignItems="center"
         justifyContent="space-between">
         <div>
-          <H5>Searching for “ mobile phone ”</H5>
-          <Paragraph color="text.muted">48 results found</Paragraph>
+          <H5>Searching for products</H5>
+          <Paragraph color="text.muted">{products.length} results found</Paragraph>
         </div>
 
         <FlexBox alignItems="center" flexWrap="wrap">
@@ -105,9 +105,9 @@ export default function SearchResult({ sortOptions }: Props) {
 
         <Grid item lg={9} xs={12}>
           {view === "grid" ? (
-            <ProductGridView products={db.slice(95, 104)} />
+            <ProductGridView products={products} />
           ) : (
-            <ProductListView products={db.slice(95, 104)} />
+            <ProductListView products={products} />
           )}
         </Grid>
       </Grid>

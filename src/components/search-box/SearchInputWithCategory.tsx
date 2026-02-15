@@ -10,14 +10,46 @@ import { Span } from "@component/Typography";
 import TextField from "@component/text-field";
 import StyledSearchBox from "./styled";
 
-export default function SearchInputWithCategory() {
-  const [resultList, setResultList] = useState<string[]>([]);
 
-  const search = debounce((e) => {
+// Define the shape of the API response item
+interface SearchSuggestion {
+  id: number;
+  product_name: string;
+  slug: string;
+  image: string;
+}
+
+export default function SearchInputWithCategory() {
+  const [resultList, setResultList] = useState<SearchSuggestion[]>([]);
+
+  const search = debounce(async (e) => {
     const value = e.target?.value;
 
-    if (!value) setResultList([]);
-    else setResultList(dummySearchResult);
+    if (!value) {
+      setResultList([]);
+    } else {
+      try {
+        const response = await fetch(`https://admin.felnatech.com/products/searchsuggest?search=${value}`);
+        const data = await response.json();
+        // The API is expected to return an array of suggestions
+        if (data.products && Array.isArray(data.products)) {
+          const mappedSuggestions = data.products.map((item: any) => ({
+            id: item.id,
+            product_name: item.pro_title || item.title || "Unknown Product",
+            slug: item.pro_slug || item.slug || "",
+            image: item.images && item.images.length > 0
+              ? `https://admin.felnatech.com/storage/app/public/products/${item.images[0].img_name}`
+              : "/assets/images/products/macbook.png"
+          }));
+          setResultList(mappedSuggestions);
+        } else {
+          setResultList([]);
+        }
+      } catch (error) {
+        console.error("Error fetching search suggestions:", error);
+        setResultList([]);
+      }
+    }
   }, 200);
 
   const hanldeSearch = useCallback((event: any) => {
@@ -48,11 +80,16 @@ export default function SearchInputWithCategory() {
       </StyledSearchBox>
 
       {!!resultList.length && (
-        <Card position="absolute" top="100%" py="0.5rem" width="100%" boxShadow="large" zIndex={99}>
+        <Card position="absolute" top="100%" py="0.5rem" width="100%" boxShadow="large" zIndex={99} style={{ maxHeight: '400px', overflowY: 'auto' }}>
           {resultList.map((item) => (
-            <Link href={`/product/search/${item}`} key={item}>
-              <MenuItem key={item}>
-                <Span fontSize="14px">{item}</Span>
+            <Link href={`/product/search/${item.slug}`} key={item.id}>
+              <MenuItem key={item.id}>
+                <img
+                  src={item.image}
+                  alt={item.product_name}
+                  style={{ width: 40, height: 40, objectFit: "contain", marginRight: 10 }}
+                />
+                <Span fontSize="14px">{item.product_name}</Span>
               </MenuItem>
             </Link>
           ))}
@@ -62,4 +99,4 @@ export default function SearchInputWithCategory() {
   );
 }
 
-const dummySearchResult = ["Macbook Air 13", "Ksus K555LA", "Acer Aspire X453", "iPad Mini 3"];
+// const dummySearchResult = ["Macbook Air 13", "Ksus K555LA", "Acer Aspire X453", "iPad Mini 3"];
