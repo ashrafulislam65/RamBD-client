@@ -15,8 +15,25 @@ const getServices = async (): Promise<Service[]> => {
 };
 
 const getCategories = async () => {
-  const response = await axios.get("/api/market-2/categories");
-  return response.data;
+  try {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
+    const response = await fetch(`${apiBaseUrl}/home-menu`, { next: { revalidate: 3600 } });
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    return (data.menu || []).map((m: any) => ({
+      id: m.category.id,
+      name: m.category.cate_name,
+      slug: m.category.cate_slug,
+      icon: m.category.cate_icon || 'fas fa-th-large', // Using cate_icon from API or a default FontAwesome icon
+      image: m.category.cate_img && m.category.cate_img !== 'default.png'
+        ? `${apiBaseUrl}/storage/${m.category.cate_img}`
+        : '/assets/images/categories/camera.png' // Default placeholder
+    }));
+  } catch (error) {
+    console.error("getCategories face error:", error);
+    return [];
+  }
 };
 
 const getBrands = async (): Promise<Brand[]> => {

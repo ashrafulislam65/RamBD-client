@@ -33,8 +33,7 @@ const StyledNavbar = styled.div`
   .root-child {
     display: none;
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
     top: 100%;
     z-index: 99;
     padding-top: 5px; /* Bridge the gap */

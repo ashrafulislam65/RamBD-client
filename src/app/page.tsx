@@ -37,44 +37,45 @@ export default async function Home() {
   return (
     <AppLayout navbar={<Navbar categories={navbarCategories} />}>
       <Fragment>
-        <Box bg="white" py="1rem">
+        <Box bg="white" pb="1rem" pt="0">
           {/* HERO CAROUSEL AREA */}
-          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section1 />
           </Box>
 
           {/* SERVICE LIST AREA */}
-          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section2 />
           </Box>
 
           {/* TOP CATEGORIES AREA */}
-          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section3 />
           </Box>
 
           {/* DEAL OF THE DAY PRODUCTS AREA - TOP RATED */}
-          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section4 products={topRatedProducts} />
           </Box>
 
           {/* LATEST PRODUCTS AREA */}
-          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section11 products={latestProducts} />
           </Box>
 
-          {/* NEW ARRIVALS AND BEST SELLER OFFER BANNER AREA */}
-          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+          {/* 
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section5 />
           </Box>
+*/}
 
           {/* FEATURES BRAND LIST AREA */}
-          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section9 brands={brands as any} />
           </Box>
 
           {/* SELECTED PRODUCTS AREA - MOST POPULAR */}
-          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section10 products={popularProducts} />
           </Box>
         </Box>

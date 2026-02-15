@@ -21,18 +21,24 @@ export default async function Section3() {
   return (
     <Container pt="0px">
       <Grid container spacing={3}>
-        {categories.map((item) => (
+        {categories.slice(0, 6).map((item) => (
           <Grid item lg={2} md={3} sm={4} xs={6} key={item.id}>
             <CategoryCard>
-              <NextImage width={300} height={300} alt="category" src={item.image as string} />
+              <NextImage
+                width={300}
+                height={300}
+                alt={item.name}
+                src={item.image || '/assets/images/categories/camera.png'}
+              />
 
               <CategoryTitle className="category-title">
-                <H4>{item.name}</H4>
+                <H4 textTransform="capitalize">{item.name}</H4>
               </CategoryTitle>
             </CategoryCard>
           </Grid>
         ))}
 
+        {/* 
         <Grid item xs={12}>
           <AdWrapper>
             <AdTitle1>Black friday sale!</AdTitle1>
@@ -56,7 +62,8 @@ export default async function Section3() {
               </AddButton>
             </Box>
           </AdWrapper>
-        </Grid>
+        </Grid> 
+*/}
       </Grid>
     </Container>
   );

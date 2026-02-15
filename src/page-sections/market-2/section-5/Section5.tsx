@@ -5,9 +5,12 @@ import { BannerCard3 } from "@component/banners";
 import { H4, Paragraph, Span } from "@component/Typography";
 
 export default function Section5() {
+  return null;
+  /*
   return (
     <Container pt="0px">
       <Grid container spacing={5}>
+        {/* 
         <Grid item md={4} xs={12}>
           <BannerCard3 img="/assets/images/banners/banner-18.jpg">
             <Paragraph fontSize={13} letterSpacing={1.2}>
@@ -24,8 +27,10 @@ export default function Section5() {
 
             <NavLink href="#">Shop Now</NavLink>
           </BannerCard3>
-        </Grid>
+        </Grid> 
+*/}
 
+{/* 
         <Grid item md={4} xs={12}>
           <BannerCard3 img="/assets/images/banners/banner-19.jpg">
             <Paragraph color="white" fontSize={13} letterSpacing={1.2}>
@@ -59,7 +64,9 @@ export default function Section5() {
             <NavLink href="#">Shop Now</NavLink>
           </BannerCard3>
         </Grid>
-      </Grid>
-    </Container>
+*/}
+      </Grid >
+    </Container >
   );
+  */
 }

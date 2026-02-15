@@ -157,7 +157,7 @@ export default function Navbar({ navListOpen, categories: initialData }: NavbarP
                   borderRadius={8}
                   py="0.5rem"
                   boxShadow="large"
-                  minWidth="230px"
+                  minWidth="180px"
                   style={{ zIndex: 100, overflow: "visible" }}
                 >
                   {renderNestedNav(nav.child)}
@@ -218,8 +218,8 @@ export default function Navbar({ navListOpen, categories: initialData }: NavbarP
           width="100%"
           px="15px"
           className="nav-list-wrapper"
-          justifyContent="space-between"
-          style={{ gap: 10 }}
+          justifyContent="flex-start"
+          style={{ gap: 20 }}
         >
           {renderNestedNav(navItems, true)}
         </FlexBox>

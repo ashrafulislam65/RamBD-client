@@ -14,7 +14,7 @@ export default async function Section1() {
   const carouselData = await api.getMainCarouselData();
 
   return (
-    <Container pt="5px">
+    <Container pt="0">
       <Grid container spacing={5}>
         <Grid item lg={12} xs={12}>
           <CarouselBox>
