@@ -23,7 +23,7 @@ export default function Section9({ brands }: Props) {
   ];
 
   return (
-    <Container my="4rem">
+    <Container my="0px">
       <FlexBox justifyContent="space-between" alignItems="center" mb="1.5rem">
         <H2 fontSize={20}>Featured Brands</H2>
 

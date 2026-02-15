@@ -19,7 +19,7 @@ export default async function Section3() {
   const categories = await api.getCategories();
 
   return (
-    <Container pt="4rem">
+    <Container pt="0px">
       <Grid container spacing={3}>
         {categories.map((item) => (
           <Grid item lg={2} md={3} sm={4} xs={6} key={item.id}>

@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-
+import Box from "@component/Box";
+import Grid from "@component/grid/Grid";
 import FlexBox from "@component/FlexBox";
 import { Button } from "@component/buttons";
 import Container from "@component/Container";
 import { H2, Paragraph } from "@component/Typography";
 import { ProductCard19 } from "@component/product-cards";
-import { Carousel } from "@component/carousel";
 import Product from "@models/product.model";
 // STYLED COMPONENT
 import { ButtonsWrapper } from "./styles";
@@ -17,6 +17,7 @@ type Section10Props = { products: Product[] };
 // ======================================================================
 
 export default function Section10({ products }: Section10Props) {
+  console.log("Most Popular Products (Section 10) products received from API:", products?.length);
   const [selected, setSelected] = useState("new");
 
   const handleSelected = (item: string) => () => setSelected(item);
@@ -29,16 +30,9 @@ export default function Section10({ products }: Section10Props) {
     { id: 4, title: "View All", type: "view" }
   ];
 
-  const responsive = [
-    { breakpoint: 1200, settings: { slidesToShow: 4 } },
-    { breakpoint: 1024, settings: { slidesToShow: 3 } },
-    { breakpoint: 650, settings: { slidesToShow: 2 } },
-    { breakpoint: 426, settings: { slidesToShow: 1 } }
-  ];
-
   return (
-    <Container mb="4rem">
-      <FlexBox alignItems="center" justifyContent="space-between" flexWrap="wrap" mb="1.5rem">
+    <Container mb="0px">
+      <FlexBox alignItems="center" justifyContent="space-between" flexWrap="wrap" mb="5px">
         <div>
           <H2 fontSize={20}>Most Popular Products</H2>
           <Paragraph>All our new arrivals in a exclusive brand selection</Paragraph>
@@ -57,20 +51,23 @@ export default function Section10({ products }: Section10Props) {
         </ButtonsWrapper>
       </FlexBox>
 
-      <Carousel slidesToShow={5} responsive={responsive}>
-        {products.map((product) => (
-          <ProductCard19
-            id={product.id}
-            key={product.id}
-            slug={product.slug}
-            name={product.title}
-            price={product.price}
-            img={product.thumbnail}
-            images={product.images as string[]}
-            reviews={product.reviews?.length || 15}
-          />
+      <Grid container spacing={1}>
+        {products.slice(0, 5).map((product) => (
+          <Grid item xl={2.4} lg={2.4} md={3} sm={4} xs={6} key={product.id}>
+            <Box py="5px">
+              <ProductCard19
+                id={product.id}
+                slug={product.slug}
+                name={product.title}
+                price={product.price}
+                img={product.thumbnail}
+                images={product.images as string[]}
+                reviews={product.reviews?.length || 15}
+              />
+            </Box>
+          </Grid>
         ))}
-      </Carousel>
+      </Grid>
     </Container>
   );
 }

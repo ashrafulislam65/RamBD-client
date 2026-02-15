@@ -6,7 +6,7 @@ import { H4, Paragraph, Span } from "@component/Typography";
 
 export default function Section5() {
   return (
-    <Container pt="4rem">
+    <Container pt="0px">
       <Grid container spacing={5}>
         <Grid item md={4} xs={12}>
           <BannerCard3 img="/assets/images/banners/banner-18.jpg">

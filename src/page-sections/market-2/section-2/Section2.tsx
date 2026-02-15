@@ -10,7 +10,7 @@ export default async function Section2() {
   const serviceList = await api.getServices();
 
   return (
-    <Container pt="2rem">
+    <Container pt="0px">
       <Wrapper>
         {serviceList.map((item, ind) => (
           <ServiceItem key={ind}>

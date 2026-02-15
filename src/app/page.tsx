@@ -2,6 +2,7 @@ import { Fragment } from "react";
 // API FUNCTIONS
 import api from "@utils/__api__/market-2";
 import navbarApi from "@utils/__api__/navbar";
+import categoryProductApi from "@utils/__api__/category-products";
 // GLOBAL CUSTOM COMPONENTS
 import Box from "@component/Box";
 import Navbar from "@component/navbar/Navbar";
@@ -29,12 +30,6 @@ export default async function Home() {
   let navbarCategories: any = null;
   try {
     navbarCategories = await navbarApi.getNavbarServices();
-    console.log("Server side navbarCategories fetched. Type:", typeof navbarCategories);
-    if (navbarCategories) {
-      console.log("Response Keys:", Object.keys(navbarCategories));
-      if (navbarCategories.menu) console.log("Menu Item 0:", JSON.stringify(navbarCategories.menu[0]));
-      if (navbarCategories.category) console.log("Category Item 0:", JSON.stringify(navbarCategories.category[0]));
-    }
   } catch (error) {
     console.error("Server-side fetch for navbar failed:", error);
   }
@@ -42,30 +37,46 @@ export default async function Home() {
   return (
     <AppLayout navbar={<Navbar categories={navbarCategories} />}>
       <Fragment>
-        <Box bg="#F6F6F6">
+        <Box bg="white" py="1rem">
           {/* HERO CAROUSEL AREA */}
-          <Section1 />
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+            <Section1 />
+          </Box>
 
           {/* SERVICE LIST AREA */}
-          <Section2 />
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+            <Section2 />
+          </Box>
 
           {/* TOP CATEGORIES AREA */}
-          <Section3 />
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+            <Section3 />
+          </Box>
 
           {/* DEAL OF THE DAY PRODUCTS AREA - TOP RATED */}
-          <Section4 products={topRatedProducts} />
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+            <Section4 products={topRatedProducts} />
+          </Box>
 
           {/* LATEST PRODUCTS AREA */}
-          <Section11 products={latestProducts} />
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+            <Section11 products={latestProducts} />
+          </Box>
 
           {/* NEW ARRIVALS AND BEST SELLER OFFER BANNER AREA */}
-          <Section5 />
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+            <Section5 />
+          </Box>
 
           {/* FEATURES BRAND LIST AREA */}
-          <Section9 brands={brands as any} />
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+            <Section9 brands={brands as any} />
+          </Box>
 
           {/* SELECTED PRODUCTS AREA - MOST POPULAR */}
-          <Section10 products={popularProducts} />
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="1.5rem" p="5px">
+            <Section10 products={popularProducts} />
+          </Box>
         </Box>
       </Fragment>
     </AppLayout>

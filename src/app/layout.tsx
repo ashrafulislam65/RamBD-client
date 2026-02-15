@@ -17,7 +17,11 @@ export const metadata: Metadata = {
   description:
     "RamBD is your one-stop shop for microphones, gadgets, and electronics in Bangladesh. Build SEO friendly Online store, delivery app and Multi vendor store",
   authors: [{ name: "RamBD", url: "https://rambd.com" }],
-  keywords: ["e-commerce", "gadgets", "microphones", "rambd", "bangladesh"]
+  keywords: ["e-commerce", "gadgets", "microphones", "rambd", "bangladesh"],
+  icons: {
+    icon: "/assets/images/rambd_logo.webp",
+    apple: "/assets/images/rambd_logo.webp",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

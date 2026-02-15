@@ -88,6 +88,10 @@ const marron = {
   main: "#BE7374"
 };
 
+const base = {
+  200: "#F2F4F7"
+};
+
 export const blue = {
   100: "#DBF0FE",
   200: "#B8DEFE",
@@ -113,6 +117,7 @@ export const colors = {
   warn: warningColor,
   success: successColor,
   default: defaultColor,
+  base,
   primary: primaryColor,
   secondary: secondaryColor
 };
