@@ -95,7 +95,7 @@ export default function ProductReview({ reviews = [], slug, model }: { reviews?:
         <ProductComment
           key={ind}
           name={item.client?.name || item.name || "Anonymous"}
-          imgUrl={item.client?.client_profile_image ? `https://admin.felnatech.com/uploads/client/${item.client.client_profile_image}` : (item.imgUrl || "/assets/images/faces/7.png")}
+          imgUrl={item.client?.client_profile_image ? `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info'}/uploads/client/${item.client.client_profile_image}` : (item.imgUrl || "/assets/images/faces/7.png")}
           rating={item.rev_rating || item.rating || 5}
           date={item.created_at || item.date || new Date().toISOString()}
           comment={item.rev_details || item.comment || item.message || ""}

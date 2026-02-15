@@ -1,6 +1,7 @@
 const getNavbarServices = async () => {
     try {
-        const response = await fetch("https://admin.felnatech.com/home-menu", { next: { revalidate: 3600 } });
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info";
+        const response = await fetch(`${apiBaseUrl}/home-menu`, { next: { revalidate: 3600 } });
         if (!response.ok) return null;
         return response.json();
     } catch (error) {

@@ -68,9 +68,9 @@ const getReviews = async (slug: string, model: string): Promise<any[]> => {
   try {
     if (!model) return [];
 
-    // Clean up model (sometimes it might have spaces or be messy)
     const cleanModel = model.trim();
-    const url = `https://admin.felnatech.com/api/products/reviews-data/${slug}/${cleanModel}`;
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
+    const url = `${apiBaseUrl}/api/products/reviews-data/${slug}/${cleanModel}`;
 
     const response = await fetch(url, { next: { revalidate: 0 } });
     if (!response.ok) return [];
@@ -86,7 +86,8 @@ const getReviews = async (slug: string, model: string): Promise<any[]> => {
 const postReview = async (slug: string, model: string, reviewData: { rating: number; message: string; client_id: number }): Promise<any> => {
   try {
     const cleanModel = model.trim();
-    const url = `https://admin.felnatech.com/api/products/reviews-data/${slug}/${cleanModel}`;
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
+    const url = `${apiBaseUrl}/api/products/reviews-data/${slug}/${cleanModel}`;
 
     // The API expects 'slug' in the body as well based on user request example
     const body = {

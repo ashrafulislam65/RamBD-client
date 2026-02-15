@@ -16,7 +16,7 @@ export default async function Section1() {
   return (
     <Container pt="1.5rem">
       <Grid container spacing={5}>
-        <Grid item lg={9} xs={12}>
+        <Grid item lg={12} xs={12}>
           <CarouselBox>
             <Carousel
               dots
@@ -38,42 +38,6 @@ export default async function Section1() {
               ))}
             </Carousel>
           </CarouselBox>
-        </Grid>
-
-        <Grid item lg={3} xs={12}>
-          <CardWrapper>
-            <BannerCard3 flex={1} img="/assets/images/banners/banner-17.jpg">
-              <Paragraph fontSize={13} letterSpacing={1.2}>
-                NEW ARRIVALS
-              </Paragraph>
-
-              <H4 fontSize={20} lineHeight={1.2} mb={2}>
-                SUMMER
-                <br />
-                SALE 20% OFF
-              </H4>
-
-              <NavLink href="#" color="dark.main">
-                Shop Now
-              </NavLink>
-            </BannerCard3>
-
-            <BannerCard3 flex={1} img="/assets/images/banners/banner-16.jpg">
-              <Paragraph fontSize={13} letterSpacing={1.2}>
-                GAMING 4K
-              </Paragraph>
-
-              <H4 fontSize={20} lineHeight={1.2} mb={2}>
-                DESKTOPS &
-                <br />
-                LAPTOPS
-              </H4>
-
-              <NavLink href="#" color="dark.main">
-                Shop Now
-              </NavLink>
-            </BannerCard3>
-          </CardWrapper>
         </Grid>
       </Grid>
     </Container>

@@ -6,7 +6,7 @@ export const transformApiProduct = (apiProduct: any): any => {
         ? apiProduct.images[0].img_name
         : '';
 
-    const storageBaseUrl = process.env.NEXT_PUBLIC_STORAGE_BASE_URL || 'https://admin.felnatech.com/storage/app/public/products';
+    const storageBaseUrl = process.env.NEXT_PUBLIC_STORAGE_BASE_URL || 'https://admin.unicodeconverter.info/storage/app/public/products';
 
     const imageUrl = firstImage
         ? `${storageBaseUrl}/${firstImage}`
@@ -56,7 +56,7 @@ export const transformApiProduct = (apiProduct: any): any => {
 };
 
 export const transformApiBrand = (apiBrand: any): any => {
-    const storageBaseUrl = process.env.NEXT_PUBLIC_BRAND_STORAGE_BASE_URL || 'https://admin.felnatech.com/storage/app/public/brand';
+    const storageBaseUrl = process.env.NEXT_PUBLIC_BRAND_STORAGE_BASE_URL || 'https://admin.unicodeconverter.info/storage/app/public/brand';
 
     // Handle missing or placeholder images
     const imageUrl = apiBrand.image && apiBrand.image !== 'no-image.jpg'

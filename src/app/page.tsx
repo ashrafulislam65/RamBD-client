@@ -13,8 +13,6 @@ import Section3 from "@sections/market-2/section-3";
 import Section4 from "@sections/market-2/section-4";
 import Section5 from "@sections/market-2/section-5";
 import Section6 from "@sections/market-2/section-6";
-import Section7 from "@sections/market-2/section-7";
-import Section8 from "@sections/market-2/section-8";
 import Section9 from "@sections/market-2/section-9";
 import Section10 from "@sections/market-2/section-10";
 import Section11 from "@sections/market-2/section-11";
@@ -22,9 +20,6 @@ import Section11 from "@sections/market-2/section-11";
 export default async function Home() {
   const brands = await api.getBrands();
   const products = await api.getProducts();
-  const menFashionProducts = await api.getMenFashionProducts();
-  const electronicsProducts = await api.getElectronicsProducts();
-  const womenFashionProducts = await api.getWomenFashionProducts();
 
   // Fetch real product data from company APIs
   const latestProducts = await api.getLatestProducts();
@@ -65,21 +60,6 @@ export default async function Home() {
 
           {/* NEW ARRIVALS AND BEST SELLER OFFER BANNER AREA */}
           <Section5 />
-
-          {/* ELECTRONICS CATEGORY BASED PRODUCTS AREA */}
-          <Section6 data={electronicsProducts} />
-
-          {/* SALES OFFER BANNERS AREA */}
-          <Section7 />
-
-          {/* MEN'S CATEGORY BASED PRODUCTS AREA */}
-          <Section6 data={menFashionProducts} />
-
-          {/* DISCOUNT OFFER BANNER AREA */}
-          <Section8 />
-
-          {/* WOMEN'S CATEGORY BASED PRODUCTS AREA */}
-          <Section6 data={womenFashionProducts} />
 
           {/* FEATURES BRAND LIST AREA */}
           <Section9 brands={brands as any} />

@@ -2,7 +2,11 @@
   "compilerOptions": {
     "baseUrl": "src",
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -15,19 +19,50 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
-      "@lib/*": ["lib/*"],
-      "@data/*": ["data/*"],
-      "@hook/*": ["hooks/*"],
-      "@utils/*": ["utils/*"],
-      "@context/*": ["contexts/*"],
-      "@reducer/*": ["reducers/*"],
-      "@component/*": ["components/*"],
-      "@sections/*": ["page-sections/*"],
-      "@models/*": ["models/*"]
+      "@lib/*": [
+        "lib/*"
+      ],
+      "@data/*": [
+        "data/*"
+      ],
+      "@hook/*": [
+        "hooks/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ],
+      "@context/*": [
+        "contexts/*"
+      ],
+      "@reducer/*": [
+        "reducers/*"
+      ],
+      "@component/*": [
+        "components/*"
+      ],
+      "@sections/*": [
+        "page-sections/*"
+      ],
+      "@models/*": [
+        "models/*"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "./src/components/icon/Icon.tsx"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "./src/components/icon/Icon.tsx"
+  ]
 }

@@ -21,7 +21,7 @@ const getCategories = async () => {
 
 const getBrands = async (): Promise<Brand[]> => {
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.felnatech.com';
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
     const response = await fetch(`${apiBaseUrl}/brand/getAllBrandsLast`, { next: { revalidate: 3600 } });
     if (!response.ok) return [];
 
@@ -56,7 +56,7 @@ const getWomenFashionProducts = async (): Promise<CategoryBasedProducts> => {
 
 const getLatestProducts = async (): Promise<Product[]> => {
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.felnatech.com';
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
     const response = await fetch(`${apiBaseUrl}/LatestProductList/getAllLatestProducts`, { next: { revalidate: 3600 } });
     if (!response.ok) return [];
 
@@ -71,7 +71,7 @@ const getLatestProducts = async (): Promise<Product[]> => {
 
 const getMostPopularProducts = async (): Promise<Product[]> => {
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.felnatech.com';
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
     const response = await fetch(`${apiBaseUrl}/most-popular-product`, { next: { revalidate: 3600 } });
     if (!response.ok) return [];
 
@@ -86,7 +86,7 @@ const getMostPopularProducts = async (): Promise<Product[]> => {
 
 const getTopRatedProducts = async (): Promise<Product[]> => {
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.felnatech.com';
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
     const response = await fetch(`${apiBaseUrl}/top-rated-product`, { next: { revalidate: 3600 } });
     if (!response.ok) return [];
 

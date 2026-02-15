@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Box from "@component/Box";
 import api from "@utils/__api__/orders";
 import Order from "@models/order.model";
 import Invoice from "@component/invoice/Invoice";
 
-export default function InvoicePage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+function InvoiceContent() {
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id") || "latest";
     const [order, setOrder] = useState<Order | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -38,5 +40,13 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
         <Box py="20px">
             <Invoice order={order} />
         </Box>
+    );
+}
+
+export default function InvoicePage() {
+    return (
+        <Suspense fallback={<Box textAlign="center" p="40px">Loading...</Box>}>
+            <InvoiceContent />
+        </Suspense>
     );
 }
