@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import { FC, useEffect, useState } from "react";
 import Box from "@component/Box";
 import Grid from "@component/grid/Grid";
@@ -69,15 +67,90 @@ export default function CheckoutForm({ formik }: { formik: any }) {
         <Typography fontWeight="600" mb="0.5rem" fontSize="14px">
           Phone
         </Typography>
-        <TextField
-          fullwidth
-          name="phone"
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={values.phone}
-          errorText={touched.phone && errors.phone}
-          placeholder="+8801"
-        />
+        <FlexBox
+          alignItems="center"
+          borderRadius="8px"
+          style={{
+            border: (() => {
+              const raw = (values.phone || "").replace(/\+8801/, "");
+              if (raw.length === 9) return "1px solid #2ba56d";
+              if (raw.length > 0) return "1px solid #e74c3c";
+              if (touched.phone && errors.phone) return "1px solid #e74c3c";
+              return "1px solid #dee2e6";
+            })(),
+            overflow: "hidden"
+          }}
+        >
+          <Box
+            bg="gray.200"
+            px="12px"
+            py="10px"
+            style={{
+              borderRight: "1px solid #dee2e6",
+              whiteSpace: "nowrap",
+              userSelect: "none"
+            }}
+          >
+            <Typography fontSize="18px" fontWeight="700" color="text.primary">
+              +8801
+            </Typography>
+          </Box>
+          <input
+            name="phone_digits"
+            type="tel"
+            maxLength={10}
+            value={(() => {
+              const raw = (values.phone || "").replace(/\+8801/, "").replace(/-/g, "");
+              if (raw.length > 5) return raw.slice(0, 5) + "-" + raw.slice(5);
+              return raw;
+            })()}
+            onBlur={handleBlur}
+            onChange={(e) => {
+              const input = e.target.value.replace(/[^0-9]/g, "");
+              if (input.length <= 9) {
+                setFieldValue("phone", input ? `+8801${input}` : "");
+              }
+            }}
+            placeholder="XXXXX-XXXX"
+            style={{
+              border: "none",
+              outline: "none",
+              width: "100%",
+              padding: "10px 12px",
+              fontSize: "20px",
+              fontWeight: 700,
+              letterSpacing: "2px",
+              fontFamily: "inherit",
+              background: "transparent"
+            }}
+          />
+        </FlexBox>
+        {/* Real-time validation feedback */}
+        {(() => {
+          const raw = (values.phone || "").replace(/\+8801/, "");
+          if (raw.length === 9) {
+            return (
+              <Typography fontSize="12px" color="success.main" mt="4px" fontWeight="600">
+                ✓ Valid phone number
+              </Typography>
+            );
+          }
+          if (raw.length > 0 && raw.length < 9) {
+            return (
+              <Typography fontSize="12px" mt="4px" fontWeight="600" style={{ color: "#e74c3c" }}>
+                ⚠ Enter {9 - raw.length} more digit{9 - raw.length > 1 ? "s" : ""} to complete the number
+              </Typography>
+            );
+          }
+          if (touched.phone && errors.phone) {
+            return (
+              <Typography fontSize="12px" mt="4px" fontWeight="600" style={{ color: "#e74c3c" }}>
+                {errors.phone}
+              </Typography>
+            );
+          }
+          return null;
+        })()}
       </Box>
 
       <Box mb="1.5rem">

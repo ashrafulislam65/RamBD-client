@@ -81,14 +81,19 @@ export default function ProductIntro({
   const handleImageClick = (ind: number) => () => setSelectedImage(ind);
 
   const handleCartAmountChange = (amount: number) => {
+    const discountedPrice = discount ? price - (price * discount) / 100 : price;
+
     dispatch({
       type: "CHANGE_CART_AMOUNT",
       payload: {
-        price,
+        price: discountedPrice,
+        originalPrice: price,
+        discount: discount,
         qty: amount,
         name: title,
         imgUrl: images[0],
-        id: id || routerId
+        id: id || routerId,
+        slug: param.slug as string
       }
     });
   };

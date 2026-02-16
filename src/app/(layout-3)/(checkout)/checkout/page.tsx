@@ -27,6 +27,8 @@ export default function Checkout() {
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [otp, setOtp] = useState("");
   const [orderPayload, setOrderPayload] = useState<any>(null);
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [newPhoneDigits, setNewPhoneDigits] = useState("");
 
   const handleFormSubmit = async (values: any) => {
     // scale payload
@@ -205,14 +207,125 @@ export default function Checkout() {
         )}
       </Formik>
 
-      <Modal open={isOtpModalOpen} onClose={() => setIsOtpModalOpen(false)}>
+      <Modal open={isOtpModalOpen} onClose={() => { setIsOtpModalOpen(false); setIsEditingPhone(false); setNewPhoneDigits(""); }}>
         <Box p="2rem" bg="white" borderRadius="8px" maxWidth="400px" width="100%">
           <Typography fontSize="22px" fontWeight="700" mb="1rem" textAlign="center">
             Verify Your Phone
           </Typography>
-          <Typography fontSize="14px" color="text.muted" mb="1.5rem" textAlign="center">
-            An OTP has been sent to your phone number. Please enter it below to confirm your order.
-          </Typography>
+
+          {/* Show current phone number */}
+          <Box mb="1.5rem" p="12px" borderRadius="8px" bg="gray.100" textAlign="center">
+            <Typography fontSize="13px" color="text.muted" mb="4px">
+              OTP sent to
+            </Typography>
+            <Typography fontSize="18px" fontWeight="700" color="text.primary">
+              {orderPayload?.order_details?.ord_phone || ""}
+            </Typography>
+            {!isEditingPhone && (
+              <Typography
+                fontSize="13px"
+                fontWeight="600"
+                color="primary.main"
+                mt="6px"
+                style={{ cursor: "pointer", textDecoration: "underline" }}
+                onClick={() => {
+                  const currentPhone = orderPayload?.order_details?.ord_phone || "";
+                  setNewPhoneDigits(currentPhone.replace(/\+8801/, ""));
+                  setIsEditingPhone(true);
+                }}
+              >
+                Change Number
+              </Typography>
+            )}
+          </Box>
+
+          {/* Inline phone editor */}
+          {isEditingPhone && (
+            <Box mb="1.5rem">
+              <Typography fontSize="13px" fontWeight="600" mb="6px" color="text.muted">
+                Enter new phone number:
+              </Typography>
+              <Box
+                display="flex"
+                alignItems="center"
+                borderRadius="8px"
+                mb="8px"
+                style={{
+                  border: newPhoneDigits.length === 9 ? "1px solid #2ba56d" : newPhoneDigits.length > 0 ? "1px solid #e74c3c" : "1px solid #dee2e6",
+                  overflow: "hidden"
+                }}
+              >
+                <Box
+                  bg="gray.200"
+                  px="10px"
+                  py="8px"
+                  style={{ borderRight: "1px solid #dee2e6", whiteSpace: "nowrap", userSelect: "none" }}
+                >
+                  <Typography fontSize="16px" fontWeight="700" color="text.primary">
+                    +8801
+                  </Typography>
+                </Box>
+                <input
+                  type="tel"
+                  maxLength={10}
+                  value={newPhoneDigits.length > 5 ? newPhoneDigits.slice(0, 5) + "-" + newPhoneDigits.slice(5) : newPhoneDigits}
+                  onChange={(e) => {
+                    const input = e.target.value.replace(/[^0-9]/g, "");
+                    if (input.length <= 9) setNewPhoneDigits(input);
+                  }}
+                  placeholder="XXXXX-XXXX"
+                  style={{
+                    border: "none", outline: "none", width: "100%",
+                    padding: "8px 10px", fontSize: "18px", fontWeight: 700,
+                    letterSpacing: "2px", fontFamily: "inherit", background: "transparent"
+                  }}
+                />
+              </Box>
+              {newPhoneDigits.length > 0 && newPhoneDigits.length < 9 && (
+                <Typography fontSize="11px" fontWeight="600" style={{ color: "#e74c3c" }}>
+                  ⚠ {9 - newPhoneDigits.length} more digit{9 - newPhoneDigits.length > 1 ? "s" : ""} needed
+                </Typography>
+              )}
+              <Box display="flex" style={{ gap: 8 }} mt="8px">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullwidth
+                  size="small"
+                  disabled={newPhoneDigits.length !== 9 || loading}
+                  onClick={async () => {
+                    const newPhone = `+8801${newPhoneDigits}`;
+                    setLoading(true);
+                    const otpResponse = await checkoutApi.generateOtp(newPhone);
+                    setLoading(false);
+                    if (otpResponse && (otpResponse.status || otpResponse.success)) {
+                      // Update payload with new phone
+                      setOrderPayload((prev: any) => ({
+                        ...prev,
+                        order_details: { ...prev.order_details, ord_phone: newPhone }
+                      }));
+                      setIsEditingPhone(false);
+                      setOtp("");
+                      Swal.fire({ icon: 'success', title: 'OTP Sent', text: `OTP sent to ${newPhone}`, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                    } else {
+                      Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to send OTP to new number.' });
+                    }
+                  }}
+                >
+                  {loading ? "Sending..." : "Send OTP to New Number"}
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="dark"
+                  size="small"
+                  onClick={() => { setIsEditingPhone(false); setNewPhoneDigits(""); }}
+                  style={{ whiteSpace: "nowrap" }}
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </Box>
+          )}
 
           <TextField
             fullwidth
@@ -262,7 +375,7 @@ const initialValues = {
 
 const checkoutSchema = yup.object().shape({
   full_name: yup.string().required("Name is required"),
-  phone: yup.string().required("Phone is required"),
+  phone: yup.string().required("Phone is required").matches(/^\+8801\d{9}$/, "Enter a valid 11-digit BD phone number"),
   district: yup.string().required("District is required"),
   thana: yup.string().required("Thana is required"),
   address: yup.string().required("Address is required"),

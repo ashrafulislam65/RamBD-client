@@ -15,6 +15,8 @@ export interface CartItem {
   price: number;
   imgUrl?: string;
   id: string | number;
+  discount?: number;
+  originalPrice?: number;
 }
 
 interface CartActionType {

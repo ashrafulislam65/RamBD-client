@@ -1,26 +1,47 @@
 "use client";
 
-import { Fragment } from "react";
 import Image from "next/image";
 import Box from "@component/Box";
 import { Card1 } from "@component/Card1";
 import Avatar from "@component/avatar";
 import Divider from "@component/Divider";
 import FlexBox from "@component/FlexBox";
-import { Button } from "@component/buttons";
-import TextField from "@component/text-field";
-import Typography, { H6 } from "@component/Typography";
+import { Button, IconButton } from "@component/buttons";
+import Typography from "@component/Typography";
 import CheckBox from "@component/CheckBox";
-import Radio from "@component/radio";
+import Icon from "@component/icon/Icon";
 import { useAppContext } from "@context/app-context";
 import { currency } from "@utils/utils";
+import { CartItem } from "@context/app-context/types";
+import { theme } from "@utils/theme";
 
 export default function CheckoutSummary({ formik }: { formik: any }) {
-  const { state } = useAppContext();
+  const { state, dispatch } = useAppContext();
   const { values, setFieldValue, handleSubmit, handleChange } = formik;
 
   const getTotalPrice = () => {
     return state.cart.reduce((accumulator, item) => accumulator + item.price * item.qty, 0) || 0;
+  };
+
+  const getTotalOriginalPrice = () => {
+    return state.cart.reduce((accumulator, item) => accumulator + (item.originalPrice || item.price) * item.qty, 0) || 0;
+  };
+
+  const totalDiscount = getTotalOriginalPrice() - getTotalPrice();
+
+  const handleQuantityChange = (item: CartItem, amount: number) => () => {
+    if (amount < 1) return;
+    dispatch({
+      type: "CHANGE_CART_AMOUNT",
+      payload: { ...item, qty: amount }
+    });
+  };
+
+  const handleRemoveItem = (item: CartItem) => () => {
+    dispatch({
+      type: "CHANGE_CART_AMOUNT",
+      payload: { ...item, qty: 0 }
+    });
   };
 
   return (
@@ -35,40 +56,80 @@ export default function CheckoutSummary({ formik }: { formik: any }) {
 
       <Divider mb="1rem" />
 
-      {state.cart.map((item) => (
-        <FlexBox justifyContent="space-between" alignItems="center" mb="1rem" key={item.id}>
-          <FlexBox alignItems="center">
-            <Avatar
-              src={item.imgUrl || "/assets/images/products/iphone-x.png"}
-              size={40}
-              mr="10px"
-            />
-            <Typography fontSize="13px" fontWeight="600" maxWidth="150px">
-              {item.name}
-            </Typography>
-          </FlexBox>
+      <Box mb="1.5rem">
+        {state.cart.map((item) => (
+          <FlexBox justifyContent="space-between" alignItems="center" mb="1.5rem" key={item.id}>
+            <FlexBox alignItems="center" flex="1" minWidth="0">
+              <IconButton
+                size="small"
+                p="2px"
+                onClick={handleRemoveItem(item)}
+                style={{ marginRight: 6, color: "#e74c3c", flexShrink: 0 }}
+              >
+                <Icon size="12px">close</Icon>
+              </IconButton>
 
-          <FlexBox alignItems="center">
-            <Typography fontSize="14px" fontWeight="700" mr="2.5rem">
-              {item.qty}
-            </Typography>
-            <Typography fontSize="14px" fontWeight="600" color="primary.main">
-              {currency(item.price * item.qty, 0)}
-            </Typography>
-          </FlexBox>
-        </FlexBox>
-      ))}
+              <Avatar
+                src={item.imgUrl || "/assets/images/products/iphone-x.png"}
+                size={40}
+                mr="8px"
+              />
+              <Typography fontSize="13px" fontWeight="600" maxWidth="120px" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {item.name}
+              </Typography>
+            </FlexBox>
 
-      <Divider mb="1rem" mt="1.5rem" />
+            <FlexBox alignItems="center" flexShrink={0}>
+              <FlexBox
+                alignItems="center"
+                p="2px"
+                borderRadius="4px"
+                mr="1rem"
+                style={{ border: `1px solid ${theme.colors.gray[300]}`, height: 28 }}>
+                <Button
+                  variant="text"
+                  size="small"
+                  p="4px"
+                  onClick={handleQuantityChange(item, item.qty - 1)}
+                  disabled={item.qty <= 1}>
+                  <Icon size="10px">minus</Icon>
+                </Button>
+
+                <Typography fontSize="12px" fontWeight="600" mx="8px">
+                  {item.qty}
+                </Typography>
+
+                <Button
+                  variant="text"
+                  size="small"
+                  p="4px"
+                  onClick={handleQuantityChange(item, item.qty + 1)}>
+                  <Icon size="10px">plus</Icon>
+                </Button>
+              </FlexBox>
+
+              <Typography fontSize="14px" fontWeight="600" color="primary.main" minWidth="55px" textAlign="right">
+                {currency(item.price * item.qty, 0)}
+              </Typography>
+            </FlexBox>
+          </FlexBox>
+        ))}
+      </Box>
+
+      <Divider mb="1rem" mt="0.5rem" />
 
       <FlexBox justifyContent="space-between" alignItems="center" mb="0.75rem">
-        <Typography fontSize="14px" fontWeight="600">Discount</Typography>
-        <Typography fontSize="14px" fontWeight="600" color="primary.main">0</Typography>
+        <Typography fontSize="14px" fontWeight="600">Subtotal</Typography>
+        <Typography fontSize="14px" fontWeight="600">
+          {currency(getTotalOriginalPrice(), 0)}
+        </Typography>
       </FlexBox>
 
       <FlexBox justifyContent="space-between" alignItems="center" mb="0.75rem">
-        <Typography fontSize="14px" fontWeight="600">Promotion Discount</Typography>
-        <Typography fontSize="14px" fontWeight="600" color="primary.main">0</Typography>
+        <Typography fontSize="14px" fontWeight="600">Discount</Typography>
+        <Typography fontSize="14px" fontWeight="600" color="primary.main">
+          -{currency(totalDiscount, 0)}
+        </Typography>
       </FlexBox>
 
       <FlexBox justifyContent="space-between" alignItems="center" mb="0.75rem">
@@ -81,81 +142,139 @@ export default function CheckoutSummary({ formik }: { formik: any }) {
       <Divider mb="1rem" />
 
       <FlexBox justifyContent="space-between" alignItems="center" mb="1.5rem">
-        <Typography fontSize="16px" fontWeight="700">Total Price</Typography>
+        <Typography fontSize="16px" fontWeight="700">Total Payable</Typography>
         <Typography fontSize="16px" fontWeight="700" color="primary.main">
           {currency(getTotalPrice() + (values.shipping_cost || 0), 0)} TK
         </Typography>
       </FlexBox>
 
-      <Box mb="1.5rem">
+      <Box mb="2rem" mt="1rem">
+        <Typography fontSize="16px" fontWeight="700" color="text.primary" mb="1rem">
+          Payment Method:
+        </Typography>
+
+        <FlexBox flexDirection="row" flexWrap="wrap" style={{ gap: 10 }}>
+          <Box
+            flex="1"
+            minWidth="0"
+            p="10px 8px"
+            borderRadius="8px"
+            cursor="pointer"
+            style={{
+              border: values.payment_method === "cod" ? "2px solid #2ba56d" : "1px solid #dee2e6",
+              background: values.payment_method === "cod" ? "#f0faf5" : "transparent",
+              transition: "all 0.2s ease"
+            }}
+            onClick={() => setFieldValue("payment_method", "cod")}
+          >
+            <FlexBox alignItems="center">
+              <Box
+                width="16px"
+                height="16px"
+                borderRadius="50%"
+                mr="8px"
+                flexShrink={0}
+                style={{
+                  border: values.payment_method === "cod" ? "5px solid #2ba56d" : "2px solid #adb5bd",
+                  transition: "all 0.2s ease"
+                }}
+              />
+              <Typography fontSize="12px" fontWeight="600" color="text.primary">
+                Cash On Delivery
+              </Typography>
+            </FlexBox>
+          </Box>
+
+          <Box
+            flex="1"
+            minWidth="0"
+            p="10px 8px"
+            borderRadius="8px"
+            cursor="pointer"
+            style={{
+              border: values.payment_method === "card" ? "2px solid #2ba56d" : "1px solid #dee2e6",
+              background: values.payment_method === "card" ? "#f0faf5" : "transparent",
+              transition: "all 0.2s ease"
+            }}
+            onClick={() => setFieldValue("payment_method", "card")}
+          >
+            <FlexBox alignItems="center">
+              <Box
+                width="16px"
+                height="16px"
+                borderRadius="50%"
+                mr="8px"
+                flexShrink={0}
+                style={{
+                  border: values.payment_method === "card" ? "5px solid #2ba56d" : "2px solid #adb5bd",
+                  transition: "all 0.2s ease"
+                }}
+              />
+              <Typography fontSize="12px" fontWeight="600" color="text.primary">
+                Online Payment
+              </Typography>
+            </FlexBox>
+          </Box>
+
+          <Box
+            flex="1"
+            minWidth="0"
+            p="10px 8px"
+            borderRadius="8px"
+            cursor="pointer"
+            style={{
+              border: values.payment_method === "bkash" ? "2px solid #2ba56d" : "1px solid #dee2e6",
+              background: values.payment_method === "bkash" ? "#f0faf5" : "transparent",
+              transition: "all 0.2s ease"
+            }}
+            onClick={() => setFieldValue("payment_method", "bkash")}
+          >
+            <FlexBox alignItems="center">
+              <Box
+                width="16px"
+                height="16px"
+                borderRadius="50%"
+                mr="8px"
+                flexShrink={0}
+                style={{
+                  border: values.payment_method === "bkash" ? "5px solid #2ba56d" : "2px solid #adb5bd",
+                  transition: "all 0.2s ease"
+                }}
+              />
+              <Typography fontSize="12px" fontWeight="600" color="text.primary" mr="6px">
+                bKash
+              </Typography>
+              <Image
+                src="/assets/images/payment-logos/bkash.png"
+                alt="bkash"
+                width={30}
+                height={13}
+                style={{ objectFit: "contain" }}
+                onError={(e: any) => (e.target.style.display = "none")}
+              />
+            </FlexBox>
+          </Box>
+        </FlexBox>
+      </Box>
+
+      <Box mb="1.5rem" p="10px" borderRadius="8px" bg="gray.100">
         <CheckBox
           name="agree"
           color="primary"
           onChange={handleChange}
           checked={values.agree}
           label={
-            <Typography fontSize="14px" color="text.hint" sx={{ cursor: "pointer", userSelect: "none", fontWeight: 700 }}>
-              I have read and agree to the <span style={{ color: "#2ba56d" }}>terms and conditions</span> & <span style={{ color: "#2ba56d" }}>privacy policy</span> & <span style={{ color: "#2ba56d" }}>return & refund policy</span>
+            <Typography
+              fontSize="13px"
+              color="text.hint"
+              sx={{ cursor: "pointer", userSelect: "none", fontWeight: 600, display: "block" }}>
+              I have read and agree to the{" "}
+              <span style={{ color: "#2ba56d", textDecoration: "underline" }}>terms and conditions</span>,{" "}
+              <span style={{ color: "#2ba56d", textDecoration: "underline" }}>privacy policy</span> &{" "}
+              <span style={{ color: "#2ba56d", textDecoration: "underline" }}>refund policy</span>
             </Typography>
           }
         />
-      </Box>
-
-      <Box mb="2rem">
-        <FlexBox alignItems="center" flexWrap="wrap">
-          <Typography fontSize="16px" fontWeight="700" color="text.primary" mr="1.5rem">
-            Payment Methods:
-          </Typography>
-
-          <FlexBox alignItems="center">
-            <Radio
-              id="payment-cod"
-              name="payment_method"
-              color="primary"
-              label={
-                <Typography ml="8px" mr="1.5rem" fontSize="14px" fontWeight="700" color="text.primary">
-                  Cash On Delivery
-                </Typography>
-              }
-              value="cod"
-              checked={values.payment_method === "cod"}
-              onChange={handleChange}
-            />
-
-            <Radio
-              id="payment-card"
-              name="payment_method"
-              color="primary"
-              label={
-                <Typography ml="8px" mr="1.5rem" fontSize="14px" fontWeight="700" color="text.primary">
-                  Bank / Card
-                </Typography>
-              }
-              value="card"
-              checked={values.payment_method === "card"}
-              onChange={handleChange}
-            />
-
-            <Radio
-              id="payment-bkash"
-              name="payment_method"
-              color="primary"
-              label={
-                <FlexBox alignItems="center" ml="8px">
-                  <Typography fontSize="14px" fontWeight="700" color="text.primary" mr="8px">
-                    bKash
-                  </Typography>
-                  <svg width="24" height="24" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M96.7 4.1c-1.2-1.2-3.2-1.2-4.4 0L67.1 29.3c-1.2 1.2-1.2 3.2 0 4.4L92.3 59c1.2 1.2 3.2 1.2 4.4 0l1.3-1.3c1.2-1.2 1.2-3.2 0-4.4L78.6 33.7c-1.2-1.2-1.2-3.2 0-4.4l11.4-11.4c1.2-1.2 1.2-3.2 0-4.4l-1.3-1.3c-.6-.6-1.5-.9-2.2-.9s-1.6.3-2.2.9L73.4 23.5c-1.2 1.2-3.2 1.2-4.4 0L43.8 17.1c-1.2 1.2-1.2 3.2 0 4.4l13.1 13.1c1.2 1.2 1.2 3.2 0 4.4L44.2 51.7c-1.2 1.2-1.2 3.2 0 4.4l6.4 6.4c1.2 1.2 3.2 1.2 4.4 0l13.1-13.1c1.2-1.2 3.2-1.2 4.4 0l13.1 13.1c1.2 1.2 3.2 1.2 4.4 0l1.3-1.3c1.2-1.2 1.2-3.2 0-4.4L78.6 44.1c-1.2-1.2-1.2-3.2 0-4.4l11.4-11.4c1.2-1.2 1.2-3.2 0-4.4l-1.3-1.3z" fill="#E2136E" />
-                  </svg>
-                </FlexBox>
-              }
-              value="bkash"
-              checked={values.payment_method === "bkash"}
-              onChange={handleChange}
-            />
-          </FlexBox>
-        </FlexBox>
       </Box>
 
       <Button

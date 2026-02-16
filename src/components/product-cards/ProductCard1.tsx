@@ -148,12 +148,16 @@ export default function ProductCard1({
   }, []);
 
   const handleCartAmountChange = (amount: number) => () => {
+    const discountedPrice = off ? price - (price * off) / 100 : price;
+
     dispatch({
       type: "CHANGE_CART_AMOUNT",
       payload: {
         id: id as number | string,
         slug,
-        price,
+        price: discountedPrice,
+        originalPrice: price,
+        discount: off,
         imgUrl,
         name: title,
         qty: amount
@@ -163,9 +167,20 @@ export default function ProductCard1({
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.stopPropagation();
+    const discountedPrice = off ? price - (price * off) / 100 : price;
+
     dispatch({
       type: "CHANGE_CART_AMOUNT",
-      payload: { id: id as number | string, slug, price, imgUrl, name: title, qty: (cartItem?.qty || 0) + 1 }
+      payload: {
+        id: id as number | string,
+        slug,
+        price: discountedPrice,
+        originalPrice: price,
+        discount: off,
+        imgUrl,
+        name: title,
+        qty: (cartItem?.qty || 0) + 1
+      }
     });
     router.push("/checkout");
   };
