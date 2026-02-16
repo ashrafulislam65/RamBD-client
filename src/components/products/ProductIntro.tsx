@@ -16,7 +16,7 @@ import { Button } from "@component/buttons";
 import Avatar from "@component/avatar";
 import { H1, H3, H4, SemiSpan, Paragraph, Span } from "@component/Typography";
 import { useAppContext } from "@context/app-context";
-import { currency } from "@utils/utils";
+import { currency, calculateDiscount } from "@utils/utils";
 import Product from "models/product.model";
 import { theme } from "@utils/theme";
 
@@ -32,6 +32,7 @@ interface Props {
   product_code?: string;
   categoryName?: string;
   visitors?: number;
+  discount?: number;
   latestProducts?: Product[];
 }
 // ========================================
@@ -47,6 +48,7 @@ export default function ProductIntro({
   product_code,
   categoryName,
   visitors,
+  discount,
   latestProducts
 }: Props) {
   const router = useRouter();
@@ -106,12 +108,12 @@ export default function ProductIntro({
 
   return (
     <Box overflow="hidden">
-      <Grid container spacing={4}>
-        <Grid item md={9} xs={12}>
+      <FlexBox flexWrap="wrap" style={{ gap: 2 }}>
+        <Box flex="1 1 0" minWidth={300}>
           <Box bg="white" p="1.5rem" borderRadius={8} shadow={1}>
             <Grid container spacing={6}>
               {/* IMAGE GALLERY */}
-              <Grid item md={6} xs={12}>
+              <Grid item md={7} xs={12}>
                 <FlexBox
                   mb="20px"
                   overflow="hidden"
@@ -126,8 +128,8 @@ export default function ProductIntro({
                   onMouseMove={handleMouseMove}
                 >
                   <Image
-                    width={400}
-                    height={400}
+                    width={500}
+                    height={500}
                     src={images[selectedImage]}
                     priority
                     alt={title}
@@ -178,9 +180,19 @@ export default function ProductIntro({
               </Grid>
 
               {/* PRODUCT INFO */}
-              <Grid item md={6} xs={12}>
-                <H1 mb="0.5rem" color="secondary.main">{title}</H1>
-                <H4 color="primary.main" mb="1rem">{currency(price)}</H4>
+              <Grid item md={5} xs={12}>
+                <H1 mb="0.75rem" color="secondary.main" fontSize={22} fontWeight="700" style={{ lineHeight: 1.3 }}>{title}</H1>
+
+                <FlexBox alignItems="center" mb="1rem">
+                  <H3 color="primary.main" mr="12px" fontWeight="700">
+                    {calculateDiscount(price, discount || 0)}
+                  </H3>
+                  {(discount > 0) && (
+                    <SemiSpan color="text.muted" fontWeight="600">
+                      <del>{currency(price)}</del>
+                    </SemiSpan>
+                  )}
+                </FlexBox>
 
                 <Box mb="1.5rem">
                   <FlexBox alignItems="center" mb="8px">
@@ -216,53 +228,52 @@ export default function ProductIntro({
                   </FlexBox>
                 </Box>
 
-                {/* QUANTITY SELECTOR (Moved Above Buttons) */}
+                {/* QUANTITY AND BUTTONS IN ONE ROW */}
                 <Box mb="1.5rem">
                   <SemiSpan fontWeight="600" mb="8px" display="block">Quantity:</SemiSpan>
-                  <FlexBox
-                    alignItems="center"
-                    justifyContent="space-between"
-                    p="4px"
-                    borderRadius="4px"
-                    style={{ border: `1px solid ${theme.colors.gray[300]}`, width: 120, height: 44 }}>
-                    <Button
-                      variant="text"
-                      size="small"
-                      onClick={() => {
-                        const newQty = Math.max(1, (cartItem?.qty || quantity) - 1);
-                        setQuantity(newQty);
-                        if (cartItem) {
-                          handleCartAmountChange(newQty);
-                        }
-                      }}>
-                      <FaMinus size={14} />
-                    </Button>
-                    <H3 fontWeight="600">{cartItem?.qty || quantity}</H3>
-                    <Button
-                      variant="text"
-                      size="small"
-                      onClick={() => {
-                        const newQty = (cartItem?.qty || quantity) + 1;
-                        setQuantity(newQty);
-                        if (cartItem) {
-                          handleCartAmountChange(newQty);
-                        }
-                      }}>
-                      <FaPlus size={14} />
-                    </Button>
-                  </FlexBox>
-                </Box>
+                  <FlexBox alignItems="center" flexWrap="wrap" style={{ gap: 2 }}>
+                    <FlexBox
+                      alignItems="center"
+                      justifyContent="space-between"
+                      borderRadius="4px"
+                      style={{ border: `1px solid ${theme.colors.gray[300]}`, width: 100, height: 40 }}>
+                      <Button
+                        variant="text"
+                        size="small"
+                        onClick={() => {
+                          const newQty = Math.max(1, (cartItem?.qty || quantity) - 1);
+                          setQuantity(newQty);
+                          if (cartItem) {
+                            handleCartAmountChange(newQty);
+                          }
+                        }}
+                        style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                        <FaMinus size={12} />
+                      </Button>
+                      <H3 fontSize={16} fontWeight="600" style={{ flex: 1, textAlign: 'center' }}>{cartItem?.qty || quantity}</H3>
+                      <Button
+                        variant="text"
+                        size="small"
+                        onClick={() => {
+                          const newQty = (cartItem?.qty || quantity) + 1;
+                          setQuantity(newQty);
+                          if (cartItem) {
+                            handleCartAmountChange(newQty);
+                          }
+                        }}
+                        style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                        <FaPlus size={12} />
+                      </Button>
+                    </FlexBox>
 
-                <Box mb="1.5rem">
-                  <FlexBox style={{ gap: 16 }}>
                     <Button
                       size="medium"
                       color="primary"
                       variant="contained"
                       onClick={() => handleCartAmountChange(cartItem?.qty || quantity)}
-                      style={{ minWidth: 160, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <IoCartOutline size={22} style={{ marginRight: 8 }} />
-                      ADD TO CART
+                      style={{ padding: '0 15px', height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <IoCartOutline size={20} style={{ marginRight: 6 }} />
+                      <Span fontSize={13} fontWeight="600">ADD TO CART</Span>
                     </Button>
 
                     <Button
@@ -270,9 +281,9 @@ export default function ProductIntro({
                       color="secondary"
                       variant="contained"
                       onClick={handleBuyNow}
-                      style={{ minWidth: 160, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <IoBagCheckOutline size={20} style={{ marginRight: 8 }} />
-                      BUY NOW
+                      style={{ padding: '0 15px', height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <IoBagCheckOutline size={18} style={{ marginRight: 6 }} />
+                      <Span fontSize={13} fontWeight="600">BUY NOW</Span>
                     </Button>
                   </FlexBox>
                 </Box>
@@ -309,57 +320,47 @@ export default function ProductIntro({
               </Grid>
             </Grid>
           </Box>
-        </Grid>
+        </Box>
 
         {/* SIDEBAR LATEST PRODUCTS */}
-        <Grid item md={3} xs={12}>
-          <Box bg="white" p="1rem" borderRadius={8} shadow={1}>
-            <H4 mb="1rem">Our Latest Products</H4>
+        <Box width="100px" flexShrink={0}>
+          <Box bg="white" p="8px" borderRadius={8} shadow={1} textAlign="center">
+            <H4 fontSize={11} mb="12px" color="text.muted" style={{ lineHeight: 1.2 }}>Latest Products</H4>
 
             <Box>
               {latestProducts?.slice(0, 6).map((item) => (
                 <Link href={`/product/${item.slug}`} key={item.id}>
-                  <FlexBox
-                    alignItems="center"
-                    padding="10px"
-                    style={{ gap: 12, border: "1px solid", borderColor: theme.colors.gray[200], borderRadius: 8, marginBottom: 12 }}
+                  <Box
+                    padding="8px 4px"
+                    mb="10px"
+                    style={{ border: "1px solid", borderColor: theme.colors.gray[200], borderRadius: 8 }}
                   >
-                    <Box size={50} minWidth={50}>
+                    <Box mb="5px" display="flex" justifyContent="center">
                       <Image
-                        width={50}
-                        height={50}
+                        width={70}
+                        height={70}
                         alt={item.title}
                         src={item.thumbnail}
                         style={{ objectFit: "contain", borderRadius: 4 }}
                       />
                     </Box>
-                    <Box overflow="hidden">
-                      <Paragraph
-                        fontSize={13}
-                        fontWeight="600"
-                        color="secondary.main"
-                        ellipsis
-                      >
-                        {item.title}
-                      </Paragraph>
-                      <Paragraph fontSize={12} color="primary.main" fontWeight="600">
-                        {currency(item.price)}
-                      </Paragraph>
-                    </Box>
-                  </FlexBox>
+
+                    <Paragraph fontSize={11} color="primary.main" fontWeight="700">
+                      {currency(item.price)}
+                    </Paragraph>
+                  </Box>
                 </Link>
               ))}
             </Box>
 
             <Link href="/#latest-products">
-              <FlexBox alignItems="center" color="success.main" style={{ gap: 4, cursor: "pointer", marginTop: "1rem" }}>
-                <Span fontWeight="600" fontSize={13}>See All Latest Products</Span>
-                <Icon size="12px">right-arrow</Icon>
-              </FlexBox>
+              <Box color="success.main" cursor="pointer" mt="10px">
+                <Span fontWeight="600" fontSize={10}>See All</Span>
+              </Box>
             </Link>
           </Box>
-        </Grid>
-      </Grid>
+        </Box>
+      </FlexBox>
     </Box>
   );
 }

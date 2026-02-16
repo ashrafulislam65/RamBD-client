@@ -72,10 +72,10 @@ export default function ProductView({ shops, product, relatedProducts, frequentl
       </Box>
 
       {/* FREQUENTLY BOUGHT TOGETHER PRODUCTS */}
-      {frequentlyBought && <FrequentlyBought products={frequentlyBought} />}
+      {/* {frequentlyBought && <FrequentlyBought products={frequentlyBought} />} */}
 
       {/* AVAILABLE SHOPS */}
-      {shops && <AvailableShops shops={shops} />}
+      {/* {shops && <AvailableShops shops={shops} />} */}
 
       {/* RELATED PRODUCTS */}
       {relatedProducts && <RelatedProducts products={relatedProducts} />}

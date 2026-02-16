@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useState } from "react";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 
 import { useAppContext } from "@context/app-context";
 
@@ -18,6 +18,7 @@ import Card, { CardProps } from "@component/Card";
 import { H3, SemiSpan } from "@component/Typography";
 import ProductQuickView from "@component/products/ProductQuickView";
 
+import { IoCartOutline, IoBagCheckOutline } from "react-icons/io5";
 import { calculateDiscount, currency, getTheme } from "@utils/utils";
 import { deviceSize } from "@utils/constants";
 
@@ -119,6 +120,7 @@ interface ProductCard1Props extends CardProps {
   images: string[];
   id?: string | number;
   categorySlug?: string;
+  showActionButtons?: boolean;
 }
 // =======================================================================
 
@@ -132,10 +134,12 @@ export default function ProductCard1({
   images,
   rating = 4,
   categorySlug,
+  showActionButtons,
   ...props
 }: ProductCard1Props) {
   const [open, setOpen] = useState(false);
   const { state, dispatch } = useAppContext();
+  const theme = useTheme();
   const cartItem = state.cart.find((item) => item.id === id);
   const productPath = categorySlug ? `/product/${slug}?cat=${categorySlug}` : `/product/${slug}`;
 
@@ -155,6 +159,15 @@ export default function ProductCard1({
         qty: amount
       }
     });
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch({
+      type: "CHANGE_CART_AMOUNT",
+      payload: { id: id as number | string, slug, price, imgUrl, name: title, qty: (cartItem?.qty || 0) + 1 }
+    });
+    router.push("/checkout");
   };
 
   const router = useRouter();
@@ -244,40 +257,94 @@ export default function ProductCard1({
               </FlexBox>
             </Box>
 
-            <FlexBox
-              width="30px"
-              alignItems="center"
-              flexDirection="column-reverse"
-              justifyContent={!!cartItem?.qty ? "space-between" : "flex-start"}>
-              <Button
-                size="none"
-                padding="3px"
-                color="primary"
-                variant="outlined"
-                borderColor="primary.light"
-                onClick={handleCartAmountChange((cartItem?.qty || 0) + 1)}>
-                <Icon variant="small">plus</Icon>
-              </Button>
+            {!showActionButtons && (
+              <FlexBox
+                width="30px"
+                alignItems="center"
+                flexDirection="column-reverse"
+                justifyContent={!!cartItem?.qty ? "space-between" : "flex-start"}>
+                <Button
+                  size="none"
+                  padding="3px"
+                  color="primary"
+                  variant="outlined"
+                  borderColor="primary.light"
+                  onClick={handleCartAmountChange((cartItem?.qty || 0) + 1)}>
+                  <Icon variant="small">plus</Icon>
+                </Button>
 
-              {!!cartItem?.qty && (
-                <Fragment>
-                  <SemiSpan color="text.primary" fontWeight="600">
-                    {cartItem.qty}
-                  </SemiSpan>
+                {!!cartItem?.qty && (
+                  <Fragment>
+                    <SemiSpan color="text.primary" fontWeight="600">
+                      {cartItem.qty}
+                    </SemiSpan>
+
+                    <Button
+                      size="none"
+                      padding="3px"
+                      color="primary"
+                      variant="outlined"
+                      borderColor="primary.light"
+                      onClick={handleCartAmountChange(cartItem.qty - 1)}>
+                      <Icon variant="small">minus</Icon>
+                    </Button>
+                  </Fragment>
+                )}
+              </FlexBox>
+            )}
+          </FlexBox>
+
+          {showActionButtons && (
+            <FlexBox mt="1rem" style={{ gap: 8 }}>
+              {cartItem?.qty ? (
+                <FlexBox
+                  alignItems="center"
+                  justifyContent="space-between"
+                  flex={1}
+                  p="2px"
+                  borderRadius="4px"
+                  style={{ border: `1px solid ${theme.colors.gray[300]}`, height: 32 }}>
+                  <Button
+                    variant="text"
+                    size="small"
+                    p="5px"
+                    onClick={handleCartAmountChange(cartItem.qty - 1)}>
+                    <Icon size="10px">minus</Icon>
+                  </Button>
+
+                  <SemiSpan fontWeight="600" fontSize={11}>{cartItem.qty}</SemiSpan>
 
                   <Button
-                    size="none"
-                    padding="3px"
-                    color="primary"
-                    variant="outlined"
-                    borderColor="primary.light"
-                    onClick={handleCartAmountChange(cartItem.qty - 1)}>
-                    <Icon variant="small">minus</Icon>
+                    variant="text"
+                    size="small"
+                    p="5px"
+                    onClick={handleCartAmountChange(cartItem.qty + 1)}>
+                    <Icon size="10px">plus</Icon>
                   </Button>
-                </Fragment>
+                </FlexBox>
+              ) : (
+                <Button
+                  fullwidth
+                  color="dark"
+                  variant="outlined"
+                  size="small"
+                  onClick={handleCartAmountChange(1)}
+                  style={{ fontSize: 10, padding: "5px 0", height: 32, textTransform: "none" }}>
+                  Add Cart
+                </Button>
               )}
+
+              <Button
+                fullwidth
+                color="primary"
+                variant="contained"
+                size="small"
+                onClick={handleBuyNow}
+                style={{ fontSize: 10, padding: "5px 0", height: 32, textTransform: "none" }}>
+                Buy Now
+              </Button>
             </FlexBox>
-          </FlexBox>
+          )}
         </div>
       </Wrapper>
 

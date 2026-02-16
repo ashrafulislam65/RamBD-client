@@ -11,19 +11,20 @@ type Props = { products: Product[] };
 // ============================================================
 
 export default function RelatedProducts({ products }: Props) {
-  const responsive = [
-    { breakpoint: 1024, settings: { slidesToShow: 3 } },
-    { breakpoint: 650, settings: { slidesToShow: 2 } },
-    { breakpoint: 426, settings: { slidesToShow: 1 } }
-  ];
 
   return (
     <Box mb="3.75rem">
       <H3 mb="1.5rem">Related Products</H3>
 
       <Carousel
-        slidesToShow={4}
-        responsive={responsive}
+        spaceBetween={2}
+        slidesToShow={5}
+        responsive={[
+          { breakpoint: 1200, settings: { slidesToShow: 4 } },
+          { breakpoint: 1024, settings: { slidesToShow: 3 } },
+          { breakpoint: 650, settings: { slidesToShow: 2 } },
+          { breakpoint: 426, settings: { slidesToShow: 1 } }
+        ]}
         autoplay={true}
         autoplaySpeed={3000}>
         {products.map((item) => {
@@ -34,6 +35,7 @@ export default function RelatedProducts({ products }: Props) {
             <Box pb="1rem" key={item.id} height="100%">
               <ProductCard1
                 hoverEffect
+                showActionButtons={true}
                 id={item.id}
                 slug={effectiveSlug}
                 price={item.price}

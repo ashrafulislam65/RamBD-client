@@ -87,6 +87,7 @@ export default async function ProductDetails({ params, searchParams }: Props) {
           product_code={product.product_code}
           categoryName={product.categoryName}
           visitors={product.visitors}
+          discount={product.discount}
           latestProducts={latestProducts}
         />
       </Container>

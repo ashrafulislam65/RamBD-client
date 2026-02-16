@@ -16,7 +16,6 @@ type Props = { title?: string; navbar?: ReactElement; children: ReactNode };
 export default function ShopLayout({ navbar, children }: Props) {
   return (
     <StyledAppLayout>
-      <Topbar />
       <Header />
 
       {navbar}
