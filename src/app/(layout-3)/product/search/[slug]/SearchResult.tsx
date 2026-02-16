@@ -22,10 +22,11 @@ import useWindowSize from "@hook/useWindowSize";
 // ==============================================================
 type Props = {
   sortOptions: { label: string; value: string }[];
+  title?: string;
 };
 // ==============================================================
 
-export default function SearchResult({ sortOptions, products }: { sortOptions: { label: string; value: string }[], products: any[] }) {
+export default function SearchResult({ sortOptions, products, title = "Searching for products" }: { sortOptions: { label: string; value: string }[], products: any[], title?: string }) {
   const width = useWindowSize();
   const [view, setView] = useState<"grid" | "list">("grid");
 
@@ -44,7 +45,7 @@ export default function SearchResult({ sortOptions, products }: { sortOptions: {
         alignItems="center"
         justifyContent="space-between">
         <div>
-          <H5>Most Popular Products</H5>
+          <H5>{title}</H5>
           <Paragraph color="text.muted">{products.length} items found</Paragraph>
         </div>
 

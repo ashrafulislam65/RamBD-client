@@ -2,12 +2,12 @@ import Box from "@component/Box";
 import api from "@utils/__api__/market-2";
 import SearchResult from "../product/search/[slug]/SearchResult";
 
-export default async function MostPopularProductsPage() {
-    const products = await api.getMostPopularProducts();
+export default async function LatestProductsPage() {
+    const products = await api.getLatestProducts();
 
     return (
         <Box pt="20px">
-            <SearchResult title="Most Popular Products" sortOptions={sortOptions} products={products} />
+            <SearchResult title="Our Latest Product" sortOptions={sortOptions} products={products} />
         </Box>
     );
 }
