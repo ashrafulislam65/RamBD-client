@@ -100,7 +100,7 @@ export default function CategorySearchResult({ sortOptions, products, categoryNa
                 </FlexBox>
             </FlexBox>
 
-            <Grid container spacing={6}>
+            <Grid container spacing={0.5}>
                 <Grid item lg={3} xs={12}>
                     <ProductFilterCard />
                 </Grid>

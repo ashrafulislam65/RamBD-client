@@ -12,9 +12,9 @@ type Props = { products: Product[]; categorySlug?: string };
 export default function ProductCard19List({ products, categorySlug }: Props) {
     return (
         <div>
-            <Grid container spacing={6}>
+            <Grid container spacing={1}>
                 {products.map((item) => (
-                    <Grid item lg={4} sm={6} xs={12} key={item.id}>
+                    <Grid item lg={3} sm={6} xs={12} key={item.id}>
                         <ProductCard19
                             id={item.id}
                             slug={item.slug}

@@ -95,7 +95,7 @@ export default function SearchResult({ sortOptions, products, title = "Searching
         </FlexBox>
       </FlexBox>
 
-      <Grid container spacing={6}>
+      <Grid container spacing={0.5}>
         {/* <Hidden as={Grid} item lg={3} xs={12} down={1024}>
           <ProductFilterCard />
         </Hidden> */}
