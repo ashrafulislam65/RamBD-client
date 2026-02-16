@@ -43,11 +43,6 @@ export default async function Home() {
             <Section1 />
           </Box>
 
-          {/* SERVICE LIST AREA */}
-          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
-            <Section2 />
-          </Box>
-
           {/* TOP CATEGORIES AREA */}
           <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section3 />
@@ -63,12 +58,6 @@ export default async function Home() {
             <Section11 products={latestProducts} />
           </Box>
 
-          {/* 
-          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
-            <Section5 />
-          </Box>
-*/}
-
           {/* FEATURES BRAND LIST AREA */}
           <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section9 brands={brands as any} />
@@ -77,6 +66,11 @@ export default async function Home() {
           {/* SELECTED PRODUCTS AREA - MOST POPULAR */}
           <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
             <Section10 products={popularProducts} />
+          </Box>
+
+          {/* SERVICE LIST AREA */}
+          <Box mx="auto" bg="base.200" maxWidth={1210} borderRadius="8px" mb="5px" p="5px">
+            <Section2 />
           </Box>
         </Box>
       </Fragment>
