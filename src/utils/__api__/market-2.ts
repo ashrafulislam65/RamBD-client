@@ -21,15 +21,52 @@ const getCategories = async () => {
     if (!response.ok) return [];
 
     const data = await response.json();
-    return (data.menu || []).map((m: any) => ({
-      id: m.category.id,
-      name: m.category.cate_name,
-      slug: m.category.cate_slug,
-      icon: m.category.cate_icon || 'fas fa-th-large', // Using cate_icon from API or a default FontAwesome icon
-      image: m.category.cate_img && m.category.cate_img !== 'default.png'
-        ? `${apiBaseUrl}/storage/${m.category.cate_img}`
-        : '/assets/images/categories/camera.png' // Default placeholder
-    }));
+    // Filter and sort to match navbar
+    const filteredMenus = (data.menu || []).filter((m: any) => Number(m.checked) === 1);
+    const sortedMenus = filteredMenus.sort((a: any, b: any) => Number(a.menu_order) - Number(b.menu_order));
+
+    const iconMapper: Record<string, string> = {
+      "microphone": "fas fa-microphone",
+      "trypod": "fas fa-video",
+      "gadgets": "fas fa-mobile-screen",
+      "converter": "fas fa-plug",
+      "electronics": "fas fa-laptop",
+      "watch": "fas fa-stopwatch",
+      "camera": "fas fa-camera",
+      "headphones": "fas fa-headphones"
+    };
+
+    const categories = sortedMenus.map((m: any) => {
+      let iconClass = m.category.cate_icon || 'fas fa-th-large';
+      const cateNameLower = m.category.cate_name.toLowerCase();
+
+      // If the icon is a full HTML tag like <i class="fas fa-microphone"></i>, extract the class
+      if (typeof iconClass === 'string' && iconClass.includes('<i class=')) {
+        const match = iconClass.match(/class="([^"]+)"/);
+        if (match && match[1]) {
+          iconClass = match[1];
+        }
+      } else if (iconMapper[cateNameLower]) {
+        // Use our predefined mapper for known category names
+        iconClass = iconMapper[cateNameLower];
+      } else if (iconClass && iconClass.length > 0 && !iconClass.startsWith('fa')) {
+        // Fallback: try to guess fa class
+        iconClass = `fas fa-${iconClass.toLowerCase().replace(/\s+/g, '-')}`;
+      }
+
+      return {
+        id: m.category.id,
+        name: m.category.cate_name,
+        slug: m.category.cate_slug,
+        icon: iconClass || 'fas fa-th-large',
+        image: m.category.cate_img && m.category.cate_img !== 'default.png'
+          ? `https://admin.unicodeconverter.info/storage/app/public/category/${m.category.cate_img}`
+          : '/assets/images/categories/camera.png'
+      };
+    });
+
+    console.log("Section 3 Categories Fetched:", categories.length, categories.slice(0, 2).map(c => c.name));
+    return categories;
   } catch (error) {
     console.error("getCategories face error:", error);
     return [];

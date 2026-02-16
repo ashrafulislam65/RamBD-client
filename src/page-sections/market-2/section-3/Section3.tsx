@@ -1,17 +1,11 @@
+import Link from "next/link";
 import Box from "@component/Box";
 import Grid from "@component/grid/Grid";
 import Container from "@component/Container";
 import NextImage from "@component/NextImage";
-import { H4, Paragraph, Span } from "@component/Typography";
+import { H4 } from "@component/Typography";
 // STYLED COMPONENTS
-import {
-  AdTitle1,
-  AdWrapper,
-  AddButton,
-  AnimatedText,
-  CategoryCard,
-  CategoryTitle
-} from "./styles";
+import { CategoryCard, CategoryTitle } from "./styles";
 // API FUNCTIONS
 import api from "@utils/__api__/market-2";
 
@@ -20,21 +14,29 @@ export default async function Section3() {
 
   return (
     <Container pt="0px">
-      <Grid container spacing={3}>
-        {categories.slice(0, 6).map((item) => (
-          <Grid item lg={2} md={3} sm={4} xs={6} key={item.id}>
-            <CategoryCard>
-              <NextImage
-                width={300}
-                height={300}
-                alt={item.name}
-                src={item.image || '/assets/images/categories/camera.png'}
-              />
+      <Grid container spacing={0.5}>
+        {categories.map((item) => (
+          <Grid item lg={1.2} md={2} sm={3} xs={4} key={item.id}>
+            <Link href={`/category/${item.slug}`}>
+              <CategoryCard style={{
+                height: "100px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "10px",
+                backgroundColor: "#fff",
+                border: "1px solid #eee"
+              }}>
+                <Box mb="5px" display="flex" justifyContent="center">
+                  <i className={item.icon} style={{ fontSize: "2.5rem", color: "#e3364e" }}></i>
+                </Box>
 
-              <CategoryTitle className="category-title">
-                <H4 textTransform="capitalize">{item.name}</H4>
-              </CategoryTitle>
-            </CategoryCard>
+                <H4 fontSize={13} textAlign="center" color="text.primary" fontWeight="600" style={{ lineHeight: 1.2 }}>
+                  {item.name}
+                </H4>
+              </CategoryCard>
+            </Link>
           </Grid>
         ))}
 
