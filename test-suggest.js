@@ -8,7 +8,7 @@ function checkUrl(url) {
     });
 }
 
-const suggestUrl = 'https://admin.felnatech.com/products/searchsuggest?search=desktop';
+const suggestUrl = 'https://admin.unicodeconverter.info/products/searchsuggest?search=desktop';
 
 https.get(suggestUrl, (resp) => {
     let data = '';
@@ -29,11 +29,11 @@ https.get(suggestUrl, (resp) => {
             // Check image paths
             const filename = "intel-felnatech-14-1.png";
             const paths = [
-                `https://admin.felnatech.com/images/${filename}`,
-                `https://admin.felnatech.com/public/uploads/products/thumbnail/${filename}`,
-                `https://admin.felnatech.com/public/uploads/all/${filename}`,
-                `https://admin.felnatech.com/storage/app/public/products/${filename}`,
-                `https://admin.felnatech.com/uploads/all/${filename}`
+                `https://admin.unicodeconverter.info/images/${filename}`,
+                `https://admin.unicodeconverter.info/public/uploads/products/thumbnail/${filename}`,
+                `https://admin.unicodeconverter.info/public/uploads/all/${filename}`,
+                `https://admin.unicodeconverter.info/storage/app/public/products/${filename}`,
+                `https://admin.unicodeconverter.info/uploads/all/${filename}`
             ];
 
             for (const p of paths) {

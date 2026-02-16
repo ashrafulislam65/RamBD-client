@@ -17,7 +17,7 @@ function checkUrl(url) {
     });
 }
 
-const searchProUrl = 'https://admin.felnatech.com/products/searchpro?search=desktop';
+const searchProUrl = 'https://admin.unicodeconverter.info/products/searchpro?search=desktop';
 
 https.get(searchProUrl, (resp) => {
     let data = '';
@@ -42,7 +42,7 @@ https.get(searchProUrl, (resp) => {
 
             // Check Image URL from suggestion response knowledge
             const imgName = "desktop-felnatech-1474-1.png";
-            const baseUrl = "https://admin.felnatech.com";
+            const baseUrl = "https://admin.unicodeconverter.info";
             const paths = [
                 `/public/uploads/all/${imgName}`,
                 `/uploads/all/${imgName}`,

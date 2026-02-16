@@ -17,7 +17,7 @@ interface Product {
 
 async function getProducts(slug: string): Promise<Product[]> {
   try {
-    const res = await fetch(`https://admin.felnatech.com/products/searchpro?search=${slug}`, { cache: 'no-store' });
+    const res = await fetch(`https://admin.unicodeconverter.info/products/searchpro?search=${slug}`, { cache: 'no-store' });
     if (!res.ok) {
       throw new Error('Failed to fetch data');
     }
@@ -32,8 +32,8 @@ async function getProducts(slug: string): Promise<Product[]> {
       title: item.pro_title || '',
       price: Number(item.pro_price || 0),
       discount: Number(item.pro_discount || 0),
-      thumbnail: item.images && item.images.length > 0 ? `https://admin.felnatech.com/storage/app/public/products/${item.images[0].img_name}` : '/assets/images/products/macbook.png', // Fallback image
-      images: item.images?.map((img: any) => `https://admin.felnatech.com/storage/app/public/products/${img.img_name}`) || [],
+      thumbnail: item.images && item.images.length > 0 ? `https://admin.unicodeconverter.info/storage/app/public/products/${item.images[0].img_name}` : '/assets/images/products/macbook.png', // Fallback image
+      images: item.images?.map((img: any) => `https://admin.unicodeconverter.info/storage/app/public/products/${img.img_name}`) || [],
       rating: 4, // Default rating
       categories: [],
       status: item.pro_status?.toString()

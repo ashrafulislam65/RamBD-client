@@ -29,7 +29,7 @@ export default function SearchInputWithCategory() {
       setResultList([]);
     } else {
       try {
-        const response = await fetch(`https://admin.felnatech.com/products/searchsuggest?search=${value}`);
+        const response = await fetch(`https://admin.unicodeconverter.info/products/searchsuggest?search=${value}`);
         const data = await response.json();
         // The API is expected to return an array of suggestions
         if (data.products && Array.isArray(data.products)) {
@@ -38,7 +38,7 @@ export default function SearchInputWithCategory() {
             product_name: item.pro_title || item.title || "Unknown Product",
             slug: item.pro_slug || item.slug || "",
             image: item.images && item.images.length > 0
-              ? `https://admin.felnatech.com/storage/app/public/products/${item.images[0].img_name}`
+              ? `https://admin.unicodeconverter.info/storage/app/public/products/${item.images[0].img_name}`
               : "/assets/images/products/macbook.png"
           }));
           setResultList(mappedSuggestions);
@@ -82,7 +82,7 @@ export default function SearchInputWithCategory() {
       {!!resultList.length && (
         <Card position="absolute" top="100%" py="0.5rem" width="100%" boxShadow="large" zIndex={99} style={{ maxHeight: '400px', overflowY: 'auto' }}>
           {resultList.map((item) => (
-            <Link href={`/product/search/${item.slug}`} key={item.id}>
+            <Link href={`/product/${item.slug}`} key={item.id}>
               <MenuItem key={item.id}>
                 <img
                   src={item.image}
