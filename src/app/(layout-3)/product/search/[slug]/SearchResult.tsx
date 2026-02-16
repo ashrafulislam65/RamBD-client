@@ -44,8 +44,8 @@ export default function SearchResult({ sortOptions, products }: { sortOptions: {
         alignItems="center"
         justifyContent="space-between">
         <div>
-          <H5>Searching for products</H5>
-          <Paragraph color="text.muted">{products.length} results found</Paragraph>
+          <H5>Most Popular Products</H5>
+          <Paragraph color="text.muted">{products.length} items found</Paragraph>
         </div>
 
         <FlexBox alignItems="center" flexWrap="wrap">

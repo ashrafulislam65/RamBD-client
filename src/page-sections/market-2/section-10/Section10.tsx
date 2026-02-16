@@ -1,54 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import Box from "@component/Box";
 import Grid from "@component/grid/Grid";
+import Icon from "@component/icon/Icon";
 import FlexBox from "@component/FlexBox";
-import { Button } from "@component/buttons";
 import Container from "@component/Container";
-import { H2, Paragraph } from "@component/Typography";
+import { H2, Span, Paragraph } from "@component/Typography";
 import { ProductCard19 } from "@component/product-cards";
 import Product from "@models/product.model";
-// STYLED COMPONENT
-import { ButtonsWrapper } from "./styles";
 
 // ======================================================================
 type Section10Props = { products: Product[] };
 // ======================================================================
 
 export default function Section10({ products }: Section10Props) {
-  console.log("Most Popular Products (Section 10) products received from API:", products?.length);
-  const [selected, setSelected] = useState("new");
-
-  const handleSelected = (item: string) => () => setSelected(item);
-  const activeColor = (item: string) => (item === selected ? "error" : "dark");
-
-  const buttons = [
-    { id: 1, title: "New Arrivals", type: "new" },
-    { id: 2, title: "Best Seller", type: "best" },
-    { id: 3, title: "Most Popular", type: "popular" },
-    { id: 4, title: "View All", type: "view" }
-  ];
-
   return (
     <Container mb="0px">
-      <FlexBox alignItems="center" justifyContent="space-between" flexWrap="wrap" mb="5px">
+      <FlexBox alignItems="center" justifyContent="space-between" flexWrap="wrap" mb="1.5rem">
         <div>
           <H2 fontSize={20}>Most Popular Products</H2>
           <Paragraph>All our new arrivals in a exclusive brand selection</Paragraph>
         </div>
 
-        <ButtonsWrapper>
-          {buttons.map(({ id, title, type }) => (
-            <Button
-              key={id}
-              variant="outlined"
-              color={activeColor(type)}
-              onClick={handleSelected(type)}>
-              {title}
-            </Button>
-          ))}
-        </ButtonsWrapper>
+        <Link href="/most-popular">
+          <FlexBox alignItems="center" color="success.main" style={{ gap: 4, cursor: "pointer" }}>
+            <Span fontWeight="600" fontSize={13}>View All</Span>
+            <Icon size="12px">right-arrow</Icon>
+          </FlexBox>
+        </Link>
       </FlexBox>
 
       <Grid container spacing={1}>
