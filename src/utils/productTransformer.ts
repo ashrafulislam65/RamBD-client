@@ -34,13 +34,28 @@ export const transformApiProduct = (apiProduct: any): any => {
     const parsedModel = extractField('Model');
     const parsedCode = extractField('Code');
 
+
+
+    const originalPrice = parseFloat(apiProduct.pro_price) || 0;
+    const discountAmount = apiProduct.pro_discount ? parseFloat(apiProduct.pro_discount) : 0;
+    const offerStatus = apiProduct.offer_status === 1;
+
+    // Calculate discount percentage
+    let discountPercentage = 0;
+    if (offerStatus && originalPrice > 0) {
+        discountPercentage = (discountAmount / originalPrice) * 100;
+        // Optional: Round to 2 decimal places to be clean
+        discountPercentage = Math.round(discountPercentage * 100) / 100;
+    }
+
     return {
         id: String(apiProduct.id),
         slug: apiProduct.pro_slug || generatedSlug || '',
         model: parsedModel || apiProduct.pro_model || apiProduct.model || '',
         title: rawTitle,
-        price: parseFloat(apiProduct.pro_price) || 0,
-        discount: apiProduct.pro_discount ? parseFloat(apiProduct.pro_discount) : 0,
+        price: originalPrice,
+        discount: discountPercentage,
+
         thumbnail: imageUrl,
         images: allImages.reverse(), // User mentioned order is flipped
         rating: 4.5, // Default rating as API doesn't provide this

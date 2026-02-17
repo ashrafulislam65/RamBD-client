@@ -2,6 +2,8 @@ import Box from "@component/Box";
 import api from "@utils/__api__/market-2";
 import SearchResult from "../product/search/[slug]/SearchResult";
 
+export const dynamic = 'force-dynamic';
+
 export default async function LatestProductsPage() {
     const products = await api.getLatestProducts();
 

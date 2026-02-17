@@ -2,6 +2,8 @@ import { Fragment } from "react";
 // GLOBAL CUSTOM COMPONENTS
 import Grid from "@component/grid/Grid";
 import FlexBox from "@component/FlexBox";
+
+export const dynamic = 'force-dynamic';
 import Pagination from "@component/pagination";
 import ShopCard1 from "@sections/shop/ShopCard1";
 import { H2, SemiSpan } from "@component/Typography";
