@@ -47,4 +47,22 @@ const generateOtp = async (phone: string) => {
     }
 };
 
-export default { getDistrictsAndThanas, getShippingCost, placeOrder, generateOtp };
+const getUserByPhone = async (phone: string) => {
+    try {
+        const encodedPhone = encodeURIComponent(phone);
+        const url = `/remote-api/api/get-user-by-phone?phone=${encodedPhone}`;
+        console.log("Fetching user by phone:", phone, "at URL:", url);
+        const response = await axios.get(url);
+        console.log("User API Response:", response.data);
+        return response.data;
+    } catch (error: any) {
+        if (error.response && error.response.status === 404) {
+            console.log("User not found (404), skipping auto-fill.");
+            return { success: false, message: "User not found" };
+        }
+        console.error("Failed to fetch user by phone. Error:", error.message);
+        return { success: false, message: "Failed to fetch user" };
+    }
+};
+
+export default { getDistrictsAndThanas, getShippingCost, placeOrder, generateOtp, getUserByPhone };

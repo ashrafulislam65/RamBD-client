@@ -67,7 +67,7 @@ export default function Header({ isFixed, className }: HeaderProps) {
           <Link href="/">
             <FlexBox alignItems="center">
               <Image src="/assets/images/rambd_logo.webp" alt="RamBD Logo" height={44} />
-              <H2 fontWeight="700" ml="10px" color="primary.main" fontSize="40px">
+              <H2 fontWeight="700" ml="10px" color="primary.main" fontSize="40px" fontFamily="'Arial Black', sans-serif">
                 Ram<span style={{ color: "#27ae60" }}>BD</span>
               </H2>
             </FlexBox>

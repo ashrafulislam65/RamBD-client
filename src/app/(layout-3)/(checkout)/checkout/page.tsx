@@ -26,6 +26,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState("");
   const [orderPayload, setOrderPayload] = useState<any>(null);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [newPhoneDigits, setNewPhoneDigits] = useState("");
@@ -106,15 +107,34 @@ export default function Checkout() {
   };
 
   const handleOtpConfirm = async () => {
+    // Clear previous errors
+    setOtpError("");
+
+    // Validate OTP format
     if (!otp) {
-      Swal.fire('Error', 'Please enter the OTP.', 'error');
+      setOtpError("Please enter the OTP");
+      return;
+    }
+
+    if (!/^\d+$/.test(otp)) {
+      setOtpError("OTP must contain only numbers");
+      return;
+    }
+
+    if (otp.length !== 6) {
+      setOtpError("OTP must be exactly 6 digits");
       return;
     }
 
     setLoading(true);
     const finalPayload = { ...orderPayload, otp };
 
+    console.log("🔐 Submitting OTP:", otp);
+    console.log("📦 Final Payload:", JSON.stringify(finalPayload, null, 2));
+
     const response = await checkoutApi.placeOrder(finalPayload);
+
+    console.log("📨 API Response:", response);
 
     if (response && response.success) {
       console.log("✅ Order placed successfully! Response:", response);
@@ -138,6 +158,8 @@ export default function Checkout() {
       console.log("✅ Stored order data in localStorage");
 
       setIsOtpModalOpen(false);
+      setOtp("");
+      setOtpError("");
 
       Swal.fire({
         icon: 'success',
@@ -150,7 +172,22 @@ export default function Checkout() {
       });
 
     } else {
-      Swal.fire('Error', response?.message || "Failed to place order. Please try again.", 'error');
+      // Handle API errors (including incorrect OTP)
+      console.error("❌ API Error Response:", response);
+      const errorMessage = response?.message || "Failed to place order. Please try again.";
+
+      // Check if it's an OTP validation error
+      if (errorMessage.toLowerCase().includes("otp") ||
+        errorMessage.toLowerCase().includes("verification") ||
+        errorMessage.toLowerCase().includes("invalid") ||
+        errorMessage.toLowerCase().includes("incorrect") ||
+        errorMessage.toLowerCase().includes("wrong") ||
+        errorMessage.toLowerCase().includes("expire") ||
+        errorMessage.toLowerCase().includes("match")) {
+        setOtpError(errorMessage);
+      } else {
+        Swal.fire('Error', errorMessage, 'error');
+      }
     }
     setLoading(false);
   };
@@ -207,7 +244,7 @@ export default function Checkout() {
         )}
       </Formik>
 
-      <Modal open={isOtpModalOpen} onClose={() => { setIsOtpModalOpen(false); setIsEditingPhone(false); setNewPhoneDigits(""); }}>
+      <Modal open={isOtpModalOpen} onClose={() => { setIsOtpModalOpen(false); setIsEditingPhone(false); setNewPhoneDigits(""); setOtp(""); setOtpError(""); }}>
         <Box p="2rem" bg="white" borderRadius="8px" maxWidth="400px" width="100%">
           <Typography fontSize="22px" fontWeight="700" mb="1rem" textAlign="center">
             Verify Your Phone
@@ -327,13 +364,30 @@ export default function Checkout() {
             </Box>
           )}
 
-          <TextField
-            fullwidth
-            placeholder="Enter OTP"
-            mb="1.5rem"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-          />
+          <Box mb="1.5rem">
+            <TextField
+              fullwidth
+              type="tel"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => {
+                const input = e.target.value.replace(/[^0-9]/g, "");
+                if (input.length <= 6) {
+                  setOtp(input);
+                  setOtpError(""); // Clear error when user types
+                }
+              }}
+              style={{
+                borderColor: otpError ? "#e74c3c" : undefined,
+                borderWidth: otpError ? "2px" : undefined
+              }}
+            />
+            {otpError && (
+              <Typography fontSize="12px" fontWeight="600" color="#e74c3c" mt="6px">
+                ⚠ {otpError}
+              </Typography>
+            )}
+          </Box>
 
           <Button
             variant="contained"

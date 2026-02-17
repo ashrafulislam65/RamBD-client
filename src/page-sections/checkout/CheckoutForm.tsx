@@ -105,10 +105,38 @@ export default function CheckoutForm({ formik }: { formik: any }) {
               return raw;
             })()}
             onBlur={handleBlur}
-            onChange={(e) => {
+            onChange={async (e) => {
               const input = e.target.value.replace(/[^0-9]/g, "");
+
+              // Validation: First digit must be 3-9
+              if (input.length > 0) {
+                const firstDigit = parseInt(input[0]);
+                if (firstDigit < 3) {
+                  return; // Block 0, 1, 2
+                }
+              }
+
               if (input.length <= 9) {
-                setFieldValue("phone", input ? `+8801${input}` : "");
+                const fullPhone = input ? `+8801${input}` : "";
+                setFieldValue("phone", fullPhone);
+
+                // Auto-fill trigger when phone is complete (9 digits after +8801)
+                if (input.length === 9) {
+                  try {
+                    const userData = await checkoutApi.getUserByPhone(fullPhone);
+                    if (userData && userData.success && userData.data) {
+                      const user = userData.data;
+                      if (user.name) setFieldValue("full_name", user.name);
+                      if (user.address) setFieldValue("address", user.address);
+                      // Attempt to match district/thana if IDs or names are provided
+                      // This might require more logic depending on API response format
+                      if (user.district_id) setFieldValue("district", user.district_id);
+                      if (user.thana_id) setFieldValue("thana", user.thana_id);
+                    }
+                  } catch (err) {
+                    console.error("Auto-fill error", err);
+                  }
+                }
               }
             }}
             placeholder="XXXXX-XXXX"
