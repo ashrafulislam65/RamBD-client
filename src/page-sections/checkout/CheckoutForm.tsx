@@ -43,9 +43,14 @@ export default function CheckoutForm({ formik }: { formik: any }) {
 
       // Fetch shipping cost
       const fetchShipping = async () => {
+        console.log("🚚 Fetching shipping cost for district:", values.district);
         const costData = await checkoutApi.getShippingCost(values.district);
+        console.log("📦 Shipping cost API response:", costData);
         if (costData && costData.success && costData.data && costData.data.price) {
+          console.log("✅ Setting shipping_cost to:", Number(costData.data.price));
           setFieldValue("shipping_cost", Number(costData.data.price));
+        } else {
+          console.log("❌ Shipping cost not found in response");
         }
       };
       fetchShipping();
@@ -209,7 +214,9 @@ export default function CheckoutForm({ formik }: { formik: any }) {
             errorText={touched.district && errors.district}
             onChange={(district: any) => {
               setFieldValue("district", district ? district.value : "");
+              setFieldValue("district_name", district ? district.label : "");
               setFieldValue("thana", ""); // Reset thana when district changes
+              setFieldValue("thana_name", ""); // Reset thana name
             }}
             placeholder="Select District"
           />
@@ -225,7 +232,10 @@ export default function CheckoutForm({ formik }: { formik: any }) {
             options={thanas}
             value={thanas.find((d) => d.value === values.thana) || ""}
             errorText={touched.thana && errors.thana}
-            onChange={(thana: any) => setFieldValue("thana", thana ? thana.value : "")}
+            onChange={(thana: any) => {
+              setFieldValue("thana", thana ? thana.value : "");
+              setFieldValue("thana_name", thana ? thana.label : "");
+            }}
             placeholder="Select Thana"
             isDisabled={thanas.length === 0}
           />

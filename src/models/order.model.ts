@@ -18,9 +18,11 @@ interface Order {
   totalPrice: number;
   isDelivered: boolean;
   shippingAddress: string;
+  shippingCost?: number;
   district?: string;
   thana?: string;
   specialNote?: string;
+  paymentMethod?: string;
   status: "Pending" | "Processing" | "Delivered" | "Cancelled";
 }
 

@@ -42,13 +42,16 @@ export default function Checkout() {
         shipping_cost: values.shipping_cost,
         ord_address: values.address,
         district_id: values.district,
+        district_name: values.district_name,
         thana_id: values.thana,
+        thana_name: values.thana_name,
         payment_method: values.payment_method
       },
       product_details: state.cart.map((item) => ({
         id: item.id,
         product_qty: item.qty,
         sale_price: item.price,
+        original_price: item.originalPrice || item.price,
         product_total_price: item.price * item.qty
       })),
       is_emi_available: "0"
@@ -143,6 +146,11 @@ export default function Checkout() {
 
       // Store both the order response AND the form data for the invoice page
       console.log("finalPayload structure:", finalPayload);
+
+      const totalPrice = state.cart.reduce((accum, item) => accum + (item.price * item.qty), 0);
+      const totalOriginalPrice = state.cart.reduce((accum, item) => accum + ((item.originalPrice || item.price) * item.qty), 0);
+      const totalDiscount = totalOriginalPrice - totalPrice;
+
       const completeOrderData = {
         ...response,
         form_data: {
@@ -150,12 +158,18 @@ export default function Checkout() {
           address: finalPayload?.order_details?.ord_address || "",
           customer_name: finalPayload?.order_details?.ord_name || "",
           district_id: finalPayload?.order_details?.district_id || "",
+          district_name: finalPayload?.order_details?.district_name || "",
           thana_id: finalPayload?.order_details?.thana_id || "",
+          thana_name: finalPayload?.order_details?.thana_name || "",
           special_note: finalPayload?.order_details?.ord_note || "",
+          payment_method: finalPayload?.order_details?.payment_method || "cod",
+          total_discount: totalDiscount,
+          shipping_cost: finalPayload?.order_details?.shipping_cost || 0,
+          products: finalPayload?.product_details || []
         }
       };
       sessionStorage.setItem("lastOrderData", JSON.stringify(completeOrderData));
-      console.log("✅ Stored order data in localStorage");
+      console.log("✅ Stored order data in sessionStorage:", completeOrderData);
 
       setIsOtpModalOpen(false);
       setOtp("");
@@ -419,7 +433,9 @@ const initialValues = {
   phone: "",
   full_name: "",
   district: "",
+  district_name: "",
   thana: "",
+  thana_name: "",
   address: "",
   special_note: "",
   payment_method: "cod",

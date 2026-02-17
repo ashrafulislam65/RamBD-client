@@ -237,10 +237,10 @@ const Invoice = ({ order }: InvoiceProps) => {
         </Box>
         <Box className="meta-column" textAlign="right">
           <Paragraph mb="2px"><strong>Invoice No::</strong> RB{order.id.substring(0, 10).toUpperCase()}</Paragraph>
-          <Paragraph mb="2px"><strong>Order Date:</strong> {format(new Date(order.createdAt), "yyyy-MM-dd HH:mm:ss")}</Paragraph>
+          <Paragraph mb="2px"><strong>Order Date:</strong> {format(new Date(order.createdAt), "yyyy-MM-dd hh:mm:ss a")}</Paragraph>
           <Paragraph mb="2px"><strong>Delivery Date:</strong> N/A</Paragraph>
           <Paragraph mb="2px"><strong>Sales Person:</strong> RamBD</Paragraph>
-          <Paragraph mb="2px"><strong>Payment Method:</strong> Cash On Delivery</Paragraph>
+          <Paragraph mb="2px"><strong>Payment Method:</strong> {order.paymentMethod === 'cod' ? 'Cash On Delivery' : order.paymentMethod || 'Cash On Delivery'}</Paragraph>
         </Box>
       </Box>
 
@@ -250,7 +250,6 @@ const Invoice = ({ order }: InvoiceProps) => {
           <tr>
             <th style={{ width: "50px" }}>#SL</th>
             <th>Product Details</th>
-            <th style={{ width: "80px" }}>Warranty</th>
             <th style={{ width: "80px" }}>Quantity</th>
             <th style={{ width: "100px" }}>Unit Price</th>
             <th style={{ width: "100px" }}>Total</th>
@@ -262,13 +261,11 @@ const Invoice = ({ order }: InvoiceProps) => {
               <td>{index + 1}</td>
               <td>
                 <span className="product-name">{item.product_name}</span>
-                <span className="product-sn">S/N: 185742510</span>
               </td>
-              <td className="blue-val">0</td>
               <td className="blue-val">{item.product_quantity}</td>
               <td className="blue-val">{item.product_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
               <td className="total-val">
-                ৳{item.product_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                ৳{(item.product_price * item.product_quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </td>
             </tr>
           ))}
@@ -292,11 +289,11 @@ const Invoice = ({ order }: InvoiceProps) => {
           </Box>
           <Box className="summary-row">
             <Typography>Shipping Cost : </Typography>
-            <Typography color="#e74c3c">৳150.00</Typography>
+            <Typography color="#e74c3c">৳{(order.shippingCost || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Typography>
           </Box>
           <Box className="summary-row total">
             <Typography>Total Payable Amount:</Typography>
-            <Typography>৳{(order.totalPrice + 150 - (order.discount || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Typography>
+            <Typography>৳{(order.totalPrice + (order.shippingCost || 0) - (order.discount || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Typography>
           </Box>
         </Box>
       </Box>

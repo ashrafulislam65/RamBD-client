@@ -12,6 +12,7 @@ import { Button } from "@component/buttons";
 import Typography, { H1, Paragraph, Tiny } from "@component/Typography";
 import Icon from "@component/icon/Icon";
 import api from "@utils/__api__/orders";
+import checkoutApi from "@utils/__api__/checkout";
 import Order from "@models/order.model";
 import Invoice from "@component/invoice/Invoice";
 
@@ -74,6 +75,8 @@ export default function OrderSuccess({ params }: { params: Promise<{ id: string 
 
     // Support query param for testing: ?login=true
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [districts, setDistricts] = useState<any[]>([]);
+    const [thanas, setThanas] = useState<any[]>([]);
 
     useEffect(() => {
         // Check for login query param
@@ -84,6 +87,16 @@ export default function OrderSuccess({ params }: { params: Promise<{ id: string 
             }
         }
 
+        // Fetch districts and thanas for lookup
+        const fetchLocations = async () => {
+            const data = await checkoutApi.getDistrictsAndThanas();
+            if (data && Array.isArray(data.district)) {
+                setDistricts(data.district || []);
+                setThanas(data.thana || []);
+            }
+        };
+        fetchLocations();
+
         const fetchOrder = async () => {
             try {
                 // First, check if we have a fresh order response from sessionStorage
@@ -92,22 +105,59 @@ export default function OrderSuccess({ params }: { params: Promise<{ id: string 
                 if (lastOrderDataStr) {
                     try {
                         const orderData = JSON.parse(lastOrderDataStr);
+
+                        // Helper function to get district name from ID
+                        const getDistrictName = (id: any) => {
+                            if (!id) return "";
+                            const district = districts.find(d => d.id == id);
+                            return district ? district.district : id.toString();
+                        };
+
+                        // Helper function to get thana name from ID
+                        const getThanaName = (id: any) => {
+                            if (!id) return "";
+                            const thana = thanas.find(t => t.id == id);
+                            return thana ? thana.thana : id.toString();
+                        };
+
                         // Transform the API response to match our Order model
+                        // Try to get original prices if available in form_data
+                        const sourceProducts = orderData.form_data?.products || orderData.products || [];
+                        const products = sourceProducts.map((p: any) => ({
+                            product_name: p.product_title || p.product_name || p.name || "Product",
+                            product_price: parseFloat(p.original_price || p.calculated_price || p.product_price || p.sale_price || 0),
+                            product_quantity: p.quantity || p.product_qty || 1,
+                            product_img: p.product_img || p.imgUrl || ""
+                        }));
+
+                        // Calculate total price from products (Gross Total)
+                        const productsTotal = products.reduce((sum: number, p: any) =>
+                            sum + (p.product_price * p.product_quantity), 0
+                        );
+
+                        // Extract shipping cost with multiple fallbacks
+                        const shippingCost = parseFloat(
+                            orderData.form_data?.shipping_cost ||
+                            orderData.shipping_cost ||
+                            orderData.order_details?.shipping_cost ||
+                            0
+                        );
+
+                        // Use stored discount if available
+                        const discount = parseFloat(orderData.form_data?.total_discount || orderData.discount || 0);
+
                         const transformedOrder: Order = {
                             id: orderData.order_id || orderData.id,
                             createdAt: new Date(),
-                            totalPrice: orderData.total_cost || 0,
-                            discount: 0,
+                            totalPrice: productsTotal,
+                            discount: discount,
                             shippingAddress: orderData.form_data?.address || orderData.shipping_address || "N/A",
-                            district: orderData.form_data?.district_id || "",
-                            thana: orderData.form_data?.thana_id || "",
+                            district: orderData.form_data?.district_name || getDistrictName(orderData.form_data?.district_id || orderData.district_id),
+                            thana: orderData.form_data?.thana_name || getThanaName(orderData.form_data?.thana_id || orderData.thana_id),
+                            shippingCost: shippingCost,
                             specialNote: orderData.form_data?.special_note || "",
-                            items: (orderData.products || []).map((p: any) => ({
-                                product_name: p.product_title || p.product_name || "Product",
-                                product_price: parseFloat(p.calculated_price || p.product_price || 0),
-                                product_quantity: p.quantity || 1,
-                                product_img: p.product_img || ""
-                            })),
+                            paymentMethod: orderData.form_data?.payment_method || "Cash On Delivery",
+                            items: products,
                             status: "Processing",
                             isDelivered: false,
                             deliveredAt: new Date(),
@@ -120,6 +170,10 @@ export default function OrderSuccess({ params }: { params: Promise<{ id: string 
                                 phone: orderData.form_data?.phone || orderData.phone || "N/A"
                             } as any
                         };
+                        console.log("📦 Raw orderData from sessionStorage/API:", orderData);
+                        console.log("💰 Products Total (Gross):", productsTotal);
+                        console.log("🚚 Shipping:", shippingCost);
+                        console.log("🎁 Discount:", discount);
                         console.log("✅ Transformed order data:", transformedOrder);
                         setOrder(transformedOrder);
                         // Clear the sessionStorage after a short delay to avoid React double-render issues
