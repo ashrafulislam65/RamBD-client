@@ -11,6 +11,7 @@ import FlexBox from "@component/FlexBox";
 import { Button } from "@component/buttons";
 import NextImage from "@component/NextImage";
 import { IconButton } from "@component/buttons";
+import { Chip } from "@component/Chip";
 import { H4, Paragraph, Small } from "@component/Typography";
 import ProductQuickView from "@component/products/ProductQuickView";
 import { useAppContext } from "@context/app-context";
@@ -68,6 +69,8 @@ type ProductCard17Props = {
   slug: string;
   title: string;
   price: number;
+  regularPrice?: number;
+  off?: number;
   imgUrl: string;
   rating?: number;
   reviews: number;
@@ -79,7 +82,7 @@ type ProductCard17Props = {
 // ==============================================================
 
 export default function ProductCard17(props: ProductCard17Props) {
-  const { id, title, price, imgUrl, category, reviews, slug, images } = props;
+  const { id, title, price, regularPrice, imgUrl, category, reviews, slug, images, off = 0 } = props;
 
   const { state, dispatch } = useAppContext();
   const [openDialog, setOpenDialog] = useState(false);
@@ -96,6 +99,7 @@ export default function ProductCard17(props: ProductCard17Props) {
       id,
       slug,
       price,
+      regularPrice,
       imgUrl,
       name: title,
       qty: (cartItem?.qty || 0) + 1
@@ -108,6 +112,20 @@ export default function ProductCard17(props: ProductCard17Props) {
     <Wrapper>
       <CardMedia>
         <Link href={`/product/${slug}`}>
+          {!!off && (
+            <Chip
+              zIndex={1}
+              top="10px"
+              left="10px"
+              p="5px 10px"
+              fontSize="10px"
+              fontWeight="600"
+              bg="primary.main"
+              position="absolute"
+              color="primary.text">
+              {off}% off
+            </Chip>
+          )}
           <NextImage width={300} height={300} src={imgUrl} alt="category" className="product-img" />
         </Link>
 
@@ -131,7 +149,7 @@ export default function ProductCard17(props: ProductCard17Props) {
       <ProductQuickView
         open={openDialog}
         onClose={toggleDialog}
-        product={{ id, images, slug, price, title }}
+        product={{ id, images, slug, price, regularPrice, title }}
       />
 
       <Box p={1} textAlign="center">
@@ -139,6 +157,11 @@ export default function ProductCard17(props: ProductCard17Props) {
         <Paragraph fontWeight="bold">{title}</Paragraph>
         <H4 fontWeight={700} py={0.5}>
           {currency(price)}
+          {regularPrice && regularPrice > price && (
+            <del style={{ fontWeight: 600, fontSize: "14px", color: "grey", marginLeft: "10px" }}>
+              {currency(regularPrice)}
+            </del>
+          )}
         </H4>
 
         <FlexBox alignItems="center" justifyContent="center">

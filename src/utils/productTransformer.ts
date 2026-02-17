@@ -36,25 +36,29 @@ export const transformApiProduct = (apiProduct: any): any => {
 
 
 
+
     const originalPrice = parseFloat(apiProduct.pro_price) || 0;
     const discountAmount = apiProduct.pro_discount ? parseFloat(apiProduct.pro_discount) : 0;
     const offerStatus = apiProduct.offer_status === 1;
 
-    // Calculate discount percentage
-    let discountPercentage = 0;
-    if (offerStatus && originalPrice > 0) {
-        discountPercentage = (discountAmount / originalPrice) * 100;
-        // Optional: Round to 2 decimal places to be clean
-        discountPercentage = Math.round(discountPercentage * 100) / 100;
-    }
+    // Calculate percentage if offer exists
+    const discountPercentage = (offerStatus && originalPrice > 0)
+        ? Math.round((discountAmount / originalPrice) * 100)
+        : 0;
+
+    // Logic Fix:
+    // price = Final selling price (discounted if offer exists)
+    // regularPrice = Original price (shown as crossed out if offer exists)
+    const finalPrice = offerStatus ? (originalPrice - discountAmount) : originalPrice;
 
     return {
         id: String(apiProduct.id),
         slug: apiProduct.pro_slug || generatedSlug || '',
         model: parsedModel || apiProduct.pro_model || apiProduct.model || '',
         title: rawTitle,
-        price: originalPrice,
-        discount: discountPercentage,
+        price: finalPrice, // Corrected: This is now the actual selling price
+        regularPrice: originalPrice, // New field: Original price for display
+        discount: discountPercentage, // Changed: Now returns PERCENTAGE for badges (e.g., 20)
 
         thumbnail: imageUrl,
         images: allImages.reverse(), // User mentioned order is flipped

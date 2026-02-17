@@ -47,6 +47,8 @@ const CardMedia = styled(Box)({
   "& .product-img": { transition: "0.3s", objectFit: "contain" }
 });
 
+import { Chip } from "@component/Chip";
+
 const EyeButton = styled(IconButton)({
   top: 5,
   right: -40,
@@ -69,6 +71,8 @@ type ProductCard19Props = {
   name: string;
   slug: string;
   price: number;
+  regularPrice?: number;
+  off?: number;
   reviews: number;
   images: string[];
   id: string | number;
@@ -77,7 +81,7 @@ type ProductCard19Props = {
 // ==============================================================
 
 export default function ProductCard19(props: ProductCard19Props) {
-  const { img, name, price, reviews, id, slug, images, categorySlug } = props;
+  const { img, name, price, regularPrice, reviews, id, slug, images, categorySlug, off = 0 } = props;
 
   const router = useRouter();
   const { state, dispatch } = useAppContext();
@@ -100,6 +104,7 @@ export default function ProductCard19(props: ProductCard19Props) {
       slug,
       name,
       price,
+      regularPrice,
       imgUrl: img,
       qty: (cartItem?.qty || 0) + 1
     };
@@ -113,6 +118,7 @@ export default function ProductCard19(props: ProductCard19Props) {
       slug,
       name,
       price,
+      regularPrice,
       imgUrl: img,
       qty: (cartItem?.qty || 0) - 1
     };
@@ -130,6 +136,20 @@ export default function ProductCard19(props: ProductCard19Props) {
       <CardBox height="100%">
         <CardMedia>
           <Link href={productPath}>
+            {!!off && (
+              <Chip
+                zIndex={1}
+                top="10px"
+                left="10px"
+                p="5px 10px"
+                fontSize="10px"
+                fontWeight="600"
+                bg="primary.main"
+                position="absolute"
+                color="primary.text">
+                {off}% off
+              </Chip>
+            )}
             <NextImage src={img} width={300} height={300} alt="category" className="product-img" />
           </Link>
 
@@ -149,6 +169,9 @@ export default function ProductCard19(props: ProductCard19Props) {
 
           <H4 fontWeight={700} py=".25rem" fontSize={15} color="primary.main">
             {currency(price)}
+            {regularPrice && regularPrice > price && (
+              <del style={{ color: "grey", fontSize: "12px", marginLeft: "5px" }}>{currency(regularPrice)}</del>
+            )}
           </H4>
 
           <FlexBox justifyContent="center" alignItems="center" mb="0.75rem">
@@ -206,7 +229,7 @@ export default function ProductCard19(props: ProductCard19Props) {
       <ProductQuickView
         open={openDialog}
         onClose={toggleDialog}
-        product={{ id, images, price, slug, title: name }}
+        product={{ id, images, price, regularPrice, slug, title: name }}
       />
     </Fragment>
   );

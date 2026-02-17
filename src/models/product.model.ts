@@ -13,6 +13,7 @@ interface Product {
   id: string;
   shop?: Shop;
   brand?: string;
+  regularPrice?: number;
   size?: string[];
   status?: string;
   colors?: string[];

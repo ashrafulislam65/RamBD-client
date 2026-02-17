@@ -25,6 +25,7 @@ export default function ProductListView({ products, categorySlug }: Props) {
           rating={item.rating}
           images={item.images}
           imgUrl={item.thumbnail}
+          regularPrice={item.regularPrice}
           categories={item.categories}
           categorySlug={categorySlug}
         />

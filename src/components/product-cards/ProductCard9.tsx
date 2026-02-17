@@ -100,6 +100,7 @@ type ProductCard9Props = {
   slug: string;
   title: string;
   price: number;
+  regularPrice?: number;
   imgUrl: string;
   rating: number;
   images: string[];
@@ -116,6 +117,7 @@ export default function ProductCard9({
   slug,
   title,
   price,
+  regularPrice,
   imgUrl,
   rating,
   images,
@@ -132,7 +134,7 @@ export default function ProductCard9({
   const handleCartAmountChange = (qty: number) => () => {
     dispatch({
       type: "CHANGE_CART_AMOUNT",
-      payload: { price, imgUrl, id, qty, slug, name: title }
+      payload: { price, regularPrice, imgUrl, id, qty, slug, name: title }
     });
   };
 
@@ -189,105 +191,126 @@ export default function ProductCard9({
 
             <FlexBox mt="0.5rem" mb="1rem" alignItems="center">
               <H5 fontWeight={600} color="primary.main" mr="0.5rem">
-                {calculateDiscount(price, off as number)}
+                {currency(price)}
               </H5>
 
               {off > 0 && (
                 <SemiSpan fontWeight="600">
-                  <del>{currency(price)}</del>
+                  <del>{currency(regularPrice || price)}</del>
                 </SemiSpan>
               )}
             </FlexBox>
 
             <Hidden up="sm">
-              <FlexBox
-                height="30px"
-                alignItems="center"
-                flexDirection="row-reverse"
-                justifyContent="space-between">
-                <Icon className="favorite-icon outlined-icon" variant="small">
-                  heart
-                </Icon>
+              <FlexBox style={{ gap: 8 }} mt="10px">
+                {cartItem?.qty ? (
+                  <FlexBox
+                    alignItems="center"
+                    justifyContent="space-between"
+                    flex={1}
+                    p="2px"
+                    borderRadius="4px"
+                    style={{ border: `1px solid ${getTheme("colors.gray.300")}`, height: 32 }}>
+                    <Button variant="text" size="small" p="5px" onClick={handleCartAmountChange(cartItem.qty - 1)} style={{ minWidth: 24 }}>
+                      <Icon size="10px">minus</Icon>
+                    </Button>
 
-                <FlexBox alignItems="center" flexDirection="row-reverse">
+                    <H5 fontWeight="600" fontSize="14px">{cartItem.qty}</H5>
+
+                    <Button variant="text" size="small" p="5px" onClick={handleCartAmountChange(cartItem.qty + 1)} style={{ minWidth: 24 }}>
+                      <Icon size="10px">plus</Icon>
+                    </Button>
+                  </FlexBox>
+                ) : (
                   <Button
-                    size="none"
-                    padding="5px"
-                    color="primary"
+                    fullwidth
+                    color="dark"
                     variant="outlined"
-                    borderColor="primary.light"
-                    onClick={handleCartAmountChange((cartItem?.qty || 0) + 1)}>
-                    <Icon variant="small">plus</Icon>
+                    size="small"
+                    onClick={handleCartAmountChange(1)}
+                    style={{ fontSize: 10, padding: "5px 0", height: 32 }}>
+                    Add Cart
                   </Button>
+                )}
 
-                  {cartItem?.qty && (
-                    <Fragment>
-                      <H5 fontWeight="600" fontSize="15px" mx="0.75rem">
-                        {cartItem.qty}
-                      </H5>
-
-                      <Button
-                        size="none"
-                        padding="5px"
-                        color="primary"
-                        variant="outlined"
-                        borderColor="primary.light"
-                        onClick={handleCartAmountChange(cartItem.qty - 1)}>
-                        <Icon variant="small">minus</Icon>
-                      </Button>
-                    </Fragment>
-                  )}
-                </FlexBox>
+                <Button
+                  fullwidth
+                  color="primary"
+                  variant="contained"
+                  size="small"
+                  onClick={() => {
+                    if (!cartItem?.qty) handleCartAmountChange(1)();
+                    // router.push("/checkout"); // Need router
+                  }}
+                  style={{ fontSize: 10, padding: "5px 0", height: 32 }}>
+                  Buy Now
+                </Button>
               </FlexBox>
             </Hidden>
           </FlexBox>
         </Grid>
 
-        <Hidden as={Grid} down="sm" item flex={1} md={1} xs={12}>
+        <Hidden as={Grid} down="sm" item flex={1} md={3} xs={12}>
           <FlexBox
             ml="auto"
-            p="2rem 0rem"
-            width="100%"
             height="100%"
-            minWidth="30px"
             alignItems="center"
             flexDirection="column"
-            justifyContent="space-between">
-            <Icon className="favorite-icon outlined-icon" variant="small">
-              heart
-            </Icon>
+            justifyContent="center">
 
-            <FlexBox
-              alignItems="center"
-              className="add-cart"
-              flexDirection={cartItem?.qty ? "column" : "column-reverse"}>
-              <Button
-                size="none"
-                padding="5px"
-                color="primary"
-                variant="outlined"
-                borderColor="primary.light"
-                onClick={handleCartAmountChange((cartItem?.qty || 0) + 1)}>
-                <Icon variant="small">plus</Icon>
-              </Button>
-
-              {cartItem?.qty && (
-                <Fragment>
-                  <H5 fontWeight="600" fontSize="15px" m="0.5rem">
-                    {cartItem.qty}
-                  </H5>
-
-                  <Button
-                    size="none"
-                    padding="5px"
-                    color="primary"
-                    variant="outlined"
-                    borderColor="primary.light"
-                    onClick={handleCartAmountChange(cartItem.qty - 1)}>
-                    <Icon variant="small">minus</Icon>
+            <FlexBox style={{ gap: 8, width: '100%' }} flexDirection="column">
+              {cartItem?.qty ? (
+                <FlexBox
+                  alignItems="center"
+                  justifyContent="space-between"
+                  width="100%"
+                  p="2px"
+                  borderRadius="4px"
+                  style={{ border: `1px solid ${getTheme("colors.gray.300")}`, height: 36 }}>
+                  <Button variant="text" size="small" p="5px" onClick={handleCartAmountChange(cartItem.qty - 1)}>
+                    <Icon size="10px">minus</Icon>
                   </Button>
-                </Fragment>
+
+                  <H5 fontWeight="600" fontSize="14px">{cartItem.qty}</H5>
+
+                  <Button variant="text" size="small" p="5px" onClick={handleCartAmountChange(cartItem.qty + 1)}>
+                    <Icon size="10px">plus</Icon>
+                  </Button>
+                </FlexBox>
+              ) : (
+                <Button
+                  fullwidth
+                  color="dark"
+                  variant="outlined"
+                  size="small"
+                  onClick={handleCartAmountChange(1)}
+                  style={{ height: 36 }}>
+                  Add To Cart
+                </Button>
               )}
+
+
+              <Button
+                fullwidth
+                color="primary"
+                variant="contained"
+                size="small"
+                onClick={() => {
+                  if (!cartItem?.qty) handleCartAmountChange(1)();
+                  // router.push("/checkout");
+                }}
+                style={{ height: 36 }}>
+                Buy Now
+              </Button>
+            </FlexBox>
+
+            <FlexBox mt="1rem" alignItems="center" cursor="pointer" style={{ gap: 10 }}>
+              <Icon color="secondary" variant="small">
+                heart
+              </Icon>
+              <H5 fontWeight="600" fontSize="12px" color="text.muted">
+                Add to Wishlist
+              </H5>
             </FlexBox>
           </FlexBox>
         </Hidden>
@@ -296,8 +319,8 @@ export default function ProductCard9({
       <ProductQuickView
         open={open}
         onClose={toggleDialog}
-        product={{ id, images, price, title, slug }}
+        product={{ id, images, price, regularPrice, title, slug }}
       />
-    </Wrapper>
+    </Wrapper >
   );
 }

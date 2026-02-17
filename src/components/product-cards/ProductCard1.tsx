@@ -115,6 +115,7 @@ interface ProductCard1Props extends CardProps {
   slug: string;
   title: string;
   price: number;
+  regularPrice?: number;
   imgUrl: string;
   rating: number;
   images: string[];
@@ -130,6 +131,7 @@ export default function ProductCard1({
   slug,
   title,
   price,
+  regularPrice,
   imgUrl,
   images,
   rating = 4,
@@ -148,15 +150,15 @@ export default function ProductCard1({
   }, []);
 
   const handleCartAmountChange = (amount: number) => () => {
-    const discountedPrice = off ? price - (price * off) / 100 : price;
+    // const discountedPrice = off ? price - (price * off) / 100 : price;
 
     dispatch({
       type: "CHANGE_CART_AMOUNT",
       payload: {
         id: id as number | string,
         slug,
-        price: discountedPrice,
-        originalPrice: price,
+        price: price, // Price is now already discounted if applicable
+        originalPrice: regularPrice || price,
         discount: off,
         imgUrl,
         name: title,
@@ -167,15 +169,15 @@ export default function ProductCard1({
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const discountedPrice = off ? price - (price * off) / 100 : price;
+    // const discountedPrice = off ? price - (price * off) / 100 : price;
 
     dispatch({
       type: "CHANGE_CART_AMOUNT",
       payload: {
         id: id as number | string,
         slug,
-        price: discountedPrice,
-        originalPrice: price,
+        price: price, // Price is now already discounted if applicable
+        originalPrice: regularPrice || price,
         discount: off,
         imgUrl,
         name: title,
@@ -261,107 +263,72 @@ export default function ProductCard1({
 
               <FlexBox alignItems="center" mt="10px">
                 <SemiSpan pr="0.5rem" fontWeight="600" color="primary.main">
-                  {calculateDiscount(price, off as number)}
+                  {currency(price)}
                 </SemiSpan>
 
                 {!!off && (
                   <SemiSpan color="text.muted" fontWeight="600">
-                    <del>{currency(price)}</del>
+                    <del>{currency(regularPrice || price)}</del>
                   </SemiSpan>
                 )}
               </FlexBox>
             </Box>
-
-            {!showActionButtons && (
-              <FlexBox
-                width="30px"
-                alignItems="center"
-                flexDirection="column-reverse"
-                justifyContent={!!cartItem?.qty ? "space-between" : "flex-start"}>
-                <Button
-                  size="none"
-                  padding="3px"
-                  color="primary"
-                  variant="outlined"
-                  borderColor="primary.light"
-                  onClick={handleCartAmountChange((cartItem?.qty || 0) + 1)}>
-                  <Icon variant="small">plus</Icon>
-                </Button>
-
-                {!!cartItem?.qty && (
-                  <Fragment>
-                    <SemiSpan color="text.primary" fontWeight="600">
-                      {cartItem.qty}
-                    </SemiSpan>
-
-                    <Button
-                      size="none"
-                      padding="3px"
-                      color="primary"
-                      variant="outlined"
-                      borderColor="primary.light"
-                      onClick={handleCartAmountChange(cartItem.qty - 1)}>
-                      <Icon variant="small">minus</Icon>
-                    </Button>
-                  </Fragment>
-                )}
-              </FlexBox>
-            )}
           </FlexBox>
 
-          {showActionButtons && (
-            <FlexBox mt="1rem" style={{ gap: 8 }}>
-              {cartItem?.qty ? (
-                <FlexBox
-                  alignItems="center"
-                  justifyContent="space-between"
-                  flex={1}
-                  p="2px"
-                  borderRadius="4px"
-                  style={{ border: `1px solid ${theme.colors.gray[300]}`, height: 32 }}>
-                  <Button
-                    variant="text"
-                    size="small"
-                    p="5px"
-                    onClick={handleCartAmountChange(cartItem.qty - 1)}>
-                    <Icon size="10px">minus</Icon>
-                  </Button>
+          {/* Buttons moved to details section below */}
 
-                  <SemiSpan fontWeight="600" fontSize={11}>{cartItem.qty}</SemiSpan>
-
-                  <Button
-                    variant="text"
-                    size="small"
-                    p="5px"
-                    onClick={handleCartAmountChange(cartItem.qty + 1)}>
-                    <Icon size="10px">plus</Icon>
-                  </Button>
-                </FlexBox>
-              ) : (
+          <FlexBox mt="10px" style={{ gap: 8 }}>
+            {cartItem?.qty ? (
+              <FlexBox
+                alignItems="center"
+                justifyContent="space-between"
+                flex={1}
+                p="2px"
+                borderRadius="4px"
+                style={{ border: `1px solid ${theme.colors.gray[300]}`, height: 32 }}>
                 <Button
-                  fullwidth
-                  color="dark"
-                  variant="outlined"
+                  variant="text"
                   size="small"
-                  onClick={handleCartAmountChange(1)}
-                  style={{ fontSize: 10, padding: "5px 0", height: 32, textTransform: "none" }}>
-                  Add Cart
+                  p="5px"
+                  onClick={handleCartAmountChange(cartItem.qty - 1)}>
+                  <Icon size="10px">minus</Icon>
                 </Button>
-              )}
 
+                <SemiSpan fontWeight="600" fontSize={11}>{cartItem.qty}</SemiSpan>
+
+                <Button
+                  variant="text"
+                  size="small"
+                  p="5px"
+                  onClick={handleCartAmountChange(cartItem.qty + 1)}>
+                  <Icon size="10px">plus</Icon>
+                </Button>
+              </FlexBox>
+            ) : (
               <Button
                 fullwidth
-                color="primary"
-                variant="contained"
+                color="dark"
+                variant="outlined"
                 size="small"
-                onClick={handleBuyNow}
+                onClick={handleCartAmountChange(1)}
                 style={{ fontSize: 10, padding: "5px 0", height: 32, textTransform: "none" }}>
-                Buy Now
+                Add Cart
               </Button>
-            </FlexBox>
-          )}
+            )}
+
+            <Button
+              fullwidth
+              color="primary"
+              variant="contained"
+              size="small"
+              onClick={handleBuyNow}
+              style={{ fontSize: 10, padding: "5px 0", height: 32, textTransform: "none" }}>
+              Buy Now
+            </Button>
+          </FlexBox>
+
         </div>
-      </Wrapper>
+      </Wrapper >
 
       <ProductQuickView
         open={open}

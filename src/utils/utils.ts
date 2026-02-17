@@ -64,10 +64,24 @@ export const renderProductCount = (
  * @returns - RETURN NEW PRICE
  */
 
+
 export function calculateDiscount(price: number, discount: number) {
-  const afterDiscount = Number((price - price * (discount / 100)).toFixed(2));
+  const afterDiscount = Number((price - discount).toFixed(2));
   return currency(afterDiscount);
 }
+
+/**
+ * CALCULATE DISCOUNT PERCENTAGE
+ * @param  price - PRODUCT PRICE
+ * @param  discountAmount - DISCOUNT AMOUNT
+ * @returns - RETURN DISCOUNT PERCENTAGE
+ */
+export function calculateDiscountPercentage(price: number, discountAmount: number) {
+  if (price === 0) return 0;
+  const percentage = (discountAmount / price) * 100;
+  return Math.round(percentage);
+}
+
 
 /**
  * CHANGE THE CURRENCY FORMAT

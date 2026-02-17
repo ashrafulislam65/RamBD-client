@@ -37,6 +37,8 @@ export default function Section11({ products }: Props) {
                                 slug={product.slug}
                                 name={product.title}
                                 price={product.price}
+                                off={product.discount}
+                                regularPrice={product.regularPrice}
                                 img={product.thumbnail}
                                 images={product.images as string[]}
                                 reviews={product.reviews?.length || 10}

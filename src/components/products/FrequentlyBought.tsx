@@ -49,6 +49,7 @@ export default function FrequentlyBought({ products }: Props) {
               id={item.id}
               slug={item.slug}
               price={item.price}
+              regularPrice={item.regularPrice}
               title={item.title}
               off={item.discount}
               imgUrl={item.thumbnail}

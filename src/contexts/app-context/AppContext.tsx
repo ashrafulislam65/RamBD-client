@@ -32,7 +32,7 @@ const reducer = (state: InitialState, action: ActionType) => {
       // IF PRODUCT ALREADY EXITS IN CART
       if (exist) {
         const newCart = cartList.map((item) =>
-          item.id === cartItem.id ? { ...item, qty: cartItem.qty } : item
+          item.id === cartItem.id ? { ...item, ...cartItem } : item
         );
 
         return { ...state, cart: newCart };

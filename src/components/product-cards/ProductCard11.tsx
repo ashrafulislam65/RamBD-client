@@ -2,6 +2,7 @@ import Link from "next/link";
 import styled from "styled-components";
 
 import Box from "@component/Box";
+import { Chip } from "@component/Chip";
 import Rating from "@component/rating";
 import FlexBox from "@component/FlexBox";
 import NextImage from "@component/NextImage";
@@ -40,18 +41,33 @@ type ProductCard11Props = {
   off?: number;
   title: string;
   price: number;
+  regularPrice?: number;
   imgUrl: string;
   rating: number;
 };
 // ===================================================
 
 export default function ProductCard11(props: ProductCard11Props) {
-  const { title, imgUrl, price, rating, slug, off = 0 } = props;
+  const { title, imgUrl, price, regularPrice, rating, slug, off = 0 } = props;
 
   return (
     <Link href={`/product/${slug}`}>
       <StyledProductCard>
         <Box mb="1rem" className="image-holder">
+          {!!off && (
+            <Chip
+              top="10px"
+              left="10px"
+              zIndex={1}
+              p="5px 10px"
+              fontSize="10px"
+              fontWeight="600"
+              bg="primary.main"
+              position="absolute"
+              color="primary.text">
+              {off}% off
+            </Chip>
+          )}
           <NextImage src={imgUrl} width={150} height={150} alt="bonik" />
         </Box>
 
@@ -65,12 +81,12 @@ export default function ProductCard11(props: ProductCard11Props) {
 
         <FlexBox alignItems="center">
           <SemiSpan pr="0.3rem" fontWeight="600" color="primary.main" lineHeight="1">
-            {calculateDiscount(price, off)}
+            {currency(price)}
           </SemiSpan>
 
           {!!off && (
             <Small color="text.muted" lineHeight="1">
-              <del>{currency(price, 0)}</del>
+              <del>{currency(regularPrice || price)}</del>
             </Small>
           )}
         </FlexBox>

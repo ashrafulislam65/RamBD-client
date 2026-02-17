@@ -23,6 +23,7 @@ import { theme } from "@utils/theme";
 // ========================================
 interface Props {
   price: number;
+  regularPrice?: number;
   title: string;
   images: string[];
   id: string | number;
@@ -41,6 +42,7 @@ export default function ProductIntro({
   images,
   title,
   price,
+  regularPrice,
   id,
   brand,
   status,
@@ -81,13 +83,14 @@ export default function ProductIntro({
   const handleImageClick = (ind: number) => () => setSelectedImage(ind);
 
   const handleCartAmountChange = (amount: number) => {
-    const discountedPrice = discount ? price - (price * discount) / 100 : price;
+    // const discountedPrice = discount ? price - (price * discount) / 100 : price;
 
     dispatch({
       type: "CHANGE_CART_AMOUNT",
       payload: {
-        price: discountedPrice,
-        originalPrice: price,
+        price: price, // Use the pre-calculated final price
+        originalPrice: regularPrice || price,
+        regularPrice: regularPrice, // Added regularPrice
         discount: discount,
         qty: amount,
         name: title,
@@ -190,11 +193,11 @@ export default function ProductIntro({
 
                 <FlexBox alignItems="center" mb="1rem">
                   <H3 color="primary.main" mr="12px" fontWeight="700">
-                    {calculateDiscount(price, discount || 0)}
+                    {currency(price)}
                   </H3>
                   {(discount > 0) && (
                     <SemiSpan color="text.muted" fontWeight="600">
-                      <del>{currency(price)}</del>
+                      <del>{currency(regularPrice || price)}</del>
                     </SemiSpan>
                   )}
                 </FlexBox>

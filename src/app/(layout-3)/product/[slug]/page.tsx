@@ -79,6 +79,7 @@ export default async function ProductDetails({ params, searchParams }: Props) {
         <ProductIntro
           id={product.id}
           price={product.price}
+          regularPrice={product.regularPrice}
           title={product.title}
           images={product.images || []}
           brand={product.brand}

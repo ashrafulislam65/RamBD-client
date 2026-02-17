@@ -109,6 +109,7 @@ type ProductCard10Props = {
   unit: string;
   title: string;
   price: number;
+  regularPrice?: number;
   imgUrl: string;
   rating: number;
   images: string[];
@@ -117,16 +118,16 @@ type ProductCard10Props = {
 // ======================================================================
 
 export default function ProductCard10(props: ProductCard10Props) {
-  const { id, off, unit, slug, title, price, imgUrl, images } = props;
+  const { id, off, unit, slug, title, price, regularPrice, imgUrl, images } = props;
 
   const [open, setOpen] = useState(false);
-  const [discountPrice, setDiscountPrice] = useState<string>("");
-  const [discountAmount, setDiscountAmount] = useState<string>("");
+  // const [discountPrice, setDiscountPrice] = useState<string>("");
+  // const [discountAmount, setDiscountAmount] = useState<string>("");
 
-  useEffect(() => {
-    setDiscountPrice(() => calculateDiscount(price, off));
-    setDiscountAmount(() => currency(off));
-  }, []);
+  // useEffect(() => {
+  //   setDiscountPrice(() => calculateDiscount(price, off));
+  //   setDiscountAmount(() => currency(off));
+  // }, []);
 
   const { state, dispatch } = useAppContext();
   const cartItem = state.cart.find((item) => item.id === id);
@@ -136,7 +137,7 @@ export default function ProductCard10(props: ProductCard10Props) {
   const handleCartAmountChange = (qty: number) => () => {
     dispatch({
       type: "CHANGE_CART_AMOUNT",
-      payload: { price, imgUrl, id, qty, slug, name: title }
+      payload: { price, regularPrice, imgUrl, id, qty, slug, name: title }
     });
   };
 
@@ -196,12 +197,12 @@ export default function ProductCard10(props: ProductCard10Props) {
 
             <FlexBox alignItems="center" mt="6px">
               <SemiSpan pr="0.5rem" fontWeight="600" color="primary.main">
-                {discountPrice}
+                {currency(price)}
               </SemiSpan>
 
-              {off && (
+              {off > 0 && (
                 <SemiSpan color="text.muted" fontWeight="600">
-                  <del>{discountAmount}</del>
+                  <del>{currency(regularPrice || price)}</del>
                 </SemiSpan>
               )}
             </FlexBox>
@@ -246,7 +247,7 @@ export default function ProductCard10(props: ProductCard10Props) {
       <ProductQuickView
         open={open}
         onClose={toggleDialog}
-        product={{ id, images, slug, price, title }}
+        product={{ id, images, slug, price, regularPrice, title }}
       />
     </Wrapper>
   );

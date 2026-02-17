@@ -97,21 +97,30 @@ const Wrapper = styled.div`
 type ProductCard3Props = {
   className?: string;
   style?: CSSProperties;
+  price: number;
+  regularPrice?: number;
+  off?: number;
+  title: string;
+  imgUrl: string;
+  rating?: number;
+  slug: string;
+  id: string | number;
 };
 // ========================================================
 
-export default function ProductCard3({ ...props }: ProductCard3Props) {
+export default function ProductCard3(props: ProductCard3Props) {
+  const { id, slug, title, price, regularPrice, off, imgUrl, rating, className, style } = props;
   return (
-    <Wrapper {...props}>
+    <Wrapper className={className} style={style}>
       <div className="image-holder">
-        <div className="sale-chip">50% off</div>
-        <img src="/assets/images/products/macbook.png" alt="golden-watch" />
+        {!!off && <div className="sale-chip">{off}% off</div>}
+        <img src={imgUrl} alt={title} />
       </div>
 
       <div className="details">
         <FlexBox justifyContent="space-between">
           <div>
-            <h4>ASUS ROG Strix G15</h4>
+            <h4>{title}</h4>
           </div>
 
           <div className="icon-holder">
@@ -130,8 +139,8 @@ export default function ProductCard3({ ...props }: ProductCard3Props) {
               onChange={(value) => console.log(value, "from rating")}
             />
             <div className="price">
-              <h4>$445.00</h4>
-              <del>$250</del>
+              <h4>{currency(price)}</h4>
+              {!!off && <del>{currency(regularPrice || price)}</del>}
             </div>
           </div>
 

@@ -113,6 +113,7 @@ interface Props {
   slug: string;
   title: string;
   price: number;
+  regularPrice?: number;
   imgUrl: string;
   status: string;
   rating?: number;
@@ -122,7 +123,7 @@ interface Props {
 // =====================================================================
 
 export default function ProductCard13(props: Props) {
-  const { off, status, id, title, price, imgUrl, rating, productColors, slug } = props;
+  const { off, status, id, title, price, regularPrice, imgUrl, rating, productColors, slug } = props;
 
   const { state, dispatch } = useAppContext();
   const cartItem = state.cart.find((item) => item.slug === slug);
@@ -130,7 +131,7 @@ export default function ProductCard13(props: Props) {
   const handleCartAmountChange = (qty: number) => () => {
     dispatch({
       type: "CHANGE_CART_AMOUNT",
-      payload: { price, imgUrl, id, qty, slug, name: title }
+      payload: { price, regularPrice, imgUrl, id, qty, slug, name: title }
     });
   };
 
@@ -138,6 +139,20 @@ export default function ProductCard13(props: Props) {
     <StyledCard>
       <Link href={`/product/${slug}`}>
         <ImgBox id="imgBox">
+          {!!off && (
+            <Chip
+              top="10px"
+              left="10px"
+              zIndex={1}
+              p="5px 10px"
+              fontSize="10px"
+              fontWeight="600"
+              bg="primary.main"
+              position="absolute"
+              color="primary.text">
+              {off}% off
+            </Chip>
+          )}
           {status && (
             <StatusChipBox>
               <StatusChip>{status}</StatusChip>
@@ -197,12 +212,12 @@ export default function ProductCard13(props: Props) {
 
             <FlexBox alignItems="center" mt={0.5}>
               <Box fontWeight="600" color="primary.main" mr=".5rem">
-                {calculateDiscount(price, off)}
+                {currency(price)}
               </Box>
 
               {off > 0 && (
                 <Box color="grey.600" fontWeight="600">
-                  <del>{currency(price)}</del>
+                  <del>{currency(regularPrice || price)}</del>
                 </Box>
               )}
             </FlexBox>

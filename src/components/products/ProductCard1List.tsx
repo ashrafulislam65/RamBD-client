@@ -24,6 +24,7 @@ export default function ProductGridView({ products, categorySlug }: Props) {
               images={item.images}
               imgUrl={item.thumbnail}
               rating={item.rating || 4}
+              regularPrice={item.regularPrice}
               categorySlug={categorySlug}
             />
           </Grid>

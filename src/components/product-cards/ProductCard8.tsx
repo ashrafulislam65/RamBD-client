@@ -5,6 +5,7 @@ import FlexBox from "@component/FlexBox";
 import HoverBox from "@component/HoverBox";
 import NextImage from "@component/NextImage";
 import { H6, SemiSpan } from "@component/Typography";
+import { Chip } from "@component/Chip";
 import { calculateDiscount, currency } from "@utils/utils";
 
 // ==============================================================
@@ -15,6 +16,7 @@ type ProductCard8Props = {
   price: number;
   title: string;
   imgUrl: string;
+  regularPrice?: number;
   [key: string]: unknown;
 };
 // ==============================================================
@@ -24,6 +26,7 @@ export default function ProductCard8({
   off,
   slug,
   price,
+  regularPrice,
   title,
   imgUrl,
   ...props
@@ -31,7 +34,21 @@ export default function ProductCard8({
   return (
     <Card p="1rem" borderRadius={8} {...props}>
       <Link href={`/product/${slug}`}>
-        <HoverBox mb="0.75rem" borderRadius={8} overflow="hidden">
+        <HoverBox mb="0.75rem" borderRadius={8} overflow="hidden" position="relative">
+          {!!off && (
+            <Chip
+              top="10px"
+              left="10px"
+              zIndex={1}
+              p="5px 10px"
+              fontSize="10px"
+              fontWeight="600"
+              bg="primary.main"
+              position="absolute"
+              color="primary.text">
+              {off}% off
+            </Chip>
+          )}
           <NextImage
             src={imgUrl || "/assets/images/products/Rectangle 116.png"}
             width={500}
@@ -46,11 +63,11 @@ export default function ProductCard8({
 
         <FlexBox alignItems="center">
           <H6 color="primary.main" mr="0.25rem">
-            {calculateDiscount(price, off)}
+            {currency(price)}
           </H6>
 
           <SemiSpan>
-            <del>{currency(price)}</del>
+            <del>{currency(regularPrice || price)}</del>
           </SemiSpan>
         </FlexBox>
       </Link>

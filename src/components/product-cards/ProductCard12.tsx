@@ -106,6 +106,7 @@ type ProductCard12Props = {
   slug: string;
   title: string;
   price: number;
+  regularPrice?: number;
   imgUrl: string;
   rating: number;
   images: string[];
@@ -113,7 +114,7 @@ type ProductCard12Props = {
 // =============================================================
 
 export default function ProductCard12(props: ProductCard12Props) {
-  const { off, title, price, imgUrl, rating, slug, id, images } = props;
+  const { off, title, price, regularPrice, imgUrl, rating, slug, id, images } = props;
 
   const [open, setOpen] = useState(false);
   const { state, dispatch } = useAppContext();
@@ -125,7 +126,7 @@ export default function ProductCard12(props: ProductCard12Props) {
   const handleCartAmountChange = (qty: number) => () => {
     dispatch({
       type: "CHANGE_CART_AMOUNT",
-      payload: { price, imgUrl, id, qty, slug, name: title }
+      payload: { price, regularPrice, imgUrl, id, qty, slug, name: title }
     });
   };
 
@@ -217,12 +218,12 @@ export default function ProductCard12(props: ProductCard12Props) {
 
         <FlexBox alignItems="center" mt={0.5}>
           <Box fontWeight="600" color="primary.main" mr={2}>
-            {calculateDiscount(price, off as number)}
+            {currency(price)}
           </Box>
 
           {off !== 0 && (
             <Box color="grey.600" fontWeight="600">
-              <del>{currency(price)}</del>
+              <del>{currency(regularPrice || price)}</del>
             </Box>
           )}
         </FlexBox>
@@ -231,7 +232,7 @@ export default function ProductCard12(props: ProductCard12Props) {
       <ProductQuickView
         open={open}
         onClose={toggleDialog}
-        product={{ id, images, slug, price, title }}
+        product={{ id, images, slug, price, regularPrice, title }}
       />
     </Wrapper>
   );

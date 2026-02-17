@@ -122,6 +122,7 @@ type ProductCardProps = {
   slug: string;
   title: string;
   price: number;
+  regularPrice?: number;
   imgUrl: string;
   rating?: number;
   images: string[];
@@ -131,7 +132,7 @@ type ProductCardProps = {
 // =============================================================
 
 export default function ProductCard16(props: ProductCardProps) {
-  const { off, id, title, price, imgUrl, rating, hoverEffect, slug, images } = props;
+  const { off, id, title, price, regularPrice, imgUrl, rating, hoverEffect, slug, images } = props;
 
   const { state, dispatch } = useAppContext();
   const [openModal, setOpenModal] = useState(false);
@@ -143,7 +144,7 @@ export default function ProductCard16(props: ProductCardProps) {
   const handleCartAmountChange = (qty: number) => () => {
     dispatch({
       type: "CHANGE_CART_AMOUNT",
-      payload: { price, imgUrl, id, qty, slug, name: title }
+      payload: { price, regularPrice, imgUrl, id, qty, slug, name: title }
     });
   };
 
@@ -186,7 +187,7 @@ export default function ProductCard16(props: ProductCardProps) {
       <ProductQuickView
         open={openModal}
         onClose={toggleDialog}
-        product={{ id, images, slug, price, title }}
+        product={{ id, images, slug, price, regularPrice, title }}
       />
 
       <ContentWrapper>
@@ -212,12 +213,12 @@ export default function ProductCard16(props: ProductCardProps) {
 
           <FlexBox alignItems="center" mt={1}>
             <Box fontWeight="600" color="primary.main" mr={1}>
-              {calculateDiscount(price, off)}
+              {currency(price)}
             </Box>
 
             {off !== 0 && (
               <Box color="grey.600" fontWeight="600">
-                <del>{currency(price)}</del>
+                <del>{currency(regularPrice || price)}</del>
               </Box>
             )}
           </FlexBox>

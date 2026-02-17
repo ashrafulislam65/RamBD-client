@@ -39,6 +39,7 @@ export default function RelatedProducts({ products }: Props) {
                 id={item.id}
                 slug={effectiveSlug}
                 price={item.price}
+                regularPrice={item.regularPrice}
                 title={item.title}
                 off={item.discount}
                 images={item.images}

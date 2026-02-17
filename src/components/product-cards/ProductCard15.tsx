@@ -96,6 +96,7 @@ type Props = {
   slug: string;
   title: string;
   price: number;
+  regularPrice?: number;
   imgUrl: string;
   rating?: number;
   images: string[];
@@ -104,7 +105,7 @@ type Props = {
 // ============================================================
 
 export default function ProductCard15(props: Props) {
-  const { off, id, title, price, imgUrl, rating, slug, images } = props;
+  const { off, id, title, price, regularPrice, imgUrl, rating, slug, images } = props;
 
   const [open, setOpen] = useState(false);
   const { state, dispatch } = useAppContext();
@@ -119,6 +120,7 @@ export default function ProductCard15(props: Props) {
       id,
       slug,
       price,
+      regularPrice,
       imgUrl,
       name: title,
       qty: (cartItem?.qty || 0) + 1
@@ -160,18 +162,18 @@ export default function ProductCard15(props: Props) {
       <ProductQuickView
         open={open}
         onClose={toggleDialog}
-        product={{ id, slug, images, price, title }}
+        product={{ id, slug, images, price, regularPrice, title }}
       />
 
       <ContentWrapper>
         <FlexBox justifyContent="center">
           <Paragraph pr={2} fontWeight="600" color="marron.main">
-            {calculateDiscount(price, off)}
+            {currency(price)}
           </Paragraph>
 
           {off !== 0 && (
             <Paragraph color="gray.600" fontWeight="600">
-              <del>{currency(price)}</del>
+              <del>{currency(regularPrice || price)}</del>
             </Paragraph>
           )}
         </FlexBox>
