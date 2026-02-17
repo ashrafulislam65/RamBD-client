@@ -58,6 +58,11 @@ export default function ProductIntro({
   const { state, dispatch } = useAppContext();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [currentUrl, setCurrentUrl] = useState("");
+
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
 
   // ZOOM STATE
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
@@ -116,9 +121,9 @@ export default function ProductIntro({
 
   return (
     <Box overflow="hidden">
-      <FlexBox flexWrap="wrap" style={{ gap: 2 }}>
+      <FlexBox flexWrap="wrap" alignItems="stretch" style={{ gap: 2 }}>
         <Box flex="1 1 0" minWidth={300}>
-          <Box bg="white" p="1.5rem" borderRadius={8} shadow={1}>
+          <Box bg="white" p="1.5rem" borderRadius={8} shadow={1} height="100%">
             <Grid container spacing={6}>
               {/* IMAGE GALLERY */}
               <Grid item md={7} xs={12}>
@@ -299,27 +304,37 @@ export default function ProductIntro({
                 <Box mb="1.5rem">
                   <FlexBox alignItems="center" style={{ gap: 10 }}>
                     <SemiSpan fontWeight="600" color="secondary.main">For Inquiry: +880-1958-666975</SemiSpan>
-                    <Box cursor="pointer" bg="#25D366" borderRadius="50%" p="6px" display="flex" alignItems="center" justifyContent="center">
-                      <FaWhatsapp size={18} color="white" />
-                    </Box>
-                    <Box cursor="pointer" bg="#3498DB" borderRadius="50%" p="6px" display="flex" alignItems="center" justifyContent="center">
-                      <FaPhoneAlt size={16} color="white" />
-                    </Box>
+                    <a href="https://whatsapp.com/channel/0029Vb6w51fADTOId5PTaH2D" target="_blank" rel="noreferrer">
+                      <Box cursor="pointer" bg="#25D366" borderRadius="50%" p="6px" display="flex" alignItems="center" justifyContent="center">
+                        <FaWhatsapp size={18} color="white" />
+                      </Box>
+                    </a>
+                    <a href="tel:+8801958666975">
+                      <Box cursor="pointer" bg="#3498DB" borderRadius="50%" p="6px" display="flex" alignItems="center" justifyContent="center">
+                        <FaPhoneAlt size={16} color="white" />
+                      </Box>
+                    </a>
                   </FlexBox>
                 </Box>
 
                 <Box>
                   <H4 mb="10px">Share This Product On Social Media</H4>
                   <FlexBox style={{ gap: 12 }}>
-                    <Box cursor="pointer" bg="#3B5998" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center">
-                      <FaFacebookF size={18} color="white" />
-                    </Box>
-                    <Box cursor="pointer" bg="#25D366" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center">
-                      <FaWhatsapp size={20} color="white" />
-                    </Box>
-                    <Box cursor="pointer" bg="#0088CC" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center">
-                      <FaTelegramPlane size={18} color="white" />
-                    </Box>
+                    <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`} target="_blank" rel="noreferrer">
+                      <Box cursor="pointer" bg="#3B5998" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center">
+                        <FaFacebookF size={18} color="white" />
+                      </Box>
+                    </a>
+                    <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(currentUrl)}`} target="_blank" rel="noreferrer">
+                      <Box cursor="pointer" bg="#25D366" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center">
+                        <FaWhatsapp size={20} color="white" />
+                      </Box>
+                    </a>
+                    <a href={`https://t.me/share/url?url=${encodeURIComponent(currentUrl)}`} target="_blank" rel="noreferrer">
+                      <Box cursor="pointer" bg="#0088CC" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center">
+                        <FaTelegramPlane size={18} color="white" />
+                      </Box>
+                    </a>
                     <Box cursor="pointer" bg="#7f8c8d" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center" onClick={copyToClipboard}>
                       <FaLink size={16} color="white" />
                     </Box>
@@ -332,11 +347,11 @@ export default function ProductIntro({
 
         {/* SIDEBAR LATEST PRODUCTS */}
         <Box width="100px" flexShrink={0}>
-          <Box bg="white" p="8px" borderRadius={8} shadow={1} textAlign="center">
+          <Box bg="white" p="8px" borderRadius={8} shadow={1} textAlign="center" height="100%">
             <H4 fontSize={11} mb="12px" color="text.muted" style={{ lineHeight: 1.2 }}>Latest Products</H4>
 
             <Box>
-              {latestProducts?.slice(0, 6).map((item) => (
+              {latestProducts?.slice(0, 4).map((item) => (
                 <Link href={`/product/${item.slug}`} key={item.id}>
                   <Box
                     padding="8px 4px"
