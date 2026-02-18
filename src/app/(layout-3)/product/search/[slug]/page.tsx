@@ -55,9 +55,9 @@ export default async function ProductSearchResult({ params }: { params: { slug: 
 }
 
 const sortOptions = [
-  { label: "Relevance", value: "Relevance" },
-  { label: "Date", value: "Date" },
-  { label: "Price Low to High", value: "Price Low to High" },
-  { label: "Price High to Low", value: "Price High to Low" }
+  { label: "Relevance", value: "relevance" },
+  { label: "Date", value: "date" },
+  { label: "Price Low to High", value: "price-asc" },
+  { label: "Price High to Low", value: "price-desc" }
 ];
 

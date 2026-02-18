@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 import Box from "@component/Box";
 import Card from "@component/Card";
@@ -26,12 +26,43 @@ type Props = {
 };
 // ==============================================================
 
-export default function SearchResult({ sortOptions, products, title = "Searching for products" }: { sortOptions: { label: string; value: string }[], products: any[], title?: string }) {
+export default function SearchResult({ sortOptions, products: initialProducts, title = "Searching for products" }: { sortOptions: { label: string; value: string }[], products: any[], title?: string }) {
   const width = useWindowSize();
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [products, setProducts] = useState(initialProducts);
+  const [currentSort, setCurrentSort] = useState(sortOptions[0]);
 
   const isTablet = width < 1025;
   const toggleView = useCallback((v: any) => () => setView(v), []);
+
+  const applySort = useCallback((productList: any[], sortOption: any) => {
+    const sorted = [...productList];
+    if (!sortOption) return productList;
+
+    switch (sortOption.value) {
+      case "price-asc":
+        sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+        break;
+      case "price-desc":
+        sorted.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+        break;
+      case "date":
+        sorted.sort((a, b) => Number(b.id) - Number(a.id));
+        break;
+      default:
+        return productList;
+    }
+    return sorted;
+  }, []);
+
+  const handleSortChange = (option: any) => {
+    setCurrentSort(option);
+    setProducts(applySort(initialProducts, option));
+  };
+
+  useEffect(() => {
+    setProducts(applySort(initialProducts, currentSort));
+  }, [initialProducts, currentSort, applySort]);
 
   return (
     <>
@@ -51,11 +82,17 @@ export default function SearchResult({ sortOptions, products, title = "Searching
 
         <FlexBox alignItems="center" flexWrap="wrap">
           <Paragraph color="text.muted" mr="1rem">
-            Short by:
+            Sort by:
           </Paragraph>
 
           <Box flex="1 1 0" mr="1.75rem" minWidth="150px">
-            <Select placeholder="Short by" defaultValue={sortOptions[0]} options={sortOptions} />
+            <Select
+              placeholder="Sort by"
+              defaultValue={currentSort}
+              value={currentSort}
+              options={sortOptions}
+              onChange={handleSortChange}
+            />
           </Box>
 
           <Paragraph color="text.muted" mr="0.5rem">

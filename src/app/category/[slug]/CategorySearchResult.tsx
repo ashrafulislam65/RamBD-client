@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 import Box from "@component/Box";
 import Card from "@component/Card";
@@ -36,7 +36,7 @@ type Props = {
 
 export default function CategorySearchResult({
     sortOptions,
-    products,
+    products: initialProducts,
     categoryName,
     totalPages,
     totalProducts,
@@ -51,9 +51,51 @@ export default function CategorySearchResult({
     const pathname = usePathname();
     const width = useWindowSize();
     const [view, setView] = useState<"grid" | "list">("grid");
+    const [products, setProducts] = useState(initialProducts);
+    const [currentSort, setCurrentSort] = useState(() =>
+        sortOptions.find(opt => opt.value === searchParams.get("sort")) || sortOptions[0]
+    );
 
     const isTablet = width < 1025;
     const toggleView = useCallback((v: any) => () => setView(v), []);
+
+    const applySort = useCallback((productList: any[], sortOption: any) => {
+        const sorted = [...productList];
+        if (!sortOption) return productList;
+
+        switch (sortOption.value) {
+            case "price-asc":
+                sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+                break;
+            case "price-desc":
+                sorted.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+                break;
+            default:
+                return productList;
+        }
+        return sorted;
+    }, []);
+
+    const handleSortChange = (option: any) => {
+        setCurrentSort(option);
+
+        // Update URL for server-side persistence (optional but good)
+        const params = new URLSearchParams(searchParams);
+        params.set("sort", option.value);
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+
+        // Immediate client-side sort
+        setProducts(applySort(initialProducts, option));
+    };
+
+    useEffect(() => {
+        // Sync with props when navigation/filtering happens
+        const urlSortValue = searchParams.get("sort");
+        const activeSort = sortOptions.find(opt => opt.value === urlSortValue) || currentSort;
+
+        setProducts(applySort(initialProducts, activeSort));
+        setCurrentSort(activeSort);
+    }, [initialProducts, searchParams, sortOptions, applySort]);
 
     return (
         <>
@@ -73,20 +115,16 @@ export default function CategorySearchResult({
 
                 <FlexBox alignItems="center" flexWrap="wrap">
                     <Paragraph color="text.muted" mr="1rem">
-                        Short by:
+                        Sort by:
                     </Paragraph>
 
                     <Box flex="1 1 0" mr="1.75rem" minWidth="150px">
                         <Select
                             instanceId="category-sort-select"
-                            placeholder="Short by"
-                            defaultValue={sortOptions.find(opt => opt.value === searchParams.get("sort")) || sortOptions[0]}
+                            placeholder="Sort by"
+                            value={currentSort}
                             options={sortOptions}
-                            onChange={(option: any) => {
-                                const params = new URLSearchParams(searchParams);
-                                params.set("sort", option.value);
-                                router.push(`${pathname}?${params.toString()}`);
-                            }}
+                            onChange={handleSortChange}
                         />
                     </Box>
 
