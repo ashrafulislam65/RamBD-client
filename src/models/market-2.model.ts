@@ -12,5 +12,5 @@ export interface MainCarouselItem {
 
 export interface CategoryBasedProducts {
   products: Product[];
-  category: { title: string; children: string[] };
+  category: { title: string; slug: string; children: string[] };
 }

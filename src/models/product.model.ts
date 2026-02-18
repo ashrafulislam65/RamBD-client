@@ -26,6 +26,9 @@ interface Product {
   description?: string;
   product_code?: string;
   visitors?: number;
+  on_sale?: boolean;
+  in_stock?: boolean;
+  featured?: boolean;
 }
 
 export default Product;

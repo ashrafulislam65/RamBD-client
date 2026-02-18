@@ -5,11 +5,21 @@ import SearchResult from "../product/search/[slug]/SearchResult";
 export const dynamic = 'force-dynamic';
 
 export default async function LatestProductsPage() {
-    const products = await api.getLatestProducts();
+    const [products, brands, categories] = await Promise.all([
+        api.getLatestProducts(),
+        api.getBrands(),
+        api.getCategories()
+    ]);
 
     return (
         <Box pt="20px">
-            <SearchResult title="Our Latest Product" sortOptions={sortOptions} products={products} />
+            <SearchResult
+                title="Our Latest Product"
+                sortOptions={sortOptions}
+                products={products}
+                brands={brands}
+                categories={categories}
+            />
         </Box>
     );
 }

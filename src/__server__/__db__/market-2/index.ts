@@ -49,7 +49,7 @@ export const market2ApiEndpoints = (Mock: MockAdapter) => {
   // electronics category products
   Mock.onGet("/api/market-2/category-based-product?tag=electronics").reply(async () => {
     try {
-      return [200, { category: db.singleCategory, products: db.products }];
+      return [200, { category: { ...db.singleCategory, slug: "electronic" }, products: db.products }];
     } catch (err) {
       console.error(err);
       return [500, { message: "Internal server error" }];
@@ -63,6 +63,7 @@ export const market2ApiEndpoints = (Mock: MockAdapter) => {
         products: db.products.slice(2),
         category: {
           title: "Men's Fashion",
+          slug: "men-s-fashion",
           children: db.singleCategory.children
         }
       };
@@ -81,6 +82,7 @@ export const market2ApiEndpoints = (Mock: MockAdapter) => {
         products: db.products.slice(3),
         category: {
           title: "Women's Fashion",
+          slug: "women-s-fashion",
           children: db.singleCategory.children
         }
       };

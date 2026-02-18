@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 import Box from "@component/Box";
 import Card from "@component/Card";
@@ -17,7 +18,6 @@ import ProductListView from "@component/products/ProductCard9List";
 import ProductFilterCard from "@component/products/ProductFilterCard";
 import useWindowSize from "@hook/useWindowSize";
 import Product from "@models/product.model";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 // ==============================================================
 type Props = {
@@ -50,52 +50,84 @@ export default function CategorySearchResult({
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const width = useWindowSize();
+
     const [view, setView] = useState<"grid" | "list">("grid");
     const [products, setProducts] = useState(initialProducts);
-    const [currentSort, setCurrentSort] = useState(() =>
-        sortOptions.find(opt => opt.value === searchParams.get("sort")) || sortOptions[0]
-    );
+
+    const currentSortValue = searchParams.get("sort") || sortOptions[0].value;
+    const currentSort = useMemo(() =>
+        sortOptions.find(opt => opt.value === currentSortValue) || sortOptions[0]
+        , [sortOptions, currentSortValue]);
 
     const isTablet = width < 1025;
     const toggleView = useCallback((v: any) => () => setView(v), []);
 
-    const applySort = useCallback((productList: any[], sortOption: any) => {
-        const sorted = [...productList];
-        if (!sortOption) return productList;
-
-        switch (sortOption.value) {
-            case "price-asc":
-                sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
-                break;
-            case "price-desc":
-                sorted.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
-                break;
-            default:
-                return productList;
-        }
-        return sorted;
-    }, []);
-
     const handleSortChange = (option: any) => {
-        setCurrentSort(option);
-
-        // Update URL for server-side persistence (optional but good)
         const params = new URLSearchParams(searchParams);
         params.set("sort", option.value);
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
-
-        // Immediate client-side sort
-        setProducts(applySort(initialProducts, option));
     };
 
     useEffect(() => {
-        // Sync with props when navigation/filtering happens
-        const urlSortValue = searchParams.get("sort");
-        const activeSort = sortOptions.find(opt => opt.value === urlSortValue) || currentSort;
+        let filtered = [...initialProducts];
 
-        setProducts(applySort(initialProducts, activeSort));
-        setCurrentSort(activeSort);
-    }, [initialProducts, searchParams, sortOptions, applySort]);
+        // 1. Filter by Brand (Only if not already filtered by API, but we apply for consistency)
+        const brandIds = searchParams.get("brand_id")?.split(",") || [];
+        if (brandIds.length > 0) {
+            filtered = filtered.filter(p => p.brandId && brandIds.includes(String(p.brandId)));
+        }
+
+        // 2. Filter by Price
+        const minPrice = Number(searchParams.get("min_price"));
+        const maxPrice = Number(searchParams.get("max_price"));
+        if (minPrice) filtered = filtered.filter(p => p.price >= minPrice);
+        if (maxPrice) filtered = filtered.filter(p => p.price <= maxPrice);
+
+        // 3. Filter by Ratings
+        const ratings = searchParams.get("ratings")?.split(",") || [];
+        if (ratings.length > 0) {
+            filtered = filtered.filter(p => ratings.includes(Math.round(p.rating || 5).toString()));
+        }
+
+        // 4. Filter by Availability
+        const onSale = searchParams.get("on_sale") === "true";
+        const inStock = searchParams.get("in_stock") === "true";
+        const featured = searchParams.get("featured") === "true";
+
+        if (onSale) filtered = filtered.filter(p => p.on_sale);
+        if (inStock) filtered = filtered.filter(p => p.in_stock);
+        if (featured) filtered = filtered.filter(p => p.featured);
+
+        // 5. Sort
+        switch (currentSort.value) {
+            case "price-asc":
+                filtered.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+                break;
+            case "price-desc":
+                filtered.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+                break;
+            default:
+                // Keep default or use relevance if available
+                break;
+        }
+
+        setProducts(filtered);
+
+        console.log("--- Category Filter Debug ---");
+        console.log("Total initial products:", initialProducts.length);
+        console.log("Active Filters:", {
+            brandIds,
+            minPrice,
+            maxPrice,
+            ratings,
+            onSale,
+            inStock,
+            featured
+        });
+        console.log("Filtered products found:", filtered.length);
+        console.log("-----------------------------");
+    }, [initialProducts, searchParams, currentSort]);
+
 
     return (
         <>
@@ -174,7 +206,6 @@ export default function CategorySearchResult({
                 <Grid item lg={3} xs={12}>
                     <ProductFilterCard
                         brands={brands}
-                        ratings={[5, 4, 3, 2, 1]}
                         minPriceDefault={minPriceDefault}
                         maxPriceDefault={maxPriceDefault}
                         categories={categories}

@@ -44,7 +44,7 @@ export default function Section6({ data }: Props) {
               ))}
             </List>
 
-            <NavLink href="#">Browse All</NavLink>
+            <NavLink href={`/category/${data.category.slug}`}>Browse All</NavLink>
           </Card>
         </Grid>
 

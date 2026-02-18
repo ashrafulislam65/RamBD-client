@@ -158,7 +158,7 @@ export default function ProductFilterCard({
       <H6 mb="10px">Categories</H6>
 
       {categories.map((item) =>
-        item.child && item.child.length > 0 ? (
+        item.children && item.children.length > 0 ? (
           <Accordion key={item.id || item.slug} expanded={item.slug === pathname.split("/").pop()}>
             <AccordionHeader px="0px" py="6px" color="text.muted">
               <SemiSpan
@@ -172,7 +172,7 @@ export default function ProductFilterCard({
               </SemiSpan>
             </AccordionHeader>
 
-            {render(item.child)}
+            {render(item.children)}
           </Accordion>
         ) : (
           <Paragraph
@@ -231,7 +231,7 @@ export default function ProductFilterCard({
 
       {/* BRANDS FILTER */}
       <H6 mb="16px">Brands</H6>
-      {(brands.length > 0 ? brands : brandList).map((item) => (
+      {brands.map((item) => (
         <CheckBox
           my="10px"
           key={item.id}
@@ -307,19 +307,5 @@ export default function ProductFilterCard({
   );
 }
 
-const categoryList = [
-  { title: "Bath Preparations", child: ["Bubble Bath", "Bath Capsules", "Others"] },
-  { title: "Eye Makeup Preparations" },
-  { title: "Fragrance" },
-  { title: "Hair Preparations" }
-];
-
 const otherOptions = ["On Sale", "In Stock", "Featured"];
-const brandList = [
-  { id: "maccs", name: "Maccs" },
-  { id: "karts", name: "Karts" },
-  { id: "baars", name: "Baars" },
-  { id: "bukks", name: "Bukks" },
-  { id: "luasis", name: "Luasis" }
-];
 const colorList = ["#1C1C1C", "#FF7A7A", "#FFC672", "#84FFB5", "#70F6FF", "#6B7AFF"];

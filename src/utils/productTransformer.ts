@@ -62,7 +62,7 @@ export const transformApiProduct = (apiProduct: any): any => {
 
         thumbnail: imageUrl,
         images: allImages.reverse(), // User mentioned order is flipped
-        rating: 4.5, // Default rating as API doesn't provide this
+        rating: parseFloat(apiProduct.rating) || parseFloat(apiProduct.avg_rating) || 4.5,
         categories: parsedCategory ? [parsedCategory] : [],
         categoryName: parsedCategory,
         reviews: [],
@@ -71,6 +71,9 @@ export const transformApiProduct = (apiProduct: any): any => {
         brandId: apiProduct.brand_id ? String(apiProduct.brand_id) : undefined,
         product_code: parsedCode || apiProduct.pro_code || String(apiProduct.id),
         status: apiProduct.pro_status === 1 ? 'Yes' : 'Out of Stock',
+        in_stock: apiProduct.pro_status === 1 || (apiProduct.total_stock && Number(apiProduct.total_stock) > 0),
+        on_sale: offerStatus,
+        featured: apiProduct.featured === 1 || apiProduct.is_featured === 1,
         visitors: apiProduct.visitors || 0
     };
 };

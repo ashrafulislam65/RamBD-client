@@ -1,6 +1,7 @@
 
 import Box from "@component/Box";
 import SearchResult from "./SearchResult";
+import api from "@utils/__api__/market-2";
 
 interface Product {
   id: string;
@@ -15,7 +16,9 @@ interface Product {
   status?: string;
 }
 
-async function getProducts(slug: string): Promise<Product[]> {
+import { transformApiProduct } from "@utils/productTransformer";
+
+async function getProducts(slug: string): Promise<any[]> {
   try {
     const res = await fetch(`https://admin.unicodeconverter.info/products/searchpro?search=${slug}`, { cache: 'no-store' });
     if (!res.ok) {
@@ -25,19 +28,7 @@ async function getProducts(slug: string): Promise<Product[]> {
 
     // Check if products exists and has data array
     const productData = json.products?.data || [];
-
-    return productData.map((item: any) => ({
-      id: item.id?.toString(),
-      slug: item.pro_slug || '',
-      title: item.pro_title || '',
-      price: Number(item.pro_price || 0),
-      discount: Number(item.pro_discount || 0),
-      thumbnail: item.images && item.images.length > 0 ? `https://admin.unicodeconverter.info/storage/app/public/products/${item.images[0].img_name}` : '/assets/images/products/macbook.png', // Fallback image
-      images: item.images?.map((img: any) => `https://admin.unicodeconverter.info/storage/app/public/products/${img.img_name}`) || [],
-      rating: 4, // Default rating
-      categories: [],
-      status: item.pro_status?.toString()
-    }));
+    return productData.map(transformApiProduct).filter((p: any) => p !== null);
   } catch (error) {
     console.error("Error fetching search results:", error);
     return [];
@@ -45,11 +36,21 @@ async function getProducts(slug: string): Promise<Product[]> {
 }
 
 export default async function ProductSearchResult({ params }: { params: { slug: string } }) {
-  const products = await getProducts(params.slug);
+  const [products, brands, categories] = await Promise.all([
+    getProducts(params.slug),
+    api.getBrands(),
+    api.getCategories()
+  ]);
 
   return (
     <Box pt="20px">
-      <SearchResult sortOptions={sortOptions} products={products} />
+      <SearchResult
+        title="Searching for products"
+        sortOptions={sortOptions}
+        products={products}
+        brands={brands}
+        categories={categories}
+      />
     </Box>
   );
 }

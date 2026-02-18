@@ -5,11 +5,21 @@ import SearchResult from "../product/search/[slug]/SearchResult";
 export const dynamic = 'force-dynamic';
 
 export default async function MostPopularProductsPage() {
-    const products = await api.getMostPopularProducts();
+    const [products, brands, categories] = await Promise.all([
+        api.getMostPopularProducts(),
+        api.getBrands(),
+        api.getCategories()
+    ]);
 
     return (
         <Box pt="20px">
-            <SearchResult title="Most Popular Products" sortOptions={sortOptions} products={products} />
+            <SearchResult
+                title="Most Popular Products"
+                sortOptions={sortOptions}
+                products={products}
+                brands={brands}
+                categories={categories}
+            />
         </Box>
     );
 }

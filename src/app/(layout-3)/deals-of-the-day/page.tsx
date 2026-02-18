@@ -5,18 +5,28 @@ import SearchResult from "../product/search/[slug]/SearchResult";
 export const dynamic = 'force-dynamic';
 
 export default async function DealsOfTheDayPage() {
-    const products = await api.getTopRatedProducts();
+    const [products, brands, categories] = await Promise.all([
+        api.getTopRatedProducts(),
+        api.getBrands(),
+        api.getCategories()
+    ]);
 
     return (
         <Box pt="20px">
-            <SearchResult title="Deals Of The Day" sortOptions={sortOptions} products={products} />
+            <SearchResult
+                title="Deals Of The Day"
+                sortOptions={sortOptions}
+                products={products}
+                brands={brands}
+                categories={categories}
+            />
         </Box>
     );
 }
 
 const sortOptions = [
-    { label: "Relevance", value: "Relevance" },
-    { label: "Date", value: "Date" },
-    { label: "Price Low to High", value: "Price Low to High" },
-    { label: "Price High to Low", value: "Price High to Low" }
+    { label: "Relevance", value: "relevance" },
+    { label: "Date", value: "date" },
+    { label: "Price Low to High", value: "price-asc" },
+    { label: "Price High to Low", value: "price-desc" }
 ];

@@ -15,34 +15,82 @@ import MobileNavigationBar from "@component/mobile-navigation";
 import { Accordion, AccordionHeader } from "@component/accordion";
 // CUSTOM HOOK
 import useWindowSize from "@hook/useWindowSize";
+// API UTILS
+import navbarApi from "@utils/__api__/navbar";
 
 import { MobileCategoryNavStyle } from "./styles";
 import MobileCategoryImageBox from "./MobileCategoryImageBox";
 
-import navigations from "@data/navigations";
-
 // ==============================================================
-interface Suggestion {
-  href: string;
+interface NavItem {
   title: string;
-  imgUrl: string;
+  icon: string;
+  href: string;
+  children?: NavItem[];
 }
 // ==============================================================
 
 export default function MobileCategoryNav() {
   const width = useWindowSize();
-  const [category, setCategory] = useState<any>(navigations[0]);
-  const [suggestedList, setSuggestedList] = useState<Suggestion[]>([]);
-  const [subCategoryList, setSubCategoryList] = useState<any[]>([]);
+  const [category, setCategory] = useState<NavItem | null>(null);
+  const [navList, setNavList] = useState<NavItem[]>([]);
+  const [subCategoryList, setSubCategoryList] = useState<NavItem[]>([]);
 
-  const handleCategoryClick = (cat: any) => () => {
-    let menuData = cat.menuData;
-    if (menuData) setSubCategoryList(menuData.categories || menuData);
-    else setSubCategoryList([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await navbarApi.getNavbarServices();
+        if (!data || !data.menu) return;
+
+        const filteredMenus = data.menu.filter((m: any) => Number(m.checked) === 1);
+        const sortedMenus = filteredMenus.sort((a: any, b: any) => Number(a.menu_order) - Number(b.menu_order));
+
+        const childMap: Record<string | number, any[]> = {};
+        if (Array.isArray(data.subCategory)) {
+          data.subCategory.forEach((sub: any) => {
+            if (sub.parent_id) {
+              if (!childMap[sub.parent_id]) childMap[sub.parent_id] = [];
+              childMap[sub.parent_id].push(sub);
+            }
+          });
+        }
+
+        const mapSubCategories = (subs?: any[]): NavItem[] | undefined => {
+          return subs?.map(sub => {
+            const children = sub.sub_categories || sub.category_sub_categories || sub.children || childMap[sub.id];
+            return {
+              title: sub.cate_name,
+              href: `/category/${sub.cate_slug}`,
+              icon: "dot", // Mobile icons for subcats are usually dots or similar
+              children: mapSubCategories(children)
+            };
+          });
+        };
+
+        const mappedNavs: NavItem[] = sortedMenus.map((m: any) => ({
+          title: m.category.cate_name,
+          href: `/category/${m.category.cate_slug}`,
+          icon: m.category.cate_icon || "dress", // Use dress as default if missing
+          children: mapSubCategories(m.category.sub_categories || m.category.category_sub_categories || m.category.children || childMap[m.category.id])
+        }));
+
+        setNavList(mappedNavs);
+        if (mappedNavs.length > 0) {
+          setCategory(mappedNavs[0]);
+          setSubCategoryList(mappedNavs[0].children || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch mobile nav categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleCategoryClick = (cat: NavItem) => () => {
+    setSubCategoryList(cat.children || []);
     setCategory(cat);
   };
-
-  useEffect(() => setSuggestedList(suggestion), []);
 
   // HIDDEN IN LARGE DEVICE
   if (width > 900) return null;
@@ -53,12 +101,11 @@ export default function MobileCategoryNav() {
 
       <div className="main-category-holder">
         <Scrollbar>
-          {navigations.map((item) => (
+          {navList.map((item) => (
             <div
               key={item.title}
               className={clsx({ "main-category-box": true, active: category?.href === item.href })}
               onClick={handleCategoryClick(item)}
-              // borderLeft={`${category?.href === item.href ? "3" : "0"}px solid`}
             >
               <Icon size="28px" mb="0.5rem">
                 {item.icon}
@@ -74,105 +121,48 @@ export default function MobileCategoryNav() {
 
       <div className="container">
         <Typography fontWeight="600" fontSize="15px" mb="1rem">
-          Recommended Categories
+          {category?.title || "Categories"}
         </Typography>
 
         <Box mb="2rem">
           <Grid container spacing={3}>
-            {suggestedList.map((item, ind) => (
+            {subCategoryList.filter(sub => !sub.children || sub.children.length === 0).map((item, ind) => (
               <Grid item lg={1} md={2} sm={3} xs={4} key={ind}>
-                <Link href="/product/search/423423">
-                  <MobileCategoryImageBox {...item} />
+                <Link href={item.href}>
+                  <MobileCategoryImageBox title={item.title} imgUrl="/assets/images/products/categories/default.png" />
                 </Link>
               </Grid>
             ))}
           </Grid>
         </Box>
 
-        {category?.menuComponent === "MegaMenu1" ? (
-          subCategoryList.map((item, ind) => (
-            <Fragment key={ind}>
-              <Divider />
-              <Accordion>
-                <AccordionHeader px="0px" py="10px">
-                  <Typography fontWeight="600" fontSize="15px">
-                    {item.title}
-                  </Typography>
-                </AccordionHeader>
+        {subCategoryList.filter(sub => sub.children && sub.children.length > 0).map((item, ind) => (
+          <Fragment key={ind}>
+            <Divider />
+            <Accordion expanded={true}>
+              <AccordionHeader px="0px" py="10px">
+                <Typography fontWeight="600" fontSize="15px">
+                  {item.title}
+                </Typography>
+              </AccordionHeader>
 
-                <Box mb="2rem" mt="0.5rem">
-                  <Grid container spacing={3}>
-                    {item.subCategories?.map((item: any, ind: number) => (
-                      <Grid item lg={1} md={2} sm={3} xs={4} key={ind}>
-                        <Link href="/product/search/423423">
-                          <MobileCategoryImageBox {...item} />
-                        </Link>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Box>
-              </Accordion>
-            </Fragment>
-          ))
-        ) : (
-          <Box mb="2rem">
-            <Grid container spacing={3}>
-              {subCategoryList.map((item, ind) => (
-                <Grid item lg={1} md={2} sm={3} xs={4} key={ind}>
-                  <Link href="/product/search/423423">
-                    <MobileCategoryImageBox {...item} />
-                  </Link>
+              <Box mb="2rem" mt="0.5rem">
+                <Grid container spacing={3}>
+                  {item.children?.map((subItem: any, subInd: number) => (
+                    <Grid item lg={1} md={2} sm={3} xs={4} key={subInd}>
+                      <Link href={subItem.href}>
+                        <MobileCategoryImageBox title={subItem.title} imgUrl="/assets/images/products/categories/default.png" />
+                      </Link>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
-          </Box>
-        )}
+              </Box>
+            </Accordion>
+          </Fragment>
+        ))}
       </div>
 
       <MobileNavigationBar />
     </MobileCategoryNavStyle>
   );
 }
-
-const suggestion = [
-  {
-    title: "Belt",
-    href: "/belt",
-    imgUrl: "/assets/images/products/categories/belt.png"
-  },
-  {
-    title: "Hat",
-    href: "/Hat",
-    imgUrl: "/assets/images/products/categories/hat.png"
-  },
-  {
-    title: "Watches",
-    href: "/Watches",
-    imgUrl: "/assets/images/products/categories/watch.png"
-  },
-  {
-    title: "Sunglasses",
-    href: "/Sunglasses",
-    imgUrl: "/assets/images/products/categories/sunglass.png"
-  },
-  {
-    title: "Sneakers",
-    href: "/Sneakers",
-    imgUrl: "/assets/images/products/categories/sneaker.png"
-  },
-  {
-    title: "Sandals",
-    href: "/Sandals",
-    imgUrl: "/assets/images/products/categories/sandal.png"
-  },
-  {
-    title: "Formal",
-    href: "/Formal",
-    imgUrl: "/assets/images/products/categories/shirt.png"
-  },
-  {
-    title: "Casual",
-    href: "/Casual",
-    imgUrl: "/assets/images/products/categories/t-shirt.png"
-  }
-];

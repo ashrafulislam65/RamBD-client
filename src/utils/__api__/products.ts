@@ -15,7 +15,7 @@ const getSlugs = async (): Promise<{ slug: string }[]> => {
 const getProduct = async (slug: string, categorySlug?: string): Promise<Product> => {
   try {
     // 1. Try to find in real product lists first
-    const probes = [
+    const probes: Promise<Product[]>[] = [
       market2Api.getLatestProducts(),
       market2Api.getMostPopularProducts(),
       market2Api.getTopRatedProducts()
@@ -24,7 +24,8 @@ const getProduct = async (slug: string, categorySlug?: string): Promise<Product>
     // If category is provided, probe that too
     if (categorySlug) {
       console.log(`Probing specific category list: ${categorySlug}`);
-      probes.push(categoryProductApi.getProductsByCategory(categorySlug));
+      const catRes = await categoryProductApi.getProductsByCategory(categorySlug);
+      probes.push(Promise.resolve(catRes.products));
     }
 
     const results = await Promise.all(probes);
@@ -54,7 +55,8 @@ const getFrequentlyBought = async (): Promise<Product[]> => {
 
 const getRelatedProducts = async (categorySlug?: string): Promise<Product[]> => {
   if (categorySlug) {
-    return categoryProductApi.getProductsByCategory(categorySlug);
+    const res = await categoryProductApi.getProductsByCategory(categorySlug);
+    return res.products;
   }
   return market2Api.getLatestProducts();
 };

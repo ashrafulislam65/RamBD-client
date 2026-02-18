@@ -5,7 +5,7 @@ import Rating from "../rating";
 import Icon from "../icon/Icon";
 import FlexBox from "../FlexBox";
 import { Button } from "../buttons";
-import { getTheme } from "@utils/utils";
+import { getTheme, currency } from "@utils/utils";
 
 // STYLED COMPONENT
 const Wrapper = styled.div`
