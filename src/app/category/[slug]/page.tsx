@@ -22,6 +22,9 @@ type Props = {
         max_price?: string;
         page?: string;
         sort?: string;
+        in_stock?: string;
+        on_sale?: string;
+        featured?: string;
     }>;
 };
 // ==============================================================
@@ -44,6 +47,11 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
     // Fetch real categories for sidebar
     const categories = await market2Api.getCategories();
 
+    // Calculate min/max price from products if not provided
+    const productPrices = products.map(p => p.price).filter(p => p > 0);
+    const minPriceDynamic = productPrices.length > 0 ? Math.min(...productPrices) : 0;
+    const maxPriceDynamic = productPrices.length > 0 ? Math.max(...productPrices) : 20000;
+
     return (
         <Box pt="0px">
             <CategorySearchResult
@@ -53,8 +61,8 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
                 totalPages={totalPages}
                 totalProducts={totalProducts}
                 currentPage={pageNumber}
-                minPriceDefault={0}
-                maxPriceDefault={20000}
+                minPriceDefault={minPriceDynamic}
+                maxPriceDefault={maxPriceDynamic}
                 categories={categories}
             />
         </Box>

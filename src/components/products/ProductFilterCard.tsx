@@ -59,8 +59,13 @@ export default function ProductFilterCard({
   const [maxPrice, setMaxPrice] = useState(searchParams.get("max_price") || maxPriceDefault.toString());
 
   useEffect(() => {
-    setMinPrice(searchParams.get("min_price") || minPriceDefault.toString());
-    setMaxPrice(searchParams.get("max_price") || maxPriceDefault.toString());
+    // Only update state if no specific search param is set OR if the defaults change
+    // This ensures that when the page first loads and products arrive, the fields update.
+    const urlMin = searchParams.get("min_price");
+    const urlMax = searchParams.get("max_price");
+
+    setMinPrice(urlMin ?? minPriceDefault.toString());
+    setMaxPrice(urlMax ?? maxPriceDefault.toString());
   }, [searchParams, minPriceDefault, maxPriceDefault]);
 
   const handlePriceChange = (values: number | number[]) => {
