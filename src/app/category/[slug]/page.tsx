@@ -16,14 +16,28 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 // ==============================================================
 type Props = {
     params: Promise<{ slug: string }>;
-    searchParams: Promise<{ min_price?: string; max_price?: string }>;
+    searchParams: Promise<{
+        min_price?: string;
+        max_price?: string;
+        page?: string;
+        sort?: string;
+    }>;
 };
 // ==============================================================
 
 export default async function CategoryProductPage({ params, searchParams }: Props) {
     const { slug } = await params;
-    const { min_price, max_price } = await searchParams;
-    const products = await categoryProductApi.getProductsByCategory(slug, min_price, max_price);
+    const sParams = await searchParams;
+    const pageNumber = sParams.page ? Number(sParams.page) : 1;
+    const { sort, min_price, max_price } = sParams;
+
+    const { products, totalPages, totalProducts } = await categoryProductApi.getProductsByCategory(
+        slug,
+        min_price,
+        max_price,
+        pageNumber,
+        sort
+    );
 
     return (
         <Box pt="0px">
@@ -31,14 +45,17 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
                 sortOptions={sortOptions}
                 products={products}
                 categoryName={slug}
+                totalPages={totalPages}
+                totalProducts={totalProducts}
+                currentPage={pageNumber}
+                minPriceDefault={0} // Ideally fetch from API
+                maxPriceDefault={20000} // Ideally fetch from API
             />
         </Box>
     );
 }
 
 const sortOptions = [
-    { label: "Relevance", value: "Relevance" },
-    { label: "Date", value: "Date" },
-    { label: "Price Low to High", value: "Price Low to High" },
-    { label: "Price High to Low", value: "Price High to Low" }
+    { label: "Price Low to High", value: "price-asc" },
+    { label: "Price High to Low", value: "price-desc" }
 ];

@@ -6,12 +6,16 @@ import { transformApiProduct } from "@utils/productTransformer";
 const getProductsByCategory = async (
     slug: string,
     minPrice?: string | string[],
-    maxPrice?: string | string[]
-): Promise<Product[]> => {
+    maxPrice?: string | string[],
+    page: number = 1,
+    sort?: string
+): Promise<{ products: Product[]; totalPages: number; totalProducts: number }> => {
     try {
         const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info";
         const categoryUrl = process.env.NEXT_PUBLIC_CATEGORY_ITEMS_URL || `${apiBaseUrl}/product/product-category-items`;
-        let url = `${categoryUrl}/${slug}?page=1&limit=20`;
+        let url = `${categoryUrl}/${slug}?page=${page}&limit=16`;
+
+        if (sort) url += `&sort=${sort}`;
 
         if (minPrice) url += `&min_price=${minPrice}`;
         if (maxPrice) url += `&max_price=${maxPrice}`;
@@ -21,7 +25,7 @@ const getProductsByCategory = async (
 
         if (!response.ok) {
             console.error(`API response error: ${response.status}`);
-            return [];
+            return { products: [], totalPages: 1, totalProducts: 0 };
         }
 
         const data = await response.json();
@@ -29,7 +33,7 @@ const getProductsByCategory = async (
         // Initial check to see if response data exists
         if (!data || !data.products || !data.products.data) {
             console.warn("No data found for category:", slug, data);
-            return [];
+            return { products: [], totalPages: 1, totalProducts: 0 };
         }
         console.log(`Found ${data.products.data.length} products`);
 
@@ -58,13 +62,17 @@ const getProductsByCategory = async (
             return transformed;
         }).filter((p: any) => p !== null);
 
-        return products;
+        return {
+            products,
+            totalPages: data.products.last_page || 1,
+            totalProducts: data.products.total || products.length
+        };
     } catch (error: any) {
         console.error("Failed to fetch products by category.");
         console.error("URL:", `${process.env.NEXT_PUBLIC_CATEGORY_ITEMS_URL}/${slug}`);
         console.error("Error details:", error);
         if (error.cause) console.error("Error cause:", error.cause);
-        return [];
+        return { products: [], totalPages: 1, totalProducts: 0 };
     }
 };
 

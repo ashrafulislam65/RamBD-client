@@ -13,6 +13,7 @@ export interface PaginationProps extends SpaceProps {
   pageRangeDisplayed?: number;
   marginPagesDisplayed?: number;
   onChange?: (data: number) => void;
+  forcePage?: number;
 }
 // ==============================================================
 
@@ -21,6 +22,7 @@ export default function Pagination({
   pageCount,
   pageRangeDisplayed,
   marginPagesDisplayed,
+  forcePage,
   ...props
 }: PaginationProps) {
   const handlePageChange = async (page: any) => {
@@ -74,7 +76,7 @@ export default function Pagination({
         onPageChange={handlePageChange}
         pageRangeDisplayed={pageRangeDisplayed}
         marginPagesDisplayed={marginPagesDisplayed}
-        // subContainerClassName="pages pagination"
+        forcePage={forcePage}
       />
     </StyledPagination>
   );

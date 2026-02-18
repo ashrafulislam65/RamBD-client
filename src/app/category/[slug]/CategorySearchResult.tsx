@@ -17,16 +17,34 @@ import ProductListView from "@component/products/ProductCard9List";
 import ProductFilterCard from "@component/products/ProductFilterCard";
 import useWindowSize from "@hook/useWindowSize";
 import Product from "@models/product.model";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 // ==============================================================
 type Props = {
     sortOptions: { label: string; value: string }[];
     products: Product[];
     categoryName?: string;
+    totalPages: number;
+    totalProducts: number;
+    currentPage: number;
+    minPriceDefault?: number;
+    maxPriceDefault?: number;
 };
 // ==============================================================
 
-export default function CategorySearchResult({ sortOptions, products, categoryName }: Props) {
+export default function CategorySearchResult({
+    sortOptions,
+    products,
+    categoryName,
+    totalPages,
+    totalProducts,
+    currentPage,
+    minPriceDefault,
+    maxPriceDefault
+}: Props) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
     const width = useWindowSize();
     const [view, setView] = useState<"grid" | "list">("grid");
 
@@ -46,7 +64,7 @@ export default function CategorySearchResult({ sortOptions, products, categoryNa
                 justifyContent="space-between">
                 <div>
                     <H5>Searching for “ {categoryName || "Category"} ”</H5>
-                    <Paragraph color="text.muted">{products.length} results found</Paragraph>
+                    <Paragraph color="text.muted">{totalProducts} results found</Paragraph>
                 </div>
 
                 <FlexBox alignItems="center" flexWrap="wrap">
@@ -58,8 +76,13 @@ export default function CategorySearchResult({ sortOptions, products, categoryNa
                         <Select
                             instanceId="category-sort-select"
                             placeholder="Short by"
-                            defaultValue={sortOptions[0]}
+                            defaultValue={sortOptions.find(opt => opt.value === searchParams.get("sort")) || sortOptions[0]}
                             options={sortOptions}
+                            onChange={(option: any) => {
+                                const params = new URLSearchParams(searchParams);
+                                params.set("sort", option.value);
+                                router.push(`${pathname}?${params.toString()}`);
+                            }}
                         />
                     </Box>
 
@@ -100,16 +123,31 @@ export default function CategorySearchResult({ sortOptions, products, categoryNa
                 </FlexBox>
             </FlexBox>
 
-            <Grid container spacing={0.5}>
+            <Grid container spacing={3}>
                 <Grid item lg={3} xs={12}>
-                    <ProductFilterCard />
+                    <ProductFilterCard
+                        brands={Array.from(new Set(products.map(p => p.brand).filter(Boolean)))}
+                        ratings={[5, 4, 3, 2, 1]}
+                        minPriceDefault={minPriceDefault}
+                        maxPriceDefault={maxPriceDefault}
+                    />
                 </Grid>
 
                 <Grid item lg={9} xs={12}>
                     {view === "grid" ? (
-                        <ProductGridView products={products} categorySlug={categoryName} />
+                        <ProductGridView
+                            products={products}
+                            categorySlug={categoryName}
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                        />
                     ) : (
-                        <ProductListView products={products} categorySlug={categoryName} />
+                        <ProductListView
+                            products={products}
+                            categorySlug={categoryName}
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                        />
                     )}
                 </Grid>
             </Grid>
