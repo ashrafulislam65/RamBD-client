@@ -29,6 +29,7 @@ type Props = {
     currentPage: number;
     minPriceDefault?: number;
     maxPriceDefault?: number;
+    categories: any[];
 };
 // ==============================================================
 
@@ -40,7 +41,8 @@ export default function CategorySearchResult({
     totalProducts,
     currentPage,
     minPriceDefault,
-    maxPriceDefault
+    maxPriceDefault,
+    categories
 }: Props) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -130,6 +132,7 @@ export default function CategorySearchResult({
                         ratings={[5, 4, 3, 2, 1]}
                         minPriceDefault={minPriceDefault}
                         maxPriceDefault={maxPriceDefault}
+                        categories={categories}
                     />
                 </Grid>
 

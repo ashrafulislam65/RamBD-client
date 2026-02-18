@@ -119,16 +119,32 @@ export default function ProductFilterCard({
   const selectedBrands = searchParams.get("brands")?.split(",") || [];
   const selectedRatings = searchParams.get("ratings")?.split(",") || [];
 
-  const render = (items: string[]) =>
-    items.map((name) => (
+  const handleAvailabilityChange = (key: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (params.get(key) === "true") {
+      params.delete(key);
+    } else {
+      params.set(key, "true");
+    }
+    params.set("page", "1");
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleCategoryChange = (slug: string) => {
+    router.push(`/category/${slug}`);
+  };
+
+  const render = (items: any[]) =>
+    items.map((item) => (
       <Paragraph
         py="6px"
         pl="22px"
-        key={name}
+        key={item.id || item.slug}
         fontSize="14px"
         color="text.muted"
-        className="cursor-pointer">
-        {name}
+        className="cursor-pointer"
+        onClick={() => handleCategoryChange(item.slug)}>
+        {item.name || item.title}
       </Paragraph>
     ));
 
@@ -136,12 +152,18 @@ export default function ProductFilterCard({
     <Card p="18px 27px" elevation={5} borderRadius={8}>
       <H6 mb="10px">Categories</H6>
 
-      {(categories.length > 0 ? categories : categoryList).map((item) =>
-        item.child ? (
-          <Accordion key={item.title} expanded>
+      {categories.map((item) =>
+        item.child && item.child.length > 0 ? (
+          <Accordion key={item.id || item.slug} expanded={item.slug === pathname.split("/").pop()}>
             <AccordionHeader px="0px" py="6px" color="text.muted">
-              <SemiSpan className="cursor-pointer" mr="9px">
-                {item.title}
+              <SemiSpan
+                className="cursor-pointer"
+                mr="9px"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCategoryChange(item.slug);
+                }}>
+                {item.name || item.title}
               </SemiSpan>
             </AccordionHeader>
 
@@ -151,10 +173,11 @@ export default function ProductFilterCard({
           <Paragraph
             py="6px"
             fontSize="14px"
-            key={item.title}
-            color="text.muted"
-            className="cursor-pointer">
-            {item.title}
+            key={item.id || item.slug}
+            color={pathname.includes(item.slug) ? "primary.main" : "text.muted"}
+            className="cursor-pointer"
+            onClick={() => handleCategoryChange(item.slug)}>
+            {item.name || item.title}
           </Paragraph>
         )
       )}
@@ -218,18 +241,37 @@ export default function ProductFilterCard({
 
       <Divider my="24px" />
 
+      <Divider my="24px" />
+
       {/* STOCK AND SALES FILTERS */}
-      {otherOptions.map((item) => (
-        <CheckBox
-          my="10px"
-          key={item}
-          name={item}
-          value={item}
-          color="secondary"
-          label={<SemiSpan color="inherit">{item}</SemiSpan>}
-          onChange={(e) => console.log(e.target.value, e.target.checked)}
-        />
-      ))}
+      <H6 mb="16px">Availability</H6>
+      <CheckBox
+        my="10px"
+        name="on_sale"
+        value="on_sale"
+        color="secondary"
+        checked={searchParams.get("on_sale") === "true"}
+        label={<SemiSpan color="inherit">On Sale</SemiSpan>}
+        onChange={() => handleAvailabilityChange("on_sale")}
+      />
+      <CheckBox
+        my="10px"
+        name="in_stock"
+        value="in_stock"
+        color="secondary"
+        checked={searchParams.get("in_stock") === "true"}
+        label={<SemiSpan color="inherit">In Stock</SemiSpan>}
+        onChange={() => handleAvailabilityChange("in_stock")}
+      />
+      <CheckBox
+        my="10px"
+        name="featured"
+        value="featured"
+        color="secondary"
+        checked={searchParams.get("featured") === "true"}
+        label={<SemiSpan color="inherit">Featured</SemiSpan>}
+        onChange={() => handleAvailabilityChange("featured")}
+      />
 
       <Divider my="24px" />
 

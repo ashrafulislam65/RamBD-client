@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Box from "@component/Box";
 import CategorySearchResult from "./CategorySearchResult";
 import categoryProductApi from "@utils/__api__/category-products";
+import market2Api from "@utils/__api__/market-2";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -29,8 +30,9 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
     const { slug } = await params;
     const sParams = await searchParams;
     const pageNumber = sParams.page ? Number(sParams.page) : 1;
-    const { sort, min_price, max_price } = sParams;
+    const { sort, min_price, max_price, in_stock, on_sale, featured } = sParams;
 
+    // Fetch products based on filters
     const { products, totalPages, totalProducts } = await categoryProductApi.getProductsByCategory(
         slug,
         min_price,
@@ -38,6 +40,9 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
         pageNumber,
         sort
     );
+
+    // Fetch real categories for sidebar
+    const categories = await market2Api.getCategories();
 
     return (
         <Box pt="0px">
@@ -48,8 +53,9 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
                 totalPages={totalPages}
                 totalProducts={totalProducts}
                 currentPage={pageNumber}
-                minPriceDefault={0} // Ideally fetch from API
-                maxPriceDefault={20000} // Ideally fetch from API
+                minPriceDefault={0}
+                maxPriceDefault={20000}
+                categories={categories}
             />
         </Box>
     );
