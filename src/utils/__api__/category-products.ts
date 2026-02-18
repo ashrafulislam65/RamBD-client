@@ -8,7 +8,8 @@ const getProductsByCategory = async (
     minPrice?: string | string[],
     maxPrice?: string | string[],
     page: number = 1,
-    sort?: string
+    sort?: string,
+    brand_id?: string
 ): Promise<{ products: Product[]; totalPages: number; totalProducts: number }> => {
     try {
         const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info";
@@ -19,6 +20,7 @@ const getProductsByCategory = async (
 
         if (minPrice) url += `&min_price=${minPrice}`;
         if (maxPrice) url += `&max_price=${maxPrice}`;
+        if (brand_id) url += `&brand_id=${brand_id}`;
 
         console.log(`Fetching products: ${url}`);
         const response = await fetch(url, { next: { revalidate: 3600 } });

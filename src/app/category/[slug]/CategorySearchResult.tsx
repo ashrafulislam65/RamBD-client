@@ -30,6 +30,7 @@ type Props = {
     minPriceDefault?: number;
     maxPriceDefault?: number;
     categories: any[];
+    brands: { id: string; name: string }[];
 };
 // ==============================================================
 
@@ -42,7 +43,8 @@ export default function CategorySearchResult({
     currentPage,
     minPriceDefault,
     maxPriceDefault,
-    categories
+    categories,
+    brands
 }: Props) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -119,7 +121,12 @@ export default function CategorySearchResult({
                                     <Icon>options</Icon>
                                 </IconButton>
                             }>
-                            <ProductFilterCard />
+                            <ProductFilterCard
+                                brands={brands}
+                                categories={categories}
+                                minPriceDefault={minPriceDefault}
+                                maxPriceDefault={maxPriceDefault}
+                            />
                         </Sidenav>
                     )}
                 </FlexBox>
@@ -128,7 +135,7 @@ export default function CategorySearchResult({
             <Grid container spacing={3}>
                 <Grid item lg={3} xs={12}>
                     <ProductFilterCard
-                        brands={Array.from(new Set(products.map(p => p.brand).filter(Boolean)))}
+                        brands={brands}
                         ratings={[5, 4, 3, 2, 1]}
                         minPriceDefault={minPriceDefault}
                         maxPriceDefault={maxPriceDefault}

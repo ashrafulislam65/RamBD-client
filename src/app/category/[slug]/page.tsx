@@ -25,6 +25,7 @@ type Props = {
         in_stock?: string;
         on_sale?: string;
         featured?: string;
+        brand_id?: string;
     }>;
 };
 // ==============================================================
@@ -33,7 +34,7 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
     const { slug } = await params;
     const sParams = await searchParams;
     const pageNumber = sParams.page ? Number(sParams.page) : 1;
-    const { sort, min_price, max_price, in_stock, on_sale, featured } = sParams;
+    const { sort, min_price, max_price, in_stock, on_sale, featured, brand_id: brandIds } = sParams;
 
     // Fetch products based on filters
     const { products, totalPages, totalProducts } = await categoryProductApi.getProductsByCategory(
@@ -41,11 +42,15 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
         min_price,
         max_price,
         pageNumber,
-        sort
+        sort,
+        brandIds
     );
 
-    // Fetch real categories for sidebar
-    const categories = await market2Api.getCategories();
+    // Fetch real categories and brands for sidebar
+    const [categories, allBrands] = await Promise.all([
+        market2Api.getCategories(),
+        market2Api.getBrands()
+    ]);
 
     // Calculate min/max price from products if not provided
     const productPrices = products.map(p => p.price).filter(p => p > 0);
@@ -64,6 +69,7 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
                 minPriceDefault={minPriceDynamic}
                 maxPriceDefault={maxPriceDynamic}
                 categories={categories}
+                brands={allBrands}
             />
         </Box>
     );

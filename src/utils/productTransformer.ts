@@ -68,6 +68,7 @@ export const transformApiProduct = (apiProduct: any): any => {
         reviews: [],
         description: description,
         brand: parsedBrand || 'Felna Tech',
+        brandId: apiProduct.brand_id ? String(apiProduct.brand_id) : undefined,
         product_code: parsedCode || apiProduct.pro_code || String(apiProduct.id),
         status: apiProduct.pro_status === 1 ? 'Yes' : 'Out of Stock',
         visitors: apiProduct.visitors || 0

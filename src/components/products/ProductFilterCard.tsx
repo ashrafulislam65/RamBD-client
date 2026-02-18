@@ -38,7 +38,7 @@ const StyledSlider = styled(Slider)`
 
 type Props = {
   categories?: any[];
-  brands?: string[];
+  brands?: { id: string, name: string }[];
   ratings?: number[];
   minPriceDefault?: number;
   maxPriceDefault?: number;
@@ -99,14 +99,14 @@ export default function ProductFilterCard({
   };
 
   const handleBrandChange = (brand: string) => {
-    const currentBrands = searchParams.get("brands")?.split(",") || [];
+    const currentBrands = searchParams.get("brand_id")?.split(",") || [];
     let updated;
     if (currentBrands.includes(brand)) {
       updated = currentBrands.filter(b => b !== brand);
     } else {
       updated = [...currentBrands, brand];
     }
-    updateParam("brands", updated.join(",") || null);
+    updateParam("brand_id", updated.join(",") || null);
   };
 
   const handleRatingChange = (rating: number) => {
@@ -121,7 +121,7 @@ export default function ProductFilterCard({
     updateParam("ratings", updated.join(",") || null);
   };
 
-  const selectedBrands = searchParams.get("brands")?.split(",") || [];
+  const selectedBrands = searchParams.get("brand_id")?.split(",") || [];
   const selectedRatings = searchParams.get("ratings")?.split(",") || [];
 
   const handleAvailabilityChange = (key: string) => {
@@ -234,13 +234,13 @@ export default function ProductFilterCard({
       {(brands.length > 0 ? brands : brandList).map((item) => (
         <CheckBox
           my="10px"
-          key={item}
-          name={item}
-          value={item}
+          key={item.id}
+          name={item.name}
+          value={item.id}
           color="secondary"
-          checked={selectedBrands.includes(item)}
-          label={<SemiSpan color="inherit">{item}</SemiSpan>}
-          onChange={() => handleBrandChange(item)}
+          checked={selectedBrands.includes(item.id)}
+          label={<SemiSpan color="inherit">{item.name}</SemiSpan>}
+          onChange={() => handleBrandChange(item.id)}
         />
       ))}
 
@@ -315,5 +315,11 @@ const categoryList = [
 ];
 
 const otherOptions = ["On Sale", "In Stock", "Featured"];
-const brandList = ["Maccs", "Karts", "Baars", "Bukks", "Luasis"];
+const brandList = [
+  { id: "maccs", name: "Maccs" },
+  { id: "karts", name: "Karts" },
+  { id: "baars", name: "Baars" },
+  { id: "bukks", name: "Bukks" },
+  { id: "luasis", name: "Luasis" }
+];
 const colorList = ["#1C1C1C", "#FF7A7A", "#FFC672", "#84FFB5", "#70F6FF", "#6B7AFF"];
