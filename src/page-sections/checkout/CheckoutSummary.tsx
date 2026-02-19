@@ -266,12 +266,12 @@ export default function CheckoutSummary({ formik }: { formik: any }) {
           label={
             <Typography
               fontSize="13px"
-              color="text.hint"
+              color="#000000"
               sx={{ cursor: "pointer", userSelect: "none", fontWeight: 600, display: "block" }}>
               I have read and agree to the{" "}
-              <span style={{ color: "#2ba56d", textDecoration: "underline" }}>terms and conditions</span>,{" "}
-              <span style={{ color: "#2ba56d", textDecoration: "underline" }}>privacy policy</span> &{" "}
-              <span style={{ color: "#2ba56d", textDecoration: "underline" }}>refund policy</span>
+              <span style={{ color: "#000000", textDecoration: "underline" }}>terms and conditions</span>,{" "}
+              <span style={{ color: "#000000", textDecoration: "underline" }}>privacy policy</span> &{" "}
+              <span style={{ color: "#000000", textDecoration: "underline" }}>refund policy</span>
             </Typography>
           }
         />

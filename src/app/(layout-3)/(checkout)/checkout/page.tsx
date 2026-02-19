@@ -7,7 +7,9 @@ import { Formik } from "formik";
 import Box from "@component/Box";
 import Grid from "@component/grid/Grid";
 import Modal from "@component/Modal";
+import FlexBox from "@component/FlexBox";
 import { Button } from "@component/buttons";
+import Icon from "@component/icon/Icon";
 import TextField from "@component/text-field";
 import Typography, { Span } from "@component/Typography";
 // PAGE SECTION COMPONENTS
@@ -228,10 +230,29 @@ export default function Checkout() {
 
   return (
     <Box mb="2rem">
+      <FlexBox alignItems="center" mb="1.5rem" mt="1rem">
+        <Button
+          color="primary"
+          variant="outlined"
+          px="20px"
+          mr="1rem"
+          onClick={() => router.back()}
+          style={{ height: "40px", fontWeight: 700 }}
+        >
+          <Icon variant="small" mr="8px">
+            arrow-left
+          </Icon>
+          Go Back
+        </Button>
+
+        <Box>
+          <Typography fontSize="14px" color="text.muted" mb="0.5rem">
+            <Span color="primary.main">🏠</Span> / Checkout
+          </Typography>
+        </Box>
+      </FlexBox>
+
       <Box mb="2rem">
-        <Typography fontSize="14px" color="text.muted" mb="0.5rem">
-          <Span color="primary.main">🏠</Span> / Checkout
-        </Typography>
         <Typography fontSize="28px" fontWeight="700" mb="0.5rem">
           Complete Checkout Process
         </Typography>

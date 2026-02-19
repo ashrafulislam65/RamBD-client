@@ -1,57 +1,51 @@
-# cPanel Deployment Guide (Standalone Mode)
+# How to Deploy to cPanel (Standalone Mode)
 
-এই প্রোজেক্টটি **Next.js Standalone Mode** ব্যবহার করে Deploy করার জন্য প্রস্তুত করা হয়েছে। এটি cPanel এর মতো Shared Hosting-এ মেমোরি সমস্যা (RAM Limit) এড়াতে সাহায্য করে।
+This guide explains how to deploy your Next.js application to cPanel using the optimized **Standalone Mode**.
 
-## ধাপ ১: বিল্ড (Build) তৈরি করা
-আপনার লোকাল কম্পিউটারে টার্মিনাল ওপেন করুন এবং নিচের কমান্ডটি রান করুন:
+## Prerequisites
+- **Node.js**: Ensure cPanel has Node.js (recommended version 18 or 20).
+- **Domain/Subdomain**: Have your domain or subdomain ready in cPanel.
 
+## Step 1: Prepare Files Locally
+Make sure you have run the build command:
 ```bash
 npm run build
 ```
 
-এটি সফলভাবে শেষ হলে `.next/standalone` নামে একটি ফোল্ডার তৈরি হবে।
+## Step 2: Files to Upload
+Upload the following files and folders from your project root to your cPanel application root (usually `public_html` or a subdirectory):
 
-## ধাপ ২: ফাইল প্রস্তুত করা (Preparation)
-cPanel এ আপলোড করার জন্য একটি নতুন ফোল্ডার তৈরি করুন (যেমন: `deploy-ready`) এবং সেখানে নিচের ফাইলগুলো কপি করুন:
+1.  **`.next/`** folder (specifically `.next/standalone` and `.next/static`)
+2.  **`public/`** folder
+3.  **`server.js`** (Root file)
+4.  **`.htaccess`** (Root file)
+5.  **`package.json`** (Root file)
+6.  **`.env`** (If you have environment variables)
 
-1. **`.next/standalone` এর ভেতরের সব ফাইল** কপি করে `deploy-ready` ফোল্ডারে পেস্ট করুন।
-2. **`.next/static` ফোল্ডারটি** কপি করে `deploy-ready/.next/static` এ রাখুন।
-   - *বিস্তারিত:* `deploy-ready` এর ভেতর `.next` নামে ফোল্ডার তৈরি করুন, তার ভেতর `static` ফোল্ডারটি পেস্ট করুন।
-3. **`public` ফোল্ডারটি** কপি করে `deploy-ready/public` এ রাখুন।
-4. **`.htaccess` ফাইলটি** আপনার প্রজেক্ট রুট থেকে কপি করে `deploy-ready/.htaccess` এ রাখুন।
-5. **`ecosystem.config.js`** (যদি থাকে) অথবা `server.js` (রুট থেকে) কপি করার প্রয়োজন নেই, কারণ standalone ফোল্ডারে নিজস্ব `server.js` থাকে।
+> [!IMPORTANT]
+> To save upload time and ensure performance, follow these structure rules after uploading:
+> - Move the contents of `.next/static` to `.next/standalone/.next/static`
+> - Move the contents of `public` to `.next/standalone/public`
 
-> **সংক্ষেপে আপনার আপলোড ফোল্ডারের গঠন এমন হবে:**
-> - `.next/`
->   - `static/` (আপনার প্রজেক্টের .next/static থেকে আসা)
-> - `public/` (আপনার প্রজেক্টের public থেকে আসা)
-> - `package.json` (অটোমেটিক থাকবে)
-> - `server.js` (অটোমেটিক থাকবে)
-> - `.htaccess` (আপনি কপি করবেন)
+## Step 3: Configure cPanel Node.js Selector
+1. Log in to **cPanel**.
+2. Go to **Setup Node.js App**.
+3. Click **Create Application**.
+4. Set:
+   - **Node.js version**: 18.x or 20.x
+   - **Application mode**: `production`
+   - **Application root**: Path to your files (e.g., `public_html`)
+   - **Application URL**: Your domain
+   - **Application startup file**: `server.js`
+5. Click **Create**.
+6. Click **Run JS Install** (if needed, but standalone doesn't strictly need it if you upload the `.next/standalone` dependencies).
 
-## ধাপ ৩: আপলোড এবং সেটআপ (cPanel)
+## Step 4: Final Verification
+Visit your website URL. If you see your app, it's successful!
 
-1. **ZIP করুন:** `deploy-ready` ফোল্ডারের সব ফাইল সিলেক্ট করে একটি `.zip` ফাইল তৈরি করুন।
-2. **Upload:** cPanel এর File Manager এ গিয়ে আপনার ডোমেইন রুটে ZIP ফাইলটি আপলোড এবং Extract করুন।
-3. **Node.js App তৈরি করুন:**
-   - cPanel থেকে **Setup Node.js App** এ যান।
-   - **Create Application** এ ক্লিক করুন।
-   - **Node.js Version:** ১৮ বা তার বেশি সিলেক্ট করুন।
-   - **Application Mode:** Production.
-   - **Application Root:** যেখানে ফাইল এক্সট্রাক্ট করেছেন (যেমন: `public_html`).
-   - **Application URL:** আপনার ডোমেইন।
-   - **Application Startup File:** `server.js` লিখুন।
-   - **Create** এ ক্লিক করুন।
+---
 
-## ধাপ ৪: ডিপ্লয় শেষ করা
-1. **Node.js App** পেজে নিচের দিকে **Run NPM Install** বাটন থাকলে ক্লিক করুন (সাধারণত Standalone মোডে দরকার হয় না, তবে `sharp` বা অন্য লাইব্রেরির জন্য লাগতে পারে)।
-   - *যদি `node_modules` আগে থেকেই থাকে, তাহলে এটি স্কিপ করতে পারেন।*
-   - *দ্রষ্টব্য:* Standalone মোডে `npm install` ছাড়াই অ্যাপ রান হতে পারে যদি আপনি `node_modules` সহ আপলোড না করেন এবং সার্ভারে `npm install` না দেন। তবে `sharp` বা কিছু নেটিভ মডিউলের জন্য মাঝে মাঝে `npm install` লাগে। **ভালো প্র্যাকটিস হলো:** প্রথমে `npm install` ছাড়াই `Restart` দিয়ে দেখুন চলে কিনা। না চললে `Runs NPM Install` দিন।
-
-2. **Restart** বাটনে ক্লিক করুন।
-3. আপনার ডোমেইন ভিজিট করুন।
-
-## সাধারণ সমস্যার সমাধান
-- **500 Error:** `.htaccess` ফাইল আছে কিনা চেক করুন এবং লগ ফাইল (`stderr.log`) চেক করুন।
-- **Image আসছে না:** `.next/static` এবং `public` ফোল্ডার ঠিকমতো আপলোড হয়েছে কিনা চেক করুন।
-- **Build Fail:** লোকাল পিসিতে `npm run build` ঠিকমতো হচ্ছে কিনা নিশ্চিত করুন।
+### Why Standalone Mode?
+- **Faster Start**: Doesn't need `node_modules` at the root.
+- **Smaller Size**: Only bundles necessary code.
+- **Stable**: Optimized for production environments like cPanel.

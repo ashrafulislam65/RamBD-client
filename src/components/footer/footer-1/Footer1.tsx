@@ -72,8 +72,8 @@ export default function Footer1() {
                     target="_blank"
                     key={item.iconName}
                     rel="noreferrer noopenner">
-                    <Box m="5px" p="10px" size="small" borderRadius="50%" bg="rgba(0,0,0,0.2)">
-                      <Icon size="12px" defaultcolor="auto">
+                    <Box m="5px" p="10px" borderRadius="50%" bg="rgba(255,255,255,0.2)" display="flex" alignItems="center" justifyContent="center">
+                      <Icon size="18px">
                         {item.iconName}
                       </Icon>
                     </Box>

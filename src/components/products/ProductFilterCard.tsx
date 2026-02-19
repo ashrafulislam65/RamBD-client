@@ -11,6 +11,8 @@ import TextField from "@component/text-field";
 import { Accordion, AccordionHeader } from "@component/accordion";
 import { H5, H6, Paragraph, SemiSpan } from "@component/Typography";
 
+import { Button } from "@component/buttons";
+import Icon from "@component/icon/Icon";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Slider from "rc-slider";
@@ -155,6 +157,22 @@ export default function ProductFilterCard({
 
   return (
     <Card p="18px 27px" elevation={5} borderRadius={8}>
+      <Button
+        color="primary"
+        variant="outlined"
+        fullwidth
+        size="large"
+        mb="24px"
+        onClick={() => router.back()}
+        style={{ fontWeight: 700, fontSize: "16px" }}>
+        <FlexBox alignItems="center" justifyContent="center">
+          <Icon variant="small" mr="10px">
+            arrow-left
+          </Icon>
+          Back to Previous
+        </FlexBox>
+      </Button>
+
       <H6 mb="10px">Categories</H6>
 
       {categories.map((item) =>

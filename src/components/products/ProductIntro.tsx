@@ -304,7 +304,7 @@ export default function ProductIntro({
                 <Box mb="1.5rem">
                   <FlexBox alignItems="center" style={{ gap: 10 }}>
                     <SemiSpan fontWeight="600" color="secondary.main">For Inquiry: +880-1958-666975</SemiSpan>
-                    <a href="https://whatsapp.com/channel/0029Vb6w51fADTOId5PTaH2D" target="_blank" rel="noreferrer">
+                    <a href="https://wa.me/8801847117888" target="_blank" rel="noreferrer">
                       <Box cursor="pointer" bg="#25D366" borderRadius="50%" p="6px" display="flex" alignItems="center" justifyContent="center">
                         <FaWhatsapp size={18} color="white" />
                       </Box>
@@ -384,6 +384,36 @@ export default function ProductIntro({
           </Box>
         </Box>
       </FlexBox>
+
+      {/* FLOATING WHATSAPP FOLLOW US BUTTON */}
+      <Box
+        position="fixed"
+        bottom={30}
+        right={30}
+        zIndex={100}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        style={{ cursor: "pointer", filter: "drop-shadow(0px 4px 10px rgba(0,0,0,0.3))" }}>
+        <a
+          href="https://whatsapp.com/channel/0029Vb6w51fADTOId5PTaH2D"
+          target="_blank"
+          rel="noreferrer"
+          style={{ textDecoration: "none", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Box
+            bg="#25D366"
+            borderRadius="50%"
+            p="12px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center">
+            <FaWhatsapp size={40} color="white" />
+          </Box>
+          <SemiSpan fontWeight="700" color="secondary.main" mt="5px" style={{ fontSize: 13, background: "rgba(255,255,255,0.8)", padding: "2px 8px", borderRadius: "10px" }}>
+            Follow us
+          </SemiSpan>
+        </a>
+      </Box>
     </Box>
   );
 }
