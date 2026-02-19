@@ -12,7 +12,7 @@ export default async function DealsOfTheDayPage() {
     ]);
 
     return (
-        <Box pt="20px">
+        <Box pt="0px">
             <SearchResult
                 title="Deals Of The Day"
                 sortOptions={sortOptions}

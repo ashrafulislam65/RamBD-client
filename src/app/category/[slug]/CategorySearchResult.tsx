@@ -202,7 +202,7 @@ export default function CategorySearchResult({
                 </FlexBox>
             </FlexBox>
 
-            <Grid container spacing={3}>
+            <Grid container vertical_spacing={3} horizontal_spacing={0.5}>
                 <Grid item lg={3} xs={12}>
                     <ProductFilterCard
                         brands={brands}

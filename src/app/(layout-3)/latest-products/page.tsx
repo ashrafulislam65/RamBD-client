@@ -12,7 +12,7 @@ export default async function LatestProductsPage() {
     ]);
 
     return (
-        <Box pt="20px">
+        <Box pt="0px">
             <SearchResult
                 title="Our Latest Product"
                 sortOptions={sortOptions}

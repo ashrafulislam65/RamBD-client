@@ -75,7 +75,7 @@ export default async function ProductDetails({ params, searchParams }: Props) {
 
   return (
     <Fragment>
-      <Container mb="2rem" mt="2rem">
+      <Container mb="2rem" mt="0px">
         <ProductIntro
           id={product.id}
           price={product.price}

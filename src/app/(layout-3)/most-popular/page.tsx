@@ -12,7 +12,7 @@ export default async function MostPopularProductsPage() {
     ]);
 
     return (
-        <Box pt="20px">
+        <Box pt="0px">
             <SearchResult
                 title="Most Popular Products"
                 sortOptions={sortOptions}
