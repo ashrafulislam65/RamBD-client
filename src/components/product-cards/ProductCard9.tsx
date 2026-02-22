@@ -171,15 +171,6 @@ export default function ProductCard9({
 
         <Grid item md={8} sm={8} xs={12}>
           <FlexBox flexDirection="column" justifyContent="center" height="100%" p="1rem">
-            {!!categories && (
-              <div className="categories">
-                {categories.map((item) => (
-                  <NavLink className="link" href={`/product/search/${item}`} key={item}>
-                    {item}
-                  </NavLink>
-                ))}
-              </div>
-            )}
 
             <Link href={productPath}>
               <H5 fontWeight="600" my="0.5rem">
@@ -258,7 +249,7 @@ export default function ProductCard9({
             flexDirection="column"
             justifyContent="center">
 
-            <FlexBox style={{ gap: 8, width: '100%' }} flexDirection="column">
+            <FlexBox style={{ gap: 8, width: '100%' }}>
               {cartItem?.qty ? (
                 <FlexBox
                   alignItems="center"
@@ -304,14 +295,6 @@ export default function ProductCard9({
               </Button>
             </FlexBox>
 
-            <FlexBox mt="1rem" alignItems="center" cursor="pointer" style={{ gap: 10 }}>
-              <Icon color="secondary" variant="small">
-                heart
-              </Icon>
-              <H5 fontWeight="600" fontSize="12px" color="text.muted">
-                Add to Wishlist
-              </H5>
-            </FlexBox>
           </FlexBox>
         </Hidden>
       </Grid>

@@ -157,9 +157,6 @@ export default function ProductCard19(props: ProductCard19Props) {
             <Icon size="18px">eye</Icon>
           </EyeButton>
 
-          <FavoriteButton className="product-actions" onClick={handleFavorite}>
-            {isFavorite ? <Icon size="18px">heart-filled</Icon> : <Icon size="18px">heart</Icon>}
-          </FavoriteButton>
         </CardMedia>
 
         <Box p={1.5} textAlign="center" flexGrow={1} display="flex" flexDirection="column" justifyContent="space-between">
