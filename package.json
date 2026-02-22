@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "package-deploy": "node scripts/prepare-cpanel-dist.js && powershell Compress-Archive -Path dist-cpanel/* -DestinationPath deploy.zip -Force"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.3.1",

@@ -6,6 +6,7 @@ import Topbar from "@component/topbar";
 import Sticky from "@component/sticky";
 import { Header } from "@component/header";
 import { Footer1 } from "@component/footer";
+import FloatingWhatsApp from "@component/FloatingWhatsApp";
 import MobileNavigationBar from "@component/mobile-navigation";
 import StyledAppLayout from "./styles";
 
@@ -24,6 +25,8 @@ export default function ShopLayout({ navbar, children }: Props) {
       <MobileNavigationBar />
 
       <Footer1 />
+
+      <FloatingWhatsApp />
     </StyledAppLayout>
   );
 }

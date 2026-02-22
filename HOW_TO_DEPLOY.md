@@ -1,51 +1,45 @@
-# How to Deploy to cPanel (Standalone Mode)
+# How to Deploy to cPanel (Automated)
 
-This guide explains how to deploy your Next.js application to cPanel using the optimized **Standalone Mode**.
+This project is configured with a one-command deployment preparation script.
 
-## Prerequisites
-- **Node.js**: Ensure cPanel has Node.js (recommended version 18 or 20).
-- **Domain/Subdomain**: Have your domain or subdomain ready in cPanel.
+## Step 1: Build and Package
 
-## Step 1: Prepare Files Locally
-Make sure you have run the build command:
+Run the following command in your terminal:
+
 ```bash
-npm run build
+npm run package-deploy
 ```
 
-## Step 2: Files to Upload
-Upload the following files and folders from your project root to your cPanel application root (usually `public_html` or a subdirectory):
+This command will:
+1. Build the production application (`next build`).
+2. Collect all required files (standalone build, static assets, public files, and config files) into a `dist-cpanel` folder.
+3. Create a **`deploy.zip`** file in your project root.
 
-1.  **`.next/`** folder (specifically `.next/standalone` and `.next/static`)
-2.  **`public/`** folder
-3.  **`server.js`** (Root file)
-4.  **`.htaccess`** (Root file)
-5.  **`package.json`** (Root file)
-6.  **`.env`** (If you have environment variables)
+## Step 2: Upload to cPanel
 
-> [!IMPORTANT]
-> To save upload time and ensure performance, follow these structure rules after uploading:
-> - Move the contents of `.next/static` to `.next/standalone/.next/static`
-> - Move the contents of `public` to `.next/standalone/public`
+1. Log in to your **cPanel File Manager**.
+2. Navigate to your application root (e.g., `public_html` or a subdirectory).
+3. Upload the **`deploy.zip`** file.
+4. Extract the contents of `deploy.zip` directly into that folder.
 
-## Step 3: Configure cPanel Node.js Selector
-1. Log in to **cPanel**.
-2. Go to **Setup Node.js App**.
-3. Click **Create Application**.
-4. Set:
+## Step 3: Configure Node.js App in cPanel
+
+1. Go to **Setup Node.js App** in cPanel.
+2. Click **Create Application**.
+3. Set the following:
    - **Node.js version**: 18.x or 20.x
    - **Application mode**: `production`
-   - **Application root**: Path to your files (e.g., `public_html`)
-   - **Application URL**: Your domain
+   - **Application root**: The folder where you extracted the files (e.g., `public_html`).
+   - **Application URL**: Your domain name.
    - **Application startup file**: `server.js`
-5. Click **Create**.
-6. Click **Run JS Install** (if needed, but standalone doesn't strictly need it if you upload the `.next/standalone` dependencies).
-
-## Step 4: Final Verification
-Visit your website URL. If you see your app, it's successful!
+4. Click **Create**.
+5. Your application should now be live!
 
 ---
 
-### Why Standalone Mode?
-- **Faster Start**: Doesn't need `node_modules` at the root.
-- **Smaller Size**: Only bundles necessary code.
-- **Stable**: Optimized for production environments like cPanel.
+### Key Files included in the Bundle:
+- `.next/`: Production build and standalone server.
+- `public/`: Static assets (images, favicon, etc.).
+- `server.js`: The entry point for cPanel's Node.js handler.
+- `.htaccess`: Optimized routing for Next.js.
+- `.env`: Environment variables.
