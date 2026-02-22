@@ -56,7 +56,10 @@ const getFrequentlyBought = async (): Promise<Product[]> => {
 const getRelatedProducts = async (categorySlug?: string): Promise<Product[]> => {
   if (categorySlug) {
     const res = await categoryProductApi.getProductsByCategory(categorySlug);
-    return res.products;
+    if (res.products && res.products.length > 0) {
+      return res.products;
+    }
+    console.log(`No related products found for category: ${categorySlug}, falling back to latest.`);
   }
   return market2Api.getLatestProducts();
 };

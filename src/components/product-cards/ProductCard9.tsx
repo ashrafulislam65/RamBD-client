@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useState } from "react";
 import styled from "styled-components";
 
@@ -125,17 +126,24 @@ export default function ProductCard9({
   categorySlug,
   ...props
 }: ProductCard9Props) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const { state, dispatch } = useAppContext();
   const cartItem = state.cart.find((item) => item.id === id);
 
   const toggleDialog = useCallback(() => setOpen((open) => !open), []);
 
-  const handleCartAmountChange = (qty: number) => () => {
+  const handleCartAmountChange = (qty: number) => {
     dispatch({
       type: "CHANGE_CART_AMOUNT",
-      payload: { price, regularPrice, imgUrl, id, qty, slug, name: title }
+      payload: { price, regularPrice, originalPrice: regularPrice || price, imgUrl, id, qty, slug, name: title }
     });
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!cartItem?.qty) handleCartAmountChange(1);
+    router.push("/checkout");
   };
 
   const productPath = categorySlug ? `/product/${slug}?cat=${categorySlug}` : `/product/${slug}`;
@@ -202,13 +210,13 @@ export default function ProductCard9({
                     p="2px"
                     borderRadius="4px"
                     style={{ border: `1px solid ${getTheme("colors.gray.300")}`, height: 32 }}>
-                    <Button variant="text" size="small" p="5px" onClick={handleCartAmountChange(cartItem.qty - 1)} style={{ minWidth: 24 }}>
+                    <Button variant="text" size="small" p="5px" onClick={() => handleCartAmountChange(cartItem.qty - 1)} style={{ minWidth: 24 }}>
                       <Icon size="10px">minus</Icon>
                     </Button>
 
                     <H5 fontWeight="600" fontSize="14px">{cartItem.qty}</H5>
 
-                    <Button variant="text" size="small" p="5px" onClick={handleCartAmountChange(cartItem.qty + 1)} style={{ minWidth: 24 }}>
+                    <Button variant="text" size="small" p="5px" onClick={() => handleCartAmountChange(cartItem.qty + 1)} style={{ minWidth: 24 }}>
                       <Icon size="10px">plus</Icon>
                     </Button>
                   </FlexBox>
@@ -218,7 +226,7 @@ export default function ProductCard9({
                     color="dark"
                     variant="outlined"
                     size="small"
-                    onClick={handleCartAmountChange(1)}
+                    onClick={() => handleCartAmountChange(1)}
                     style={{ fontSize: 10, padding: "5px 0", height: 32 }}>
                     Add Cart
                   </Button>
@@ -229,10 +237,7 @@ export default function ProductCard9({
                   color="primary"
                   variant="contained"
                   size="small"
-                  onClick={() => {
-                    if (!cartItem?.qty) handleCartAmountChange(1)();
-                    // router.push("/checkout"); // Need router
-                  }}
+                  onClick={handleBuyNow}
                   style={{ fontSize: 10, padding: "5px 0", height: 32 }}>
                   Buy Now
                 </Button>
@@ -258,13 +263,13 @@ export default function ProductCard9({
                   p="2px"
                   borderRadius="4px"
                   style={{ border: `1px solid ${getTheme("colors.gray.300")}`, height: 36 }}>
-                  <Button variant="text" size="small" p="5px" onClick={handleCartAmountChange(cartItem.qty - 1)}>
+                  <Button variant="text" size="small" p="5px" onClick={() => handleCartAmountChange(cartItem.qty - 1)}>
                     <Icon size="10px">minus</Icon>
                   </Button>
 
                   <H5 fontWeight="600" fontSize="14px">{cartItem.qty}</H5>
 
-                  <Button variant="text" size="small" p="5px" onClick={handleCartAmountChange(cartItem.qty + 1)}>
+                  <Button variant="text" size="small" p="5px" onClick={() => handleCartAmountChange(cartItem.qty + 1)}>
                     <Icon size="10px">plus</Icon>
                   </Button>
                 </FlexBox>
@@ -274,7 +279,7 @@ export default function ProductCard9({
                   color="dark"
                   variant="outlined"
                   size="small"
-                  onClick={handleCartAmountChange(1)}
+                  onClick={() => handleCartAmountChange(1)}
                   style={{ height: 36 }}>
                   Add To Cart
                 </Button>
@@ -286,10 +291,7 @@ export default function ProductCard9({
                 color="primary"
                 variant="contained"
                 size="small"
-                onClick={() => {
-                  if (!cartItem?.qty) handleCartAmountChange(1)();
-                  // router.push("/checkout");
-                }}
+                onClick={handleBuyNow}
                 style={{ height: 36 }}>
                 Buy Now
               </Button>

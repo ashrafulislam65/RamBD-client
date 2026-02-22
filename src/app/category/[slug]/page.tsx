@@ -77,7 +77,6 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
 
 const sortOptions = [
     { label: "Default", value: "relevance" },
-    { label: "Date", value: "date" },
     { label: "Price Low to High", value: "price-asc" },
     { label: "Price High to Low", value: "price-desc" }
 ];

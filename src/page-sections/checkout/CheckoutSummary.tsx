@@ -24,7 +24,7 @@ export default function CheckoutSummary({ formik }: { formik: any }) {
   };
 
   const getTotalOriginalPrice = () => {
-    return state.cart.reduce((accumulator, item) => accumulator + (item.originalPrice || item.price) * item.qty, 0) || 0;
+    return state.cart.reduce((accumulator, item) => accumulator + (item.regularPrice || item.originalPrice || item.price) * item.qty, 0) || 0;
   };
 
   const totalDiscount = getTotalOriginalPrice() - getTotalPrice();

@@ -144,7 +144,7 @@ export default function ProductCard16(props: ProductCardProps) {
   const handleCartAmountChange = (qty: number) => () => {
     dispatch({
       type: "CHANGE_CART_AMOUNT",
-      payload: { price, regularPrice, imgUrl, id, qty, slug, name: title }
+      payload: { price, regularPrice, originalPrice: regularPrice || price, imgUrl, id, qty, slug, name: title }
     });
   };
 

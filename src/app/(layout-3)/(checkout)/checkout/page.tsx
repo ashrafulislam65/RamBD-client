@@ -53,7 +53,7 @@ export default function Checkout() {
         id: item.id,
         product_qty: item.qty,
         sale_price: item.price,
-        original_price: item.originalPrice || item.price,
+        original_price: item.regularPrice || item.originalPrice || item.price,
         product_total_price: item.price * item.qty
       })),
       is_emi_available: "0"
@@ -150,7 +150,7 @@ export default function Checkout() {
       console.log("finalPayload structure:", finalPayload);
 
       const totalPrice = state.cart.reduce((accum, item) => accum + (item.price * item.qty), 0);
-      const totalOriginalPrice = state.cart.reduce((accum, item) => accum + ((item.originalPrice || item.price) * item.qty), 0);
+      const totalOriginalPrice = state.cart.reduce((accum, item) => accum + ((item.regularPrice || item.originalPrice || item.price) * item.qty), 0);
       const totalDiscount = totalOriginalPrice - totalPrice;
 
       const completeOrderData = {

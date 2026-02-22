@@ -89,8 +89,36 @@ const getBrands = async (): Promise<Brand[]> => {
 };
 
 const getMainCarouselData = async (): Promise<MainCarouselItem[]> => {
-  const response = await axios.get("/api/market-2/main-carousel");
-  return response.data;
+  try {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
+    const response = await fetch(`${apiBaseUrl}/home`, { next: { revalidate: 3600 } });
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    const sliders = data.sliders || [];
+
+    // Map API slider items to MainCarouselItem model
+    return sliders.map((item: any) => {
+      // Construction of image URL from the slider_img field
+      const imgPath = item.slider_img || item.image || item.img || "";
+      const fullImgUrl = imgPath.startsWith('http')
+        ? imgPath
+        : `https://admin.unicodeconverter.info/storage/app/public/uploads/slider/${imgPath}`;
+
+      return {
+        title: item.title || item.slider_title || "",
+        imgUrl: fullImgUrl,
+        category: item.category || item.category_name || "",
+        discount: item.discount || item.pct_off || 0,
+        buttonText: item.button_text || "Shop Now",
+        buttonLink: item.button_link || item.link || "#",
+        description: item.description || item.sub_title || ""
+      };
+    });
+  } catch (error) {
+    console.error("getMainCarouselData error:", error);
+    return [];
+  }
 };
 
 const getElectronicsProducts = async (): Promise<CategoryBasedProducts> => {
@@ -112,14 +140,23 @@ const getLatestProducts = async (): Promise<Product[]> => {
   try {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
     const response = await fetch(`${apiBaseUrl}/LatestProductList/getAllLatestProducts`, { next: { revalidate: 3600 } });
-    if (!response.ok) return [];
 
-    const data = await response.json();
-    const products = data.products || [];
+    let products = [];
+    if (response.ok) {
+      const data = await response.json();
+      products = data.products || [];
+    }
+
+    // Fallback if latest is empty
+    if (products.length === 0) {
+      console.log("Latest products API empty, falling back to most popular");
+      return getMostPopularProducts();
+    }
+
     return products.map(transformApiProduct).filter((p: any) => p !== null);
   } catch (error) {
-    console.error("getLatestProducts face error:", error);
-    return [];
+    console.error("getLatestProducts fallback error:", error);
+    return getMostPopularProducts();
   }
 };
 
@@ -131,7 +168,7 @@ const getMostPopularProducts = async (): Promise<Product[]> => {
 
     const data = await response.json();
     const products = data.populars || [];
-    return products.map(transformApiProduct);
+    return products.map(transformApiProduct).filter((p: any) => p !== null);
   } catch (error) {
     console.error("getMostPopularProducts face error:", error);
     return [];

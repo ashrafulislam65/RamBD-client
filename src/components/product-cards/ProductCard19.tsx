@@ -104,7 +104,7 @@ export default function ProductCard19(props: ProductCard19Props) {
       slug,
       name,
       price,
-      regularPrice,
+      originalPrice: regularPrice || price,
       imgUrl: img,
       qty: (cartItem?.qty || 0) + 1
     };
@@ -118,7 +118,7 @@ export default function ProductCard19(props: ProductCard19Props) {
       slug,
       name,
       price,
-      regularPrice,
+      originalPrice: regularPrice || price,
       imgUrl: img,
       qty: (cartItem?.qty || 0) - 1
     };

@@ -35,8 +35,9 @@ const StyledCheckBox = styled.input.withConfig({
       outline: "none",
       cursor: "pointer",
       margin: 0,
-      width: size || 22,
-      height: size || 22,
+      width: size || 18,
+      height: size || 18,
+      flexShrink: 0,
       border: "1px solid",
       borderColor: "#2ba56d",
       borderRadius: 2,
@@ -111,19 +112,17 @@ const CheckBox = ({
   // extract spacing props
   let spacingProps: any = {};
   for (const key in props) {
-    const propKey = key as "color" | "size";
-    if (key.startsWith("m") || key.startsWith("p")) spacingProps[propKey] = props[propKey];
+    if (key.startsWith("m") || key.startsWith("p")) (spacingProps as any)[key] = (props as any)[key];
   }
 
   useEffect(() => setCheckboxId(Math.random()), []);
 
   return (
     <Wrapper
-      size={22}
       color={`${labelColor}.main`}
       labelPlacement={labelPlacement}
       {...spacingProps}>
-      <StyledCheckBox id={checkboxId} type="checkbox" size={22} {...props} />
+      <StyledCheckBox id={checkboxId} type="checkbox" {...props} />
       <label htmlFor={checkboxId}>{label}</label>
     </Wrapper>
   );

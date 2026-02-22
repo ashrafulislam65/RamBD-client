@@ -44,6 +44,8 @@ export default function ProductCard19List({
                             slug={item.slug}
                             price={item.price}
                             name={item.title}
+                            off={item.discount}
+                            regularPrice={item.regularPrice}
                             img={item.thumbnail}
                             images={item.images as string[]}
                             reviews={item.rating || 5}

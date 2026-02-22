@@ -48,12 +48,7 @@ export default async function ProductDetails({ params, searchParams }: Props) {
   const { slug } = await params;
   const { cat } = await searchParams;
 
-  const shops = await api.getAvailableShop();
-  const relatedProducts = await api.getRelatedProducts(cat);
-  const frequentlyBought = await api.getFrequentlyBought();
   const product = await api.getProduct(slug, cat);
-  const reviews = product && product.model ? await api.getReviews(slug, product.model) : [];
-  const latestProducts = await market2Api.getProducts();
 
   if (!product) {
     return (
@@ -66,9 +61,16 @@ export default async function ProductDetails({ params, searchParams }: Props) {
     );
   }
 
-  // Attach reviews to product or pass separately. Let's attach them to the product model for simplicity if allowed,
-  // or pass as new prop. Since ProductView API is fixed, passing as part of product is easier if type allows.
-  // Product model has reviews?: Review[].
+  // Use product's internal category if 'cat' query param is missing
+  const effectiveCat = cat || (product.categories && product.categories.length > 0 ? product.categories[0] : undefined);
+
+  const shops = await api.getAvailableShop();
+  const relatedProducts = await api.getRelatedProducts(effectiveCat);
+  const frequentlyBought = await api.getFrequentlyBought();
+  const reviews = product.model ? await api.getReviews(slug, product.model) : [];
+  const latestProducts = await market2Api.getProducts();
+
+  // Attach reviews if found
   if (reviews) {
     product.reviews = reviews;
   }

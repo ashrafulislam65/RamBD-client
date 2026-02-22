@@ -194,7 +194,21 @@ export default function ProductIntro({
 
               {/* PRODUCT INFO */}
               <Grid item md={5} xs={12}>
-                <H1 mb="0.75rem" color="secondary.main" fontSize={22} fontWeight="700" style={{ lineHeight: 1.3 }}>{title}</H1>
+                <H1
+                  mb="0.75rem"
+                  color="secondary.main"
+                  fontSize={22}
+                  fontWeight="700"
+                  style={{
+                    lineHeight: 1.3,
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  }}>
+                  {title}
+                </H1>
 
                 <FlexBox alignItems="center" mb="1rem">
                   <H3 color="primary.main" mr="12px" fontWeight="700">

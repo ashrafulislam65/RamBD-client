@@ -38,18 +38,23 @@ export const transformApiProduct = (apiProduct: any): any => {
 
 
     const originalPrice = parseFloat(apiProduct.pro_price) || 0;
-    const discountAmount = apiProduct.pro_discount ? parseFloat(apiProduct.pro_discount) : 0;
-    const offerStatus = apiProduct.offer_status === 1;
+    const discountAmount = (apiProduct.pro_discount && apiProduct.pro_discount !== '0')
+        ? parseFloat(apiProduct.pro_discount)
+        : 0;
 
-    // Calculate percentage if offer exists
+    // Price = Final selling price (Original - Discount Amount)
+    const finalPrice = originalPrice - discountAmount;
+
+    // Determine if product is on offer (discount amount > 0 or offer_status is 1)
+    const offerStatus = discountAmount > 0 || apiProduct.offer_status === 1;
+
+    // Calculate percentage based on saving (e.g., Discount Amount / Original)
     const discountPercentage = (offerStatus && originalPrice > 0)
         ? Math.round((discountAmount / originalPrice) * 100)
         : 0;
 
-    // Logic Fix:
-    // price = Final selling price (discounted if offer exists)
-    // regularPrice = Original price (shown as crossed out if offer exists)
-    const finalPrice = offerStatus ? (originalPrice - discountAmount) : originalPrice;
+    const categorySlug = apiProduct.category?.cate_slug || (parsedCategory ? parsedCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '');
+    const categoryName = apiProduct.category?.cate_name || parsedCategory || '';
 
     return {
         id: String(apiProduct.id),
@@ -63,8 +68,9 @@ export const transformApiProduct = (apiProduct: any): any => {
         thumbnail: imageUrl,
         images: allImages.reverse(), // User mentioned order is flipped
         rating: parseFloat(apiProduct.rating) || parseFloat(apiProduct.avg_rating) || 4.5,
-        categories: parsedCategory ? [parsedCategory] : [],
-        categoryName: parsedCategory,
+        categories: categorySlug ? [categorySlug] : [],
+        categoryName: categoryName,
+        category_slug: categorySlug,
         reviews: [],
         description: description,
         brand: parsedBrand || 'Felna Tech',
