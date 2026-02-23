@@ -23,7 +23,7 @@ const getProductsByCategory = async (
         if (brand_id) url += `&brand_id=${brand_id}`;
 
         console.log(`Fetching products: ${url}`);
-        const response = await fetch(url, { next: { revalidate: 3600 } });
+        const response = await fetch(url, { next: { revalidate: 0 } });
 
         if (!response.ok) {
             console.error(`API response error: ${response.status}`);

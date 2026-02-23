@@ -24,6 +24,8 @@ export const metadata: Metadata = {
   },
 };
 
+import AutoRefresh from "@component/AutoRefresh";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -37,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <StyledComponentsRegistry>
           <AppProvider>
             <StyledContext>
+              <AutoRefresh />
               {children}
               <NProgressBar />
             </StyledContext>

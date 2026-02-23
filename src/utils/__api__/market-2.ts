@@ -17,7 +17,7 @@ const getServices = async (): Promise<Service[]> => {
 const getCategories = async () => {
   try {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/home-menu`, { next: { revalidate: 3600 } });
+    const response = await fetch(`${apiBaseUrl}/home-menu`, { next: { revalidate: 0 } });
     if (!response.ok) return [];
 
     const data = await response.json();
@@ -76,7 +76,7 @@ const getCategories = async () => {
 const getBrands = async (): Promise<Brand[]> => {
   try {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/brand/getAllBrandsLast`, { next: { revalidate: 3600 } });
+    const response = await fetch(`${apiBaseUrl}/brand/getAllBrandsLast`, { next: { revalidate: 0 } });
     if (!response.ok) return [];
 
     const data = await response.json();
@@ -91,7 +91,7 @@ const getBrands = async (): Promise<Brand[]> => {
 const getMainCarouselData = async (): Promise<MainCarouselItem[]> => {
   try {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/home`, { next: { revalidate: 3600 } });
+    const response = await fetch(`${apiBaseUrl}/home`, { next: { revalidate: 0 } });
     if (!response.ok) return [];
 
     const data = await response.json();
@@ -139,7 +139,7 @@ const getWomenFashionProducts = async (): Promise<CategoryBasedProducts> => {
 const getLatestProducts = async (): Promise<Product[]> => {
   try {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/LatestProductList/getAllLatestProducts`, { next: { revalidate: 3600 } });
+    const response = await fetch(`${apiBaseUrl}/LatestProductList/getAllLatestProducts`, { next: { revalidate: 0 } });
 
     let products = [];
     if (response.ok) {
@@ -163,7 +163,7 @@ const getLatestProducts = async (): Promise<Product[]> => {
 const getMostPopularProducts = async (): Promise<Product[]> => {
   try {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/most-popular-product`, { next: { revalidate: 3600 } });
+    const response = await fetch(`${apiBaseUrl}/most-popular-product`, { next: { revalidate: 0 } });
     if (!response.ok) return [];
 
     const data = await response.json();
@@ -178,7 +178,7 @@ const getMostPopularProducts = async (): Promise<Product[]> => {
 const getTopRatedProducts = async (): Promise<Product[]> => {
   try {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/top-rated-product`, { next: { revalidate: 3600 } });
+    const response = await fetch(`${apiBaseUrl}/top-rated-product`, { next: { revalidate: 0 } });
     if (!response.ok) return [];
 
     const data = await response.json();
