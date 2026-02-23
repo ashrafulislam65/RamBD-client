@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FC, useState, Fragment } from "react";
-import styled from "styled-components";
+import { useState, Fragment } from "react";
+import styled, { keyframes, css } from "styled-components";
 
 import Box from "@component/Box";
 import Rating from "@component/rating";
@@ -18,52 +18,71 @@ import { useAppContext } from "@context/app-context";
 import { currency } from "@utils/utils";
 import { theme } from "@utils/theme";
 
-// styled components
-const CardBox = styled(Box)({
-  borderRadius: "3px",
-  transition: "all 0.3s",
-  backgroundColor: "white",
-  border: `1px solid ${theme.colors.gray[100]}`,
-  height: "100%",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
-  "&:hover": {
-    border: "1px solid #000",
-    "& .product-actions": { right: 5 },
-    "& .product-img": { transform: "scale(1.1)" }
-  }
-});
+// pulse animation
+const pulse = keyframes`
+  0% { background-color: ${theme.colors.gray[100]}; }
+  50% { background-color: ${theme.colors.gray[200]}; }
+  100% { background-color: ${theme.colors.gray[100]}; }
+`;
 
-const CardMedia = styled(Box)({
-  width: "100%",
-  height: 200, // Fixed height
-  cursor: "pointer",
-  overflow: "hidden",
-  position: "relative",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  "& .product-img": { transition: "0.3s", objectFit: "contain" }
-});
+const CardBox = styled(Box)`
+  border-radius: 3px;
+  transition: all 0.3s;
+  background-color: white;
+  border: 1px solid ${theme.colors.gray[100]};
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  &:hover {
+    border: 1px solid #000;
+    & .product-actions {
+      right: 5px;
+    }
+    & .product-img {
+      transform: scale(1.1);
+    }
+  }
+`;
+
+const CardMedia = styled(Box) <{ $loading?: boolean }>`
+  width: 100%;
+  height: 200px;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${props => (props.$loading ? theme.colors.gray[100] : "transparent")};
+  ${props =>
+    props.$loading &&
+    css`
+      animation: ${pulse} 1.5s infinite ease-in-out;
+    `}
+  & .product-img {
+    transition: opacity 0.4s ease-in-out;
+    object-fit: contain;
+  }
+`;
 
 import { Chip } from "@component/Chip";
 
-const EyeButton = styled(IconButton)({
-  top: 5,
-  right: -40,
-  position: "absolute",
-  transition: "right 0.3s .1s",
-  background: "transparent"
-});
+const EyeButton = styled(IconButton)`
+  top: 5px;
+  right: -40px;
+  position: absolute;
+  transition: right 0.3s 0.1s;
+  background: transparent;
+`;
 
-const FavoriteButton = styled(IconButton)({
-  top: 35,
-  right: -40,
-  position: "absolute",
-  background: "transparent",
-  transition: "right 0.3s .2s"
-});
+const FavoriteButton = styled(IconButton)`
+  top: 35px;
+  right: -40px;
+  position: absolute;
+  background: transparent;
+  transition: right 0.3s 0.2s;
+`;
 
 // ==============================================================
 type ProductCard19Props = {
@@ -87,6 +106,7 @@ export default function ProductCard19(props: ProductCard19Props) {
   const { state, dispatch } = useAppContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const cartItem = state.cart.find((item) => item.slug === slug);
   const productPath = categorySlug ? `/product/${slug}?cat=${categorySlug}` : `/product/${slug}`;
@@ -134,7 +154,7 @@ export default function ProductCard19(props: ProductCard19Props) {
   return (
     <Fragment>
       <CardBox height="100%">
-        <CardMedia>
+        <CardMedia $loading={!isLoaded}>
           <Link href={productPath}>
             {!!off && (
               <Chip
@@ -150,7 +170,16 @@ export default function ProductCard19(props: ProductCard19Props) {
                 {off}% off
               </Chip>
             )}
-            <NextImage src={img} width={300} height={300} alt={name} className="product-img" sizes="(max-width: 640px) 50vw, 300px" />
+            <NextImage
+              src={img}
+              width={300}
+              height={300}
+              alt={name}
+              className="product-img"
+              sizes="(max-width: 640px) 50vw, 300px"
+              onLoad={() => setIsLoaded(true)}
+              style={{ opacity: isLoaded ? 1 : 0, transition: "opacity 0.4s ease-in-out" }}
+            />
           </Link>
 
           <EyeButton className="product-actions" onClick={() => setOpenDialog(true)}>

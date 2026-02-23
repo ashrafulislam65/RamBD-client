@@ -1,13 +1,13 @@
-import { Fragment } from "react";
+import { Fragment, Suspense } from "react";
 import { Metadata } from "next";
 import api from "@utils/__api__/products";
-import market2Api from "@utils/__api__/market-2";
 import Box from "@component/Box";
+import FlexBox from "@component/FlexBox";
 import Container from "@component/Container";
 import ProductIntro from "@component/products/ProductIntro";
-import ProductView from "@component/products/ProductView";
-import Section11 from "@sections/market-2/section-11";
 import { H3, Paragraph } from "@component/Typography";
+import LatestProductsSidebar from "@component/products/LatestProductsSidebar";
+import ProductViewWrapper from "@component/products/ProductViewWrapper";
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -61,48 +61,40 @@ export default async function ProductDetails({ params, searchParams }: Props) {
     );
   }
 
-  // Use product's internal category if 'cat' query param is missing
   const effectiveCat = cat || (product.categories && product.categories.length > 0 ? product.categories[0] : undefined);
-
-  const shops = await api.getAvailableShop();
-  const relatedProducts = await api.getRelatedProducts(effectiveCat);
-  const frequentlyBought = await api.getFrequentlyBought();
-  const reviews = product.model ? await api.getReviews(slug, product.model) : [];
-  const latestProducts = await market2Api.getProducts();
-
-  // Attach reviews if found
-  if (reviews) {
-    product.reviews = reviews;
-  }
 
   return (
     <Fragment>
       <Container mb="2rem" mt="0px">
-        <ProductIntro
-          id={product.id}
-          price={product.price}
-          regularPrice={product.regularPrice}
-          title={product.title}
-          images={product.images || []}
-          brand={product.brand}
-          status={product.status}
-          model={product.model}
-          product_code={product.product_code}
-          categoryName={product.categoryName}
-          visitors={product.visitors}
-          discount={product.discount}
-          latestProducts={latestProducts}
-        />
+        <Box overflow="hidden">
+          <FlexBox flexWrap="wrap" alignItems="stretch" style={{ gap: 2 }}>
+            <Box flex="1 1 0" minWidth={300}>
+              <ProductIntro
+                id={product.id}
+                price={product.price}
+                regularPrice={product.regularPrice}
+                title={product.title}
+                images={product.images || []}
+                brand={product.brand}
+                status={product.status}
+                model={product.model}
+                product_code={product.product_code}
+                categoryName={product.categoryName}
+                visitors={product.visitors}
+                discount={product.discount}
+              />
+            </Box>
+
+            <Suspense fallback={<Box width="100px" bg="white" p="8px" borderRadius={8} height="100%" shadow={1} />}>
+              <LatestProductsSidebar />
+            </Suspense>
+          </FlexBox>
+        </Box>
       </Container>
 
-      <Container>
-        <ProductView
-          product={product}
-          shops={shops}
-          relatedProducts={relatedProducts}
-          frequentlyBought={frequentlyBought}
-        />
-      </Container>
+      <Suspense fallback={<Container><Box p="2rem" textAlign="center">Loading details...</Box></Container>}>
+        <ProductViewWrapper product={product} effectiveCat={effectiveCat} />
+      </Suspense>
     </Fragment>
   );
 }

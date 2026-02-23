@@ -25,7 +25,7 @@ export default async function DealsOfTheDayPage() {
 }
 
 const sortOptions = [
-    { label: "Relevance", value: "relevance" },
+    { label: "Default", value: "relevance" },
     { label: "Price Low to High", value: "price-asc" },
     { label: "Price High to Low", value: "price-desc" }
 ];

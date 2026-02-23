@@ -19,6 +19,7 @@ const FloatingWhatsApp = () => {
                 href="https://whatsapp.com/channel/0029Vb6w51fADTOId5PTaH2D"
                 target="_blank"
                 rel="noreferrer"
+                aria-label="Follow us on WhatsApp"
                 style={{ textDecoration: "none", display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <Box
                     bg="#25D366"

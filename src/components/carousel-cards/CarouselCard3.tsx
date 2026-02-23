@@ -35,18 +35,19 @@ interface Props {
   discount: number;
   buttonText: string;
   description: string;
+  priority?: boolean;
 }
 // =============================================================
 
 export default function CarouselCard3(props: Props) {
-  const { img, title, category, discount, description, buttonText } = props;
+  const { img, title, category, discount, description, buttonText, priority } = props;
 
   return (
     <CarouselCard>
       <Image
         src={img}
         fill
-        priority
+        priority={priority}
         alt={category || title || "Hero Image"}
         style={{ objectFit: "cover", zIndex: 0 }}
       />
@@ -77,7 +78,7 @@ export default function CarouselCard3(props: Props) {
         )}
 
         {buttonText && (
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" aria-label={buttonText}>
             {buttonText}
           </Button>
         )}

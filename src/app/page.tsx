@@ -19,20 +19,17 @@ import Section10 from "@sections/market-2/section-10";
 import Section11 from "@sections/market-2/section-11";
 
 export default async function Home() {
-  const brands = await api.getBrands();
-  const products = await api.getProducts();
-
-  // Fetch real product data from company APIs
-  const latestProducts = await api.getLatestProducts();
-  const popularProducts = await api.getMostPopularProducts();
-  const topRatedProducts = await api.getTopRatedProducts();
-
-  let navbarCategories: any = null;
-  try {
-    navbarCategories = await navbarApi.getNavbarServices();
-  } catch (error) {
-    console.error("Server-side fetch for navbar failed:", error);
-  }
+  const [brands, products, latestProducts, popularProducts, topRatedProducts, navbarCategories] = await Promise.all([
+    api.getBrands(),
+    api.getProducts(),
+    api.getLatestProducts(),
+    api.getMostPopularProducts(),
+    api.getTopRatedProducts(),
+    navbarApi.getNavbarServices().catch(error => {
+      console.error("Server-side fetch for navbar failed:", error);
+      return null;
+    })
+  ]);
 
   return (
     <AppLayout navbar={<Navbar categories={navbarCategories} />}>

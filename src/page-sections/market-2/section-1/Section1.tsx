@@ -34,6 +34,7 @@ export default async function Section1() {
                   discount={item.discount}
                   buttonText={item.buttonText}
                   description={item.description}
+                  priority={index === 0}
                 />
               ))}
             </Carousel>

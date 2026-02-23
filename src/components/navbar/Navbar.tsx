@@ -128,7 +128,7 @@ export default function Navbar({ navListOpen, categories: initialData }: NavbarP
       if (isRoot) {
         if (nav.isHome) {
           return (
-            <NavLink className="nav-link" href={nav.url} key={key} style={{ display: "flex", alignItems: "center" }}>
+            <NavLink className="nav-link" href={nav.url} key={key} aria-label="Go to Home" style={{ display: "flex", alignItems: "center" }}>
               <AiOutlineHome size={18} />
             </NavLink>
           );

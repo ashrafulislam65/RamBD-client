@@ -1,3 +1,4 @@
+import { cache } from "react";
 import axios from "@lib/axios";
 import Product from "@models/product.model";
 import Shop from "@models/shop.model";
@@ -12,18 +13,23 @@ const getSlugs = async (): Promise<{ slug: string }[]> => {
 };
 
 // get product based on slug
-const getProduct = async (slug: string, categorySlug?: string): Promise<Product> => {
+const getProduct = cache(async (slug: string, categorySlug?: string): Promise<Product> => {
   try {
-    // 1. Try to find in real product lists first
+    // 1. Always try direct fetch first (Most common case)
+    console.log(`Directly fetching product for slug: ${slug}`);
+    const response = await axios.get("/api/products/slug", { params: { slug } });
+    if (response.data) {
+      return response.data;
+    }
+
+    // 2. Probing logic as fallback (if direct fetch for some reason doesn't return the full data or is mock-only)
     const probes: Promise<Product[]>[] = [
       market2Api.getLatestProducts(),
       market2Api.getMostPopularProducts(),
       market2Api.getTopRatedProducts()
     ];
 
-    // If category is provided, probe that too
     if (categorySlug) {
-      console.log(`Probing specific category list: ${categorySlug}`);
       const catRes = await categoryProductApi.getProductsByCategory(categorySlug);
       probes.push(Promise.resolve(catRes.products));
     }
@@ -32,44 +38,35 @@ const getProduct = async (slug: string, categorySlug?: string): Promise<Product>
     const allRealProducts = results.flat();
     const realProduct = allRealProducts.find((p) => p.slug === slug);
 
-    if (realProduct) {
-      console.log(`Found real product for slug: ${slug}`);
-      return realProduct;
-    }
-
-    // 2. Fallback to mock data
-    console.log(`Falling back to mock data for slug: ${slug}`);
-    const response = await axios.get("/api/products/slug", { params: { slug } });
-    return response.data;
+    return realProduct || response.data;
   } catch (error) {
-    console.error("Error in getProduct (smart search):", error);
-    // Final fallback to mock if API fails
+    console.error("Error in getProduct:", error);
+    // Final fallback
     const response = await axios.get("/api/products/slug", { params: { slug } });
     return response.data;
   }
-};
+});
 
-const getFrequentlyBought = async (): Promise<Product[]> => {
+const getFrequentlyBought = cache(async (): Promise<Product[]> => {
   return market2Api.getTopRatedProducts();
-};
+});
 
-const getRelatedProducts = async (categorySlug?: string): Promise<Product[]> => {
+const getRelatedProducts = cache(async (categorySlug?: string): Promise<Product[]> => {
   if (categorySlug) {
     const res = await categoryProductApi.getProductsByCategory(categorySlug);
     if (res.products && res.products.length > 0) {
       return res.products;
     }
-    console.log(`No related products found for category: ${categorySlug}, falling back to latest.`);
   }
   return market2Api.getLatestProducts();
-};
+});
 
-const getAvailableShop = async (): Promise<Shop[]> => {
+const getAvailableShop = cache(async (): Promise<Shop[]> => {
   const response = await axios.get("/api/product/shops");
   return response.data;
-};
+});
 
-const getReviews = async (slug: string, model: string): Promise<any[]> => {
+const getReviews = cache(async (slug: string, model: string): Promise<any[]> => {
   try {
     if (!model) return [];
 
@@ -86,7 +83,7 @@ const getReviews = async (slug: string, model: string): Promise<any[]> => {
     console.error("Failed to fetch reviews:", error);
     return [];
   }
-};
+});
 
 const postReview = async (slug: string, model: string, reviewData: { rating: number; message: string; client_id: number }): Promise<any> => {
   try {
