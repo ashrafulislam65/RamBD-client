@@ -55,12 +55,14 @@ const linkList = [
       { href: "/support-tickets", title: "Support Tickets", iconName: "customer-service", count: 1 }
     ]
   },
+  /*
   {
     title: "ACCOUNT SETTINGS",
     list: [
-      { href: "/profile", title: "Profile Info", iconName: "user", count: 3 },
+      // { href: "/profile", title: "Profile Info", iconName: "user", count: 3 },
       { href: "/address", title: "Addresses", iconName: "pin", count: 16 },
       { href: "/payment-methods", title: "Payment Methods", iconName: "credit-card", count: 4 }
     ]
   }
+  */
 ];

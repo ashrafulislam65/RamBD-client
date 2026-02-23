@@ -15,6 +15,9 @@ import DashboardPageHeader from "@component/layout/DashboardPageHeader";
 import { EditProfileButton } from "@sections/customer-dashboard/profile";
 
 export default async function Profile() {
+  return null;
+
+  /*
   const user = await api.getUser();
 
   const infoList = [
@@ -132,4 +135,5 @@ export default async function Profile() {
       </TableRow>
     </Fragment>
   );
+  */
 }
