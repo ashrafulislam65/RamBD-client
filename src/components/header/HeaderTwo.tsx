@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -62,7 +63,14 @@ export default function HeaderTwo({ className }: HeaderProps) {
         <FlexBox className="logo" alignItems="center" mr="1rem">
           <Link href="/">
             <FlexBox alignItems="center">
-              <img src="/assets/images/rambd_logo.webp" alt="RamBD Logo" height="44px" />
+              <Image
+                src="/assets/images/rambd_logo.webp"
+                alt="RamBD Logo"
+                width={44}
+                height={44}
+                priority
+                style={{ objectFit: "contain" }}
+              />
               <H3 fontWeight="700" ml="10px" color="primary.main">
                 Ram<span style={{ color: "#27ae60" }}>BD</span>
               </H3>

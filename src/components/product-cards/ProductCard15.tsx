@@ -139,7 +139,9 @@ export default function ProductCard15(props: Props) {
             src={imgUrl}
             width={200}
             height={200}
-            alt="bonik"
+            alt={title}
+            loading="lazy"
+            sizes="(max-width: 640px) 50vw, 200px"
             style={{ height: "auto", width: "100%", objectFit: "contain" }}
           />
         </Link>

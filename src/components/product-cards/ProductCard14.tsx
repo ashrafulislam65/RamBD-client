@@ -33,8 +33,10 @@ export default function ProductCard14({ imgUrl, title, available }: Props) {
           src={imgUrl}
           width={256}
           height={166}
+          loading="lazy"
+          sizes="(max-width: 640px) 100vw, 256px"
           style={{ width: "100%", objectFit: "contain" }}
-          alt="bonik"
+          alt={title}
         />
       </ImgBox>
 

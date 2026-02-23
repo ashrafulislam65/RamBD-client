@@ -160,6 +160,8 @@ export default function ProductCard16(props: ProductCardProps) {
               src={imgUrl}
               width={190}
               height={190}
+              loading="lazy"
+              sizes="(max-width: 640px) 50vw, 190px"
               style={{ objectFit: "contain" }}
             />
           </Link>

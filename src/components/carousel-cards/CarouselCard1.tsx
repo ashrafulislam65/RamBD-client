@@ -1,3 +1,4 @@
+import Image from "next/image";
 import styled from "styled-components";
 // GLOBAL CUSTOM COMPONENTS
 import { Button } from "@component/buttons";
@@ -25,9 +26,8 @@ const StyledCarouselCard1 = styled.div`
   .image-holder {
     position: relative;
     max-width: 300px;
-    img {
-      width: 100%;
-    }
+    width: 300px;
+    height: 250px;
   }
 
   @media only screen and (max-width: 900px) {
@@ -77,7 +77,14 @@ export default function CarouselCard1({ title, image, buttonText, description }:
       </div>
 
       <div className="image-holder">
-        <img src={image} alt="apple-watch-1" />
+        <Image
+          src={image}
+          alt={title}
+          fill
+          sizes="300px"
+          style={{ objectFit: "contain" }}
+          priority
+        />
       </div>
     </StyledCarouselCard1>
   );

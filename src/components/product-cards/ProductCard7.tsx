@@ -73,6 +73,8 @@ export default function ProductCard7(props: ProductCard7Props) {
         alt={name}
         width={140}
         height={140}
+        loading="lazy"
+        sizes="140px"
         src={imgUrl || "/assets/images/products/iphone-xi.png"}
       />
 

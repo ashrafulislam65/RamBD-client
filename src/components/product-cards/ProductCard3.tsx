@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import styled, { CSSProperties } from "styled-components";
 import Rating from "../rating";
 import Icon from "../icon/Icon";
@@ -112,9 +113,16 @@ export default function ProductCard3(props: ProductCard3Props) {
   const { id, slug, title, price, regularPrice, off, imgUrl, rating, className, style } = props;
   return (
     <Wrapper className={className} style={style}>
-      <div className="image-holder">
+      <div className="image-holder" style={{ position: "relative", width: "100%", minHeight: "200px" }}>
         {!!off && <div className="sale-chip">{off}% off</div>}
-        <img src={imgUrl} alt={title} />
+        <Image
+          src={imgUrl}
+          alt={title}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
+          style={{ objectFit: "contain" }}
+          loading="lazy"
+        />
       </div>
 
       <div className="details">

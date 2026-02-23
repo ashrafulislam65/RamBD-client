@@ -150,7 +150,7 @@ export default function ProductCard19(props: ProductCard19Props) {
                 {off}% off
               </Chip>
             )}
-            <NextImage src={img} width={300} height={300} alt="category" className="product-img" />
+            <NextImage src={img} width={300} height={300} alt={name} className="product-img" sizes="(max-width: 640px) 50vw, 300px" />
           </Link>
 
           <EyeButton className="product-actions" onClick={() => setOpenDialog(true)}>

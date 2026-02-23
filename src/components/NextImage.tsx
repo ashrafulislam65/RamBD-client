@@ -10,6 +10,7 @@ type NextImageProps = ImageProps & SpaceProps & BorderRadiusProps;
 
 const NextImage = styled(Image).attrs(props => ({
   alt: props.alt || "image",
+  loading: (props as any).loading || "lazy",
   style: { width: "100%", height: "auto" }
 }))<NextImageProps>(
   compose(space, borderRadius)
