@@ -35,8 +35,8 @@ const getProduct = cache(async (slug: string, categorySlug?: string): Promise<Pr
     }
 
     const results = await Promise.all(probes);
-    const allRealProducts = results.flat();
-    const realProduct = allRealProducts.find((p) => p.slug === slug);
+    const allRealProducts = results.map(res => (res as any).products || res).flat();
+    const realProduct = allRealProducts.find((p) => (p as any).slug === slug);
 
     return realProduct || response.data;
   } catch (error) {

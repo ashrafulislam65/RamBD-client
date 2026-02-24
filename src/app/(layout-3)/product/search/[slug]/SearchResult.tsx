@@ -61,7 +61,7 @@ export default function SearchResult({
     let filtered = [...initialProducts];
 
     // 1. Filter by Brand
-    const brandIds = searchParams.get("brand_id")?.split(",") || [];
+    const brandIds = searchParams.get("brand_id")?.split(",").filter(Boolean) || [];
     if (brandIds.length > 0) {
       filtered = filtered.filter(p => p.brandId && brandIds.includes(String(p.brandId)));
     }
@@ -73,7 +73,7 @@ export default function SearchResult({
     if (maxPrice) filtered = filtered.filter(p => p.price <= maxPrice);
 
     // 3. Filter by Ratings
-    const ratings = searchParams.get("ratings")?.split(",") || [];
+    const ratings = searchParams.get("ratings")?.split(",").filter(Boolean) || [];
     if (ratings.length > 0) {
       filtered = filtered.filter(p => ratings.includes(Math.round(p.rating || 5).toString()));
     }

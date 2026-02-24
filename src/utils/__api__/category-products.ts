@@ -12,8 +12,8 @@ const getProductsByCategory = async (
     brand_id?: string
 ): Promise<{ products: Product[]; totalPages: number; totalProducts: number }> => {
     try {
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info";
-        const categoryUrl = process.env.NEXT_PUBLIC_CATEGORY_ITEMS_URL || `${apiBaseUrl}/product/product-category-items`;
+        const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
+        const categoryUrl = (process.env.NEXT_PUBLIC_CATEGORY_ITEMS_URL || `${apiBaseUrl}/product/product-category-items`).trim();
         let url = `${categoryUrl}/${slug}?page=${page}&limit=16`;
 
         if (sort) url += `&sort=${sort}`;

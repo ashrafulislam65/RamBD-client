@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import sharp from "sharp";
 import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
@@ -19,9 +18,9 @@ const CACHE_DIR = path.join(process.cwd(), ".next", "cache", "image-proxy");
 
 async function ensureCacheDir() {
     try {
-        await fs.access(CACHE_DIR);
-    } catch {
         await fs.mkdir(CACHE_DIR, { recursive: true });
+    } catch (err) {
+        console.warn("[image-proxy] Could not create cache directory:", err);
     }
 }
 
@@ -78,75 +77,104 @@ export async function GET(request: NextRequest) {
             // Cache miss, proceed to fetch and process
         }
 
-        // Fetch with browser-like headers so PHP backend doesn't block
-        const res = await fetch(url, {
-            headers: {
-                "User-Agent":
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
-                "Accept-Encoding": "gzip, deflate, br",
-                Referer: "https://rambd.com/",
-                "Cache-Control": "no-cache",
-            },
-            signal: AbortSignal.timeout(10000),
-        });
-
-        if (!res.ok) {
-            return new NextResponse(`Failed to fetch image: ${res.status}`, {
-                status: res.status,
-            });
-        }
-
-        const contentType = res.headers.get("content-type") || "";
-        if (!contentType.startsWith("image/")) {
-            return new NextResponse("Not an image", { status: 400 });
-        }
-
-        const buffer = Buffer.from(await res.arrayBuffer());
-
-        // 4. Optimization Pipeline
-        let transformer = sharp(buffer)
-            .rotate()
-            .resize(width, undefined, {
-                withoutEnlargement: true,
-                fit: "inside",
+        try {
+            // Fetch with browser-like headers so PHP backend doesn't block
+            const res = await fetch(url, {
+                headers: {
+                    "User-Agent":
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+                    "Accept-Encoding": "gzip, deflate, br",
+                    Referer: "https://rambd.com/",
+                    "Cache-Control": "no-cache",
+                },
+                signal: AbortSignal.timeout(10000),
             });
 
-        let finalContentType = `image/${format}`;
-        let finalBuffer: Buffer;
+            if (!res.ok) {
+                console.error(`[image-proxy] Fetch failed for ${url}: ${res.status}`);
+                return new NextResponse(`Failed to fetch image: ${res.status}`, {
+                    status: res.status,
+                });
+            }
 
-        if (prefersAvif) {
-            finalBuffer = await transformer
-                .avif({
-                    quality: Math.max(quality - 15, 40),
-                    effort: 4
-                })
-                .toBuffer();
-        } else {
-            finalBuffer = await transformer
-                .webp({
-                    quality: Math.max(quality - 5, 50),
-                    effort: 6
-                })
-                .toBuffer();
+            const contentType = res.headers.get("content-type") || "";
+            if (!contentType.startsWith("image/")) {
+                console.error(`[image-proxy] Invalid content type for ${url}: ${contentType}`);
+                return new NextResponse("Not an image", { status: 400 });
+            }
+
+            const originalBuffer = Buffer.from(await res.arrayBuffer());
+
+            // 4. Optimization Pipeline with Fallback
+            let finalBuffer: Buffer = originalBuffer;
+            let finalContentType = contentType;
+            let isOptimized = false;
+
+            try {
+                // Optimization Pipeline
+                // Use dynamic import for sharp to avoid loading errors if module is missing
+                const sharpModule = await import("sharp");
+                const sharp = (sharpModule.default || sharpModule) as any;
+
+                let transformer = sharp(originalBuffer)
+                    .rotate()
+                    .resize(width, undefined, {
+                        withoutEnlargement: true,
+                        fit: "inside",
+                    });
+
+                if (prefersAvif) {
+                    finalBuffer = await transformer
+                        .avif({
+                            quality: Math.max(quality - 15, 40),
+                            effort: 4
+                        })
+                        .toBuffer();
+                    finalContentType = "image/avif";
+                } else {
+                    finalBuffer = await transformer
+                        .webp({
+                            quality: Math.max(quality - 5, 50),
+                            effort: 6
+                        })
+                        .toBuffer();
+                    finalContentType = "image/webp";
+                }
+                isOptimized = true;
+            } catch (sharpError) {
+                console.error("[image-proxy] Sharp optimization failed, falling back to original:", sharpError);
+                // Fallback to original buffer if sharp fails (e.g. missing binaries on cPanel)
+                finalBuffer = originalBuffer;
+                finalContentType = contentType;
+                isOptimized = false;
+            }
+
+            // 5. Save to Cache (Fire and forget, don't block the response)
+            if (isOptimized) {
+                fs.writeFile(cacheFilePath, finalBuffer).catch(err =>
+                    console.error("[image-proxy] Cache write error:", err)
+                );
+            }
+
+            return new NextResponse(new Uint8Array(finalBuffer), {
+                status: 200,
+                headers: {
+                    "Content-Type": finalContentType,
+                    "Cache-Control": "public, max-age=31536000, immutable",
+                    "Vary": "Accept",
+                    "X-Image-Cache": "MISS",
+                    "X-Image-Optimized": isOptimized.toString(),
+                },
+            });
+        } catch (error) {
+            console.error("[image-proxy] Global Error:", error);
+            return new NextResponse(`Image fetch failed: ${error instanceof Error ? error.message : "Unknown error"}`, {
+                status: 500
+            });
         }
-
-        // 5. Save to Cache (Fire and forget, don't block the response)
-        fs.writeFile(cacheFilePath, finalBuffer).catch(err =>
-            console.error("[image-proxy] Cache write error:", err)
-        );
-
-        return new NextResponse(new Uint8Array(finalBuffer), {
-            status: 200,
-            headers: {
-                "Content-Type": finalContentType,
-                "Cache-Control": "public, max-age=31536000, immutable",
-                "Vary": "Accept",
-                "X-Image-Cache": "MISS",
-            },
-        });
-    } catch (error) {
-        console.error("[image-proxy] Error:", error);
-        return new NextResponse("Image fetch failed", { status: 500 });
+    } catch (globalError) {
+        console.error("[image-proxy] Critical Error:", globalError);
+        return new NextResponse("Internal Server Error", { status: 500 });
     }
 }

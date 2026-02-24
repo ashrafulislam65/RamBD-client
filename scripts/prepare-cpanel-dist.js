@@ -94,6 +94,22 @@ async function prepareForCPanel() {
         }
     });
 
+    // 7. NEW: Ensure Sharp Linux binaries are present
+    // This is critical when building on Windows for a Linux cPanel server
+    try {
+        console.log('\nInstalling Linux-compatible Sharp binaries...');
+        // We use npm install with specific platform flags. 
+        // This will create/update the node_modules inside dist-cpanel
+        execSync('npm install --platform=linux --arch=x64 sharp', {
+            cwd: distDir,
+            stdio: 'inherit'
+        });
+        console.log('Linux Sharp binaries installed successfully.');
+    } catch (err) {
+        console.warn('Warning: Could not install Linux Sharp binaries. Optimization might fail on cPanel.');
+        console.warn('Manual fix: Run "npm install --platform=linux --arch=x64 sharp" on your server if images don\'t load.');
+    }
+
     console.log('\n--- SUCCESS: dist-cpanel is ready ---');
     console.log('You can now ZIP the contents of "dist-cpanel" and upload to cPanel.');
 }

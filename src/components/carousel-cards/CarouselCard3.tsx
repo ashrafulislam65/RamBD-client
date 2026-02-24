@@ -42,47 +42,18 @@ interface Props {
 export default function CarouselCard3(props: Props) {
   const { img, title, category, discount, description, buttonText, priority } = props;
 
+  // Fallback image if URL is empty
+  const imgSrc = img && img.trim() !== "" ? img : "/assets/images/banners/banner-1.png";
+
   return (
     <CarouselCard>
       <Image
-        src={img}
+        src={imgSrc}
         fill
         priority={priority}
         alt={category || title || "Hero Image"}
         style={{ objectFit: "cover", zIndex: 0 }}
       />
-
-      <div className="hero-content" style={{ position: "relative", zIndex: 1 }}>
-        {title && (
-          <H4 mb={1} fontSize={30} lineHeight={1} fontWeight={400} textTransform="uppercase">
-            {title}
-          </H4>
-        )}
-
-        {category && (
-          <H1 fontSize={60} lineHeight={1} textTransform="uppercase">
-            {category}
-          </H1>
-        )}
-
-        {discount > 0 && (
-          <H4 fontSize={30} lineHeight={1} mt=".75rem" textTransform="uppercase">
-            SALE UP TO <Span color="primary.main">{discount}% OFF</Span>
-          </H4>
-        )}
-
-        {description && (
-          <Paragraph fontSize={18} mb="2rem">
-            {description}
-          </Paragraph>
-        )}
-
-        {buttonText && (
-          <Button variant="contained" color="primary" aria-label={buttonText}>
-            {buttonText}
-          </Button>
-        )}
-      </div>
     </CarouselCard>
   );
 }

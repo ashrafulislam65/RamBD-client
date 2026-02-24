@@ -16,9 +16,14 @@ const getServices = async (): Promise<Service[]> => {
 
 const getCategories = async () => {
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/home-menu`, { next: { revalidate: 0 } });
-    if (!response.ok) return [];
+    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
+    const url = `${apiBaseUrl}/home-menu`;
+    console.log(`Fetching categories from: ${url}`);
+    const response = await fetch(url, { next: { revalidate: 0 } });
+    if (!response.ok) {
+      console.error(`getCategories API response not ok: ${response.status} ${response.statusText}`);
+      return [];
+    }
 
     const data = await response.json();
     // Filter and sort to match navbar
@@ -67,56 +72,72 @@ const getCategories = async () => {
 
     console.log("Section 3 Categories Fetched:", categories.length, categories.slice(0, 2).map(c => c.name));
     return categories;
-  } catch (error) {
-    console.error("getCategories face error:", error);
+  } catch (error: any) {
+    console.error("getCategories face error:", error.message);
+    if (error.cause) console.error("getCategories error cause:", error.cause);
     return [];
   }
 };
 
 const getBrands = async (): Promise<Brand[]> => {
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/brand/getAllBrandsLast`, { next: { revalidate: 0 } });
-    if (!response.ok) return [];
+    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
+    const url = `${apiBaseUrl}/brand/getAllBrandsLast`;
+    console.log(`Fetching brands from: ${url}`);
+    const response = await fetch(url, { next: { revalidate: 0 } });
+    if (!response.ok) {
+      console.error(`getBrands API response not ok: ${response.status} ${response.statusText}`);
+      return [];
+    }
 
     const data = await response.json();
     const brands = data.brands || [];
     return brands.map(transformApiBrand);
-  } catch (error) {
-    console.error("getBrands face error:", error);
+  } catch (error: any) {
+    console.error("getBrands face error:", error.message);
+    if (error.cause) console.error("getBrands error cause:", error.cause);
     return [];
   }
 };
 
 const getMainCarouselData = async (): Promise<MainCarouselItem[]> => {
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/home`, { next: { revalidate: 0 } });
-    if (!response.ok) return [];
+    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
+    const url = `${apiBaseUrl}/home`;
+    console.log(`Fetching carousel data from: ${url}`);
+    const response = await fetch(url, { next: { revalidate: 0 } });
+    if (!response.ok) {
+      console.error(`getMainCarouselData API response not ok: ${response.status} ${response.statusText}`);
+      return [];
+    }
 
     const data = await response.json();
     const sliders = data.sliders || [];
 
     // Map API slider items to MainCarouselItem model
     return sliders.map((item: any) => {
-      // Construction of image URL from the slider_img field
-      const imgPath = item.slider_img || item.image || item.img || "";
-      const fullImgUrl = imgPath.startsWith('http')
-        ? imgPath
-        : `https://admin.unicodeconverter.info/storage/app/public/uploads/slider/${imgPath}`;
+      // API returns gal_img for filename, gal_title for title
+      // Images are stored under /storage/app/public/gallery/
+      const imgPath = item.gal_img || item.slider_img || item.image || item.img || "";
+      const fullImgUrl = imgPath
+        ? (imgPath.startsWith('http')
+          ? imgPath
+          : `https://admin.unicodeconverter.info/storage/app/public/gallery/${imgPath}`)
+        : "";
 
       return {
-        title: item.title || item.slider_title || "",
+        title: item.gal_title || item.title || item.slider_title || "",
         imgUrl: fullImgUrl,
         category: item.category || item.category_name || "",
         discount: item.discount || item.pct_off || 0,
         buttonText: item.button_text || "Shop Now",
-        buttonLink: item.button_link || item.link || "#",
+        buttonLink: item.button_link || item.url || item.link || "#",
         description: item.description || item.sub_title || ""
       };
     });
-  } catch (error) {
-    console.error("getMainCarouselData error:", error);
+  } catch (error: any) {
+    console.error("getMainCarouselData error:", error.message);
+    if (error.cause) console.error("getMainCarouselData error cause:", error.cause);
     return [];
   }
 };
@@ -138,8 +159,10 @@ const getWomenFashionProducts = async (): Promise<CategoryBasedProducts> => {
 
 const getLatestProducts = async (): Promise<Product[]> => {
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/LatestProductList/getAllLatestProducts`, { next: { revalidate: 0 } });
+    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
+    const url = `${apiBaseUrl}/LatestProductList/getAllLatestProducts`;
+    console.log(`Fetching latest products from: ${url}`);
+    const response = await fetch(url, { next: { revalidate: 0 } });
 
     let products = [];
     if (response.ok) {
@@ -154,38 +177,51 @@ const getLatestProducts = async (): Promise<Product[]> => {
     }
 
     return products.map(transformApiProduct).filter((p: any) => p !== null);
-  } catch (error) {
-    console.error("getLatestProducts fallback error:", error);
+  } catch (error: any) {
+    console.error("getLatestProducts fallback error:", error.message);
+    if (error.cause) console.error("getLatestProducts error cause:", error.cause);
     return getMostPopularProducts();
   }
 };
 
 const getMostPopularProducts = async (): Promise<Product[]> => {
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/most-popular-product`, { next: { revalidate: 0 } });
-    if (!response.ok) return [];
+    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
+    const url = `${apiBaseUrl}/most-popular-product`;
+    console.log(`Fetching popular products from: ${url}`);
+    const response = await fetch(url, { next: { revalidate: 0 } });
+    if (!response.ok) {
+      console.error(`getMostPopularProducts API response not ok: ${response.status} ${response.statusText}`);
+      return [];
+    }
 
     const data = await response.json();
     const products = data.populars || [];
     return products.map(transformApiProduct).filter((p: any) => p !== null);
-  } catch (error) {
-    console.error("getMostPopularProducts face error:", error);
+  } catch (error: any) {
+    console.error("getMostPopularProducts face error:", error.message);
+    if (error.cause) console.error("getMostPopularProducts error cause:", error.cause);
     return [];
   }
 };
 
 const getTopRatedProducts = async (): Promise<Product[]> => {
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const response = await fetch(`${apiBaseUrl}/top-rated-product`, { next: { revalidate: 0 } });
-    if (!response.ok) return [];
+    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
+    const url = `${apiBaseUrl}/top-rated-product`;
+    console.log(`Fetching top rated products from: ${url}`);
+    const response = await fetch(url, { next: { revalidate: 0 } });
+    if (!response.ok) {
+      console.error(`getTopRatedProducts API response not ok: ${response.status} ${response.statusText}`);
+      return [];
+    }
 
     const data = await response.json();
     const products = data.products || [];
     return products.map(transformApiProduct).filter((p: any) => p !== null);
-  } catch (error) {
-    console.error("getTopRatedProducts face error:", error);
+  } catch (error: any) {
+    console.error("getTopRatedProducts face error:", error.message);
+    if (error.cause) console.error("getTopRatedProducts error cause:", error.cause);
     return [];
   }
 };

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { debounce } from "lodash";
 
 import Box from "@component/Box";
@@ -20,11 +21,11 @@ interface SearchSuggestion {
 }
 
 export default function SearchInputWithCategory() {
+  const router = useRouter();
+  const [searchValue, setSearchValue] = useState("");
   const [resultList, setResultList] = useState<SearchSuggestion[]>([]);
 
-  const search = debounce(async (e) => {
-    const value = e.target?.value;
-
+  const search = debounce(async (value: string) => {
     if (!value) {
       setResultList([]);
     } else {
@@ -53,9 +54,17 @@ export default function SearchInputWithCategory() {
   }, 200);
 
   const hanldeSearch = useCallback((event: any) => {
-    event.persist();
-    search(event);
-  }, []);
+    const value = event.target?.value;
+    setSearchValue(value);
+    search(value);
+  }, [search]);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && searchValue.trim()) {
+      router.push(`/product/search/${encodeURIComponent(searchValue.trim())}`);
+      setResultList([]);
+    }
+  };
 
   const handleDocumentClick = () => setResultList([]);
 
@@ -73,7 +82,9 @@ export default function SearchInputWithCategory() {
 
         <TextField
           fullwidth
+          value={searchValue}
           onChange={hanldeSearch}
+          onKeyDown={handleKeyDown}
           className="search-field"
           placeholder="Search and hit enter..."
         />

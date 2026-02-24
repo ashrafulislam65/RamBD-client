@@ -1,6 +1,6 @@
 const getNavbarServices = async () => {
     try {
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info";
+        const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
         const response = await fetch(`${apiBaseUrl}/home-menu`, { next: { revalidate: 3600 } });
         if (!response.ok) return null;
         return response.json();
