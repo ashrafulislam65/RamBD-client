@@ -29,6 +29,9 @@ interface Product {
   on_sale?: boolean;
   in_stock?: boolean;
   featured?: boolean;
+  pro_meta_key?: string;
+  pro_meta_description?: string;
+  meta_title?: string;
 }
 
 export default Product;

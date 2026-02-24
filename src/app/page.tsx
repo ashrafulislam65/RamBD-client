@@ -1,4 +1,11 @@
 import { Fragment } from "react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "RamBD - The Best Gadgets Shop in Bangladesh",
+  description: "RamBD is your one-stop shop for microphones, gadgets, and electronics in Bangladesh. Build SEO friendly Online store, delivery app and Multi vendor store",
+  keywords: ["e-commerce", "gadgets", "microphones", "rambd", "bangladesh"]
+};
 // API FUNCTIONS
 import api from "@utils/__api__/market-2";
 import navbarApi from "@utils/__api__/navbar";

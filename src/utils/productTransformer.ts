@@ -80,7 +80,10 @@ export const transformApiProduct = (apiProduct: any): any => {
         in_stock: apiProduct.pro_status === 1 || (apiProduct.total_stock && Number(apiProduct.total_stock) > 0),
         on_sale: offerStatus,
         featured: apiProduct.featured === 1 || apiProduct.is_featured === 1,
-        visitors: apiProduct.visitors || 0
+        visitors: apiProduct.visitors || 0,
+        pro_meta_key: apiProduct.pro_meta_key || '',
+        pro_meta_description: apiProduct.pro_meta_description || apiProduct.pro_meta_sec || '',
+        meta_title: apiProduct.meta_title || ''
     };
 };
 

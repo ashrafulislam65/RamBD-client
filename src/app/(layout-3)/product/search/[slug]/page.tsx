@@ -1,6 +1,38 @@
 import Box from "@component/Box";
 import SearchResult from "./SearchResult";
 import api from "@utils/__api__/market-2";
+import { Metadata } from "next";
+
+export async function generateMetadata({ params: paramsPromise }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await paramsPromise;
+  const slug = decodeURIComponent(params?.slug || '');
+
+  try {
+    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
+    const response = await fetch(`${apiBaseUrl}/home-menu`, { next: { revalidate: 3600 } });
+
+    if (response.ok) {
+      const data = await response.json();
+      const categories = data.category || [];
+      const category = categories.find((c: any) => c.cate_slug === slug);
+
+      if (category) {
+        return {
+          title: category.meta_title || `${category.cate_name} | Felna Tech`,
+          description: category.meta_description || category.cate_desc?.replace(/<[^>]*>/g, '').slice(0, 160) || `Buy ${category.cate_name} at Felna Tech`,
+          keywords: category.cat_meta_keys || ""
+        };
+      }
+    }
+  } catch (error) {
+    console.error("Error generating metadata for category:", error);
+  }
+
+  return {
+    title: `${slug.charAt(0).toUpperCase() + slug.slice(1)} | Felna Tech`,
+    description: `Browse ${slug} at the best price from Felna Tech.`
+  };
+}
 
 interface Product {
   id: string;

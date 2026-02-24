@@ -22,13 +22,17 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   }
 
   // Remove HTML tags from description for meta tag
-  const plainDescription = product.description
+  const plainDescription = product.pro_meta_description || (product.description
     ? product.description.replace(/<[^>]*>/g, '').slice(0, 160) + "..."
-    : `Buy ${product.title} at the best price from Felna Tech.`;
+    : `Buy ${product.title} at the best price from Felna Tech.`);
+
+  const metaTitle = product.meta_title || `${product.title} | Felna Tech`;
+  const metaKeywords = product.pro_meta_key || "";
 
   return {
-    title: `${product.title} | Felna Tech`,
+    title: metaTitle,
     description: plainDescription,
+    keywords: metaKeywords,
     openGraph: {
       title: product.title,
       description: plainDescription,

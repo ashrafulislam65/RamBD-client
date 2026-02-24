@@ -5,6 +5,7 @@ import Shop from "@models/shop.model";
 
 import market2Api from "./market-2";
 import categoryProductApi from "./category-products";
+import { transformApiProduct } from "@utils/productTransformer";
 
 // get all product slug
 const getSlugs = async (): Promise<{ slug: string }[]> => {
@@ -19,7 +20,10 @@ const getProduct = cache(async (slug: string, categorySlug?: string): Promise<Pr
     console.log(`Directly fetching product for slug: ${slug}`);
     const response = await axios.get("/api/products/slug", { params: { slug } });
     if (response.data) {
-      return response.data;
+      // If it's the mock server, it might already be transformed, 
+      // but applying transformApiProduct is safer if it returns raw API format.
+      // We check for id to see if it's already a model.
+      return response.data.pro_title ? transformApiProduct(response.data) : response.data;
     }
 
     // 2. Probing logic as fallback (if direct fetch for some reason doesn't return the full data or is mock-only)
@@ -43,7 +47,7 @@ const getProduct = cache(async (slug: string, categorySlug?: string): Promise<Pr
     console.error("Error in getProduct:", error);
     // Final fallback
     const response = await axios.get("/api/products/slug", { params: { slug } });
-    return response.data;
+    return response.data.pro_title ? transformApiProduct(response.data) : response.data;
   }
 });
 
