@@ -20,10 +20,17 @@ interface Props {
 // ==============================================================
 
 export default function MobileCategoryImageBox({ icon, title, imgUrl }: Props) {
+  const isHtmlIcon = icon?.startsWith("<i");
+
   return (
     <FlexBox flexDirection="column" alignItems="center" justifyContent="center">
       {imgUrl ? (
-        <StyledImage src={imgUrl} width={69} height={60} alt="bonik" />
+        <StyledImage src={imgUrl} width={69} height={60} alt={title} />
+      ) : isHtmlIcon ? (
+        <div
+          style={{ fontSize: "32px", height: "48px", display: "flex", alignItems: "center", justifyContent: "center", color: "#4B566B" }}
+          dangerouslySetInnerHTML={{ __html: icon }}
+        />
       ) : (
         icon && <Icon size="48px">{icon}</Icon>
       )}
@@ -34,7 +41,7 @@ export default function MobileCategoryImageBox({ icon, title, imgUrl }: Props) {
         fontSize="11px"
         lineHeight="1"
         mt="0.5rem">
-        {title}
+        {title || "Category"}
       </Typography>
     </FlexBox>
   );

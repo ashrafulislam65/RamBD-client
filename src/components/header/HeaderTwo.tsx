@@ -23,9 +23,8 @@ type HeaderProps = { className?: string };
 // ========================================================================
 
 export default function HeaderTwo({ className }: HeaderProps) {
-  const { state } = useAppContext();
-  const [open, setOpen] = useState(false);
-  const toggleSidenav = () => setOpen(!open);
+  const { state, dispatch } = useAppContext();
+  const toggleSidenav = () => dispatch({ type: "TOGGLE_CART" });
 
   const CART_HANDLE = (
     <FlexBox ml="20px" alignItems="flex-start">
@@ -88,7 +87,7 @@ export default function HeaderTwo({ className }: HeaderProps) {
           </UserLoginDialog>
 
           <Sidenav
-            open={open}
+            open={state.isCartOpen}
             width={380}
             position="right"
             handle={CART_HANDLE}

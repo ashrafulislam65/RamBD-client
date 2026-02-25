@@ -41,7 +41,7 @@ const ProductCard6 = ({ title, subtitle, imgUrl }: ProductCard6Props) => {
       </Chip>
 
       <Box borderRadius={8} display="flex" overflow="hidden">
-        <NextImage src={imgUrl} width={345} height={120} alt="bonik" />
+        <NextImage src={imgUrl} width={345} height={120} alt={title} />
       </Box>
     </Card>
   );

@@ -49,7 +49,7 @@ export default function MiniCart({ toggleSidenav = () => { } }: MiniCartProps) {
             flexDirection="column"
             justifyContent="center"
             height="calc(100% - 80px)">
-            <Image src="/assets/images/logos/shopping-bag.svg" width={90} height={90} alt="bonik" />
+            <Image src="/assets/images/logos/shopping-bag.svg" width={90} height={90} alt="Empty Cart" />
             <Paragraph mt="1rem" color="text.muted" textAlign="center" maxWidth="200px">
               Your shopping bag is empty. Start shopping
             </Paragraph>
@@ -128,8 +128,18 @@ export default function MiniCart({ toggleSidenav = () => { } }: MiniCartProps) {
       {!!state.cart.length && (
         <div className="actions">
           <Link href="/checkout">
-            <Button fullwidth color="primary" variant="contained" onClick={toggleSidenav}>
-              <Typography fontWeight={600}>Checkout Now ({currency(getTotalPrice())})</Typography>
+            <Button
+              fullwidth
+              color="primary"
+              variant="contained"
+              onClick={toggleSidenav}
+              style={{ backgroundColor: "#28a745", textTransform: "lowercase", padding: "12px" }}>
+              <FlexBox alignItems="center" justifyContent="center" width="100%">
+                <Typography fontWeight={600} mr="10px">
+                  processed to checkout
+                </Typography>
+                <Icon size="1.25rem">credit-card</Icon>
+              </FlexBox>
             </Button>
           </Link>
 

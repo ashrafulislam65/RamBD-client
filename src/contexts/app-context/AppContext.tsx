@@ -7,7 +7,7 @@ import { ActionType, InitialState, ContextProps } from "./types";
 // DATA
 import { INITIAL_CART } from "./data";
 
-const INITIAL_STATE = { cart: INITIAL_CART, isHeaderFixed: false };
+const INITIAL_STATE = { cart: INITIAL_CART, isCartOpen: false, isHeaderFixed: false };
 
 export const AppContext = createContext<ContextProps>({
   state: INITIAL_STATE,
@@ -18,6 +18,9 @@ const reducer = (state: InitialState, action: ActionType) => {
   switch (action.type) {
     case "TOGGLE_HEADER":
       return { ...state, isHeaderFixed: action.payload };
+
+    case "TOGGLE_CART":
+      return { ...state, isCartOpen: action.payload !== undefined ? action.payload : !state.isCartOpen };
 
     case "CHANGE_CART_AMOUNT":
       let cartList = state.cart;
@@ -42,6 +45,9 @@ const reducer = (state: InitialState, action: ActionType) => {
 
     case "RESTORE_CART":
       return { ...state, cart: action.payload };
+
+    case "CLEAR_CART":
+      return { ...state, cart: [] };
 
     default: {
       return state;

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Fragment } from "react";
+import styled, { keyframes } from "styled-components";
 // GLOBAL CUSTOM COMPONENTS
 import Box from "@component/Box";
 import Select from "@component/Select";
@@ -8,11 +9,11 @@ import Grid from "@component/grid/Grid";
 import { Card1 } from "@component/Card1";
 import Divider from "@component/Divider";
 import FlexBox from "@component/FlexBox";
-import TextArea from "@component/textarea";
+import Icon from "@component/icon/Icon";
+import LazyImage from "@component/LazyImage";
 import { Button } from "@component/buttons";
 import TextField from "@component/text-field";
 import Typography from "@component/Typography";
-import { ProductCard7 } from "@component/product-cards";
 // CUSTOM HOOK
 import { useAppContext } from "@context/app-context";
 // CUSTOM DATA
@@ -20,102 +21,346 @@ import countryList from "@data/countryList";
 // UTILS
 import { currency } from "@utils/utils";
 
+const float = keyframes`
+  0% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-60%) translateX(-5px); }
+  100% { transform: translateY(-50%) translateX(0); }
+`;
+
+const wiggle = keyframes`
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
+`;
+
+const StyledSticker = styled(Box)`
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1001;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-right: none;
+  border-radius: 24px 0 0 24px;
+  padding: 12px 8px 12px 14px;
+  color: white;
+  animation: ${float} 4s ease-in-out infinite;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: -10px 10px 30px rgba(0, 0, 0, 0.15);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
+    opacity: 0.85;
+    z-index: -1;
+    border-radius: inherit;
+  }
+
+  &:hover {
+    padding-left: 20px;
+    transform: translateY(-50%) translateX(-5px) scale(1.05);
+    box-shadow: -15px 15px 40px rgba(244, 114, 182, 0.3);
+    
+    .cart-icon {
+      animation: ${wiggle} 0.5s ease-in-out infinite;
+    }
+  }
+
+  .items-badge {
+    background: white;
+    color: #f472b6;
+    font-weight: 800;
+    box-shadow: 0 4px 10px rgba(244, 114, 182, 0.2);
+  }
+`;
+
 export default function Cart() {
-  const { state } = useAppContext();
+  const { state, dispatch } = useAppContext();
 
   const getTotalPrice = () => {
-    return state.cart.reduce((accumulator, item) => accumulator + item.price * item.qty, 0) || 0;
+    return state?.cart?.reduce((accumulator, item) => accumulator + item.price * item.qty, 0) || 0;
   };
+
+  const handleCartAmountChange = (amount: number, item: any) => () => {
+    dispatch({
+      type: "CHANGE_CART_AMOUNT",
+      payload: { ...item, qty: amount }
+    });
+  };
+
+  const cartList = state?.cart || [];
 
   return (
     <Fragment>
       <Grid container spacing={6}>
         <Grid item lg={8} md={8} xs={12}>
-          {state.cart.map((item) => (
-            <ProductCard7
-              mb="1.5rem"
-              id={item.id}
-              key={item.id}
-              qty={item.qty}
-              slug={item.slug}
-              name={item.name}
-              price={item.price}
-              imgUrl={item.imgUrl}
-            />
-          ))}
-        </Grid>
+          <Box
+            bg="white"
+            borderRadius="8px"
+            border="1px solid"
+            borderColor="gray.300"
+            overflow="hidden">
+            <Box px="1rem" py="0.5rem" bg="gray.100" borderBottom="1px solid" borderColor="gray.300">
+              <Grid container spacing={2}>
+                <Grid item md={5} xs={5}>
+                  <Typography fontWeight="600" fontSize="14px">
+                    Name
+                  </Typography>
+                </Grid>
+                <Grid item md={2} xs={2}>
+                  <Typography fontWeight="600" fontSize="14px" textAlign="center">
+                    Price
+                  </Typography>
+                </Grid>
+                <Grid item md={3} xs={3}>
+                  <Typography fontWeight="600" fontSize="14px" textAlign="center">
+                    Qty
+                  </Typography>
+                </Grid>
+                <Grid item md={2} xs={2}>
+                  <Typography fontWeight="600" fontSize="14px" textAlign="right">
+                    Total
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
 
-        <Grid item lg={4} md={4} xs={12}>
-          <Card1>
-            <FlexBox justifyContent="space-between" alignItems="center" mb="1rem">
-              <Typography color="gray.600">Total:</Typography>
+            {cartList.length > 0 ? (
+              cartList.map((item) => (
+                <Box
+                  key={item.id}
+                  px="1rem"
+                  py="1rem"
+                  borderBottom="1px solid"
+                  borderColor="gray.200">
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item md={5} xs={5}>
+                      <FlexBox alignItems="center">
+                        <Box mr="1rem">
+                          <LazyImage
+                            alt={item.name}
+                            src={item.imgUrl || "/assets/images/products/iphone-xi.png"}
+                            width={60}
+                            height={60}
+                            borderRadius="5px"
+                          />
+                        </Box>
+                        <Typography fontWeight="600" fontSize="14px">
+                          {item.name}
+                        </Typography>
+                      </FlexBox>
+                    </Grid>
 
-              <Typography fontSize="18px" fontWeight="600" lineHeight="1">
-                {currency(getTotalPrice())}
-              </Typography>
-            </FlexBox>
+                    <Grid item md={2} xs={2}>
+                      <Typography fontSize="14px" textAlign="center">
+                        {currency(item.price)}
+                      </Typography>
+                    </Grid>
 
-            <Divider mb="1rem" />
+                    <Grid item md={3} xs={3}>
+                      <FlexBox alignItems="center" justifyContent="center">
+                        <Button
+                          size="none"
+                          padding="4px"
+                          color="primary"
+                          variant="outlined"
+                          disabled={item.qty === 1}
+                          borderColor="gray.400"
+                          onClick={handleCartAmountChange(item.qty - 1, item)}>
+                          <Icon variant="small">minus</Icon>
+                        </Button>
 
-            <FlexBox alignItems="center" mb="1rem">
-              <Typography fontWeight="600" mr="10px">
-                Additional Comments
-              </Typography>
+                        <Typography mx="0.75rem" fontWeight="600" fontSize="14px">
+                          {item.qty}
+                        </Typography>
 
-              <Box p="3px 10px" bg="primary.light" borderRadius="3px">
-                <Typography fontSize="12px" color="primary.main">
-                  Note
+                        <Button
+                          size="none"
+                          padding="4px"
+                          color="primary"
+                          variant="outlined"
+                          borderColor="gray.400"
+                          onClick={handleCartAmountChange(item.qty + 1, item)}>
+                          <Icon variant="small">plus</Icon>
+                        </Button>
+                      </FlexBox>
+                    </Grid>
+
+                    <Grid item md={2} xs={2}>
+                      <Typography fontSize="14px" fontWeight="600" textAlign="right">
+                        {currency(item.price * item.qty)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Box>
+              ))
+            ) : (
+              <Box py="2rem" textAlign="center">
+                <Typography fontSize="16px" fontWeight="600" color="gray.600">
+                  Cart is Empty
                 </Typography>
+              </Box>
+            )}
+
+            <FlexBox p="1.5rem" style={{ gap: 16 }}>
+              <Box flex={1}>
+                <Link href="/" passHref>
+                  <Button
+                    variant="outlined"
+                    color="dark"
+                    borderRadius="5px"
+                    fullwidth
+                    style={{ textTransform: "none" }}>
+                    <Icon size="1rem" mr="0.5rem">
+                      shopping-cart
+                    </Icon>
+                    Continue Shopping
+                  </Button>
+                </Link>
+              </Box>
+
+              <Box flex={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  borderRadius="5px"
+                  fullwidth
+                  style={{ textTransform: "none" }}
+                  onClick={() => dispatch({ type: "CLEAR_CART" })}>
+                  <Icon size="1rem" mr="0.5rem">
+                    delete
+                  </Icon>
+                  Clear Shopping Cart
+                </Button>
               </Box>
             </FlexBox>
 
-            <TextArea rows={6} fullwidth mb="1rem" />
+            <Divider bg="gray.300" />
 
-            <Divider mb="1rem" />
+            <Box p="1.5rem">
+              <Box
+                bg="gray.100"
+                p="1px"
+                borderRadius="5px"
+                border="1px solid"
+                borderColor="gray.300"
+                maxWidth="100%">
+                <TextField
+                  placeholder="ENTER COUPON CODE"
+                  fullwidth
+                  style={{
+                    border: "none",
+                    backgroundColor: "transparent",
+                    padding: "10px 15px",
+                    fontSize: "14px",
+                    textTransform: "uppercase"
+                  }}
+                />
+              </Box>
 
-            <TextField placeholder="Voucher" fullwidth />
+              <Typography mt="1rem" fontSize="13px" fontWeight="600">
+                To get discount with our special coupone please register !!{" "}
+                <Link href="/register">
+                  <Typography
+                    as="span"
+                    color="marron.main"
+                    style={{ textDecoration: "underline", cursor: "pointer" }}>
+                    Register now &rarr;
+                  </Typography>
+                </Link>
+              </Typography>
+            </Box>
+          </Box>
+        </Grid>
 
-            <Button variant="outlined" color="primary" mt="1rem" mb="30px" fullwidth>
-              Apply Voucher
-            </Button>
-
-            <Divider mb="1.5rem" />
-
-            <Typography fontWeight="600" mb="1rem">
-              Shipping Estimates
+        <Grid item lg={4} md={4} xs={12}>
+          <Card1 borderRadius="8px" p="1.5rem">
+            <Typography fontSize="20px" fontWeight="700" mb="1.5rem">
+              Cart Summery
             </Typography>
 
-            <Select
-              mb="1rem"
-              label="Country"
-              options={countryList}
-              placeholder="Select Country"
-              onChange={(e) => console.log(e)}
-            />
+            <FlexBox justifyContent="space-between" alignItems="center" mb="1rem">
+              <Typography color="gray.700" fontWeight="600">
+                Order Total
+              </Typography>
+              <Typography fontWeight="600">{currency(getTotalPrice())} Tk</Typography>
+            </FlexBox>
 
-            <Select
-              label="State"
-              options={stateList}
-              placeholder="Select State"
-              onChange={(e) => console.log(e)}
-            />
+            <Divider mb="1rem" bg="gray.300" />
 
-            <Box mt="1rem">
-              <TextField label="Zip Code" placeholder="3100" fullwidth />
-            </Box>
+            <FlexBox justifyContent="space-between" alignItems="center" mb="1rem">
+              <Typography color="gray.700" fontWeight="600">
+                Discount
+              </Typography>
+              <Typography fontWeight="600">0 Tk</Typography>
+            </FlexBox>
 
-            <Button variant="outlined" color="primary" my="1rem" fullwidth>
-              Calculate Shipping
-            </Button>
+            <Divider mb="1rem" bg="gray.300" />
 
-            <Link href="/checkout">
-              <Button variant="contained" color="primary" fullwidth>
-                Checkout Now
+            <FlexBox justifyContent="space-between" alignItems="center" mb="1rem">
+              <Typography color="gray.700" fontWeight="600">
+                Promotion Discount
+              </Typography>
+              <Typography fontWeight="600">0 Tk</Typography>
+            </FlexBox>
+
+            <Divider mb="1rem" bg="gray.300" />
+
+            <FlexBox justifyContent="space-between" alignItems="center" mb="1.5rem" pt="1rem">
+              <Typography fontSize="16px" fontWeight="700">
+                Final Total
+              </Typography>
+              <Typography fontSize="16px" fontWeight="700">
+                {currency(getTotalPrice())} Tk
+              </Typography>
+            </FlexBox>
+
+            <Link href="/checkout" passHref>
+              <Button
+                variant="contained"
+                color="primary"
+                fullwidth
+                borderRadius="5px"
+                py="12px"
+                style={{ textTransform: "none" }}>
+                <Icon size="1.25rem" mr="10px">
+                  credit-card
+                </Icon>
+                Proceed to Checkout
               </Button>
             </Link>
           </Card1>
         </Grid>
       </Grid>
+
+      {/* Pookie Floating Sticker */}
+      <StyledSticker onClick={() => dispatch({ type: "TOGGLE_CART", payload: true })}>
+        <FlexBox flexDirection="column" alignItems="center">
+          <Box className="items-badge" borderRadius="50%" width="30px" height="30px" display="flex" alignItems="center" justifyContent="center" mb="6px">
+            <Typography fontSize="12px">
+              {cartList.reduce((acc, item) => acc + item.qty, 0)}
+            </Typography>
+          </Box>
+
+          <Icon size="1.75rem" mb="4px" className="cart-icon">shopping-bag</Icon>
+
+          <Typography fontSize="9px" fontWeight="700" style={{ textTransform: "uppercase", letterSpacing: "1.5px", opacity: 0.9 }}>
+            Cart
+          </Typography>
+
+          <Box mt="8px" pt="6px" borderTop="1px solid rgba(255,255,255,0.3)" width="100%" textAlign="center">
+            <Typography fontSize="14px" fontWeight="800">
+              ৳{getTotalPrice()}
+            </Typography>
+          </Box>
+        </FlexBox>
+      </StyledSticker>
     </Fragment>
   );
 }

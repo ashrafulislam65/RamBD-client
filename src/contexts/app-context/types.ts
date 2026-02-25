@@ -5,6 +5,7 @@ export interface ContextProps {
 
 export interface InitialState {
   cart: CartItem[];
+  isCartOpen: boolean;
   isHeaderFixed: boolean;
 }
 
@@ -30,9 +31,23 @@ interface LayoutActionType {
   payload: boolean;
 }
 
+interface ToggleCartActionType {
+  type: "TOGGLE_CART";
+  payload?: boolean;
+}
+
 interface RestoreCartActionType {
   type: "RESTORE_CART";
   payload: CartItem[];
 }
 
-export type ActionType = CartActionType | LayoutActionType | RestoreCartActionType;
+interface ClearCartActionType {
+  type: "CLEAR_CART";
+}
+
+export type ActionType =
+  | CartActionType
+  | LayoutActionType
+  | RestoreCartActionType
+  | ClearCartActionType
+  | ToggleCartActionType;

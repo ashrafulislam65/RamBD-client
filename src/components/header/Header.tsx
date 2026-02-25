@@ -25,9 +25,8 @@ type HeaderProps = { isFixed?: boolean; className?: string };
 // =====================================================================
 
 export default function Header({ isFixed, className }: HeaderProps) {
-  const { state } = useAppContext();
-  const [open, setOpen] = useState(false);
-  const toggleSidenav = () => setOpen(!open);
+  const { state, dispatch } = useAppContext();
+  const toggleSidenav = () => dispatch({ type: "TOGGLE_CART" });
 
   const CART_HANDLE = (
     <Box ml="20px" position="relative">
@@ -87,7 +86,7 @@ export default function Header({ isFixed, className }: HeaderProps) {
           </UserLoginDialog>
 
           <Sidenav
-            open={open}
+            open={state.isCartOpen}
             width={380}
             position="right"
             handle={CART_HANDLE}

@@ -55,23 +55,55 @@ export default function MobileCategoryNav() {
           });
         }
 
+        const iconMapper: Record<string, string> = {
+          "microphone": "fas fa-microphone",
+          "trypod": "fas fa-video",
+          "gadgets": "fas fa-mobile-screen",
+          "converter": "fas fa-plug",
+          "electronics": "fas fa-laptop",
+          "watch": "fas fa-stopwatch",
+          "camera": "fas fa-camera",
+          "headphones": "fas fa-headphones"
+        };
+
+        const getIconClass = (iconStr: string, catName: string) => {
+          let iconClass = iconStr || "";
+          const nameLower = catName.toLowerCase();
+
+          if (iconClass.includes("<i class=")) {
+            const match = iconClass.match(/class="([^"]+)"/);
+            if (match && match[1]) iconClass = match[1];
+          } else if (iconMapper[nameLower]) {
+            iconClass = iconMapper[nameLower];
+          } else if (iconClass && !iconClass.startsWith("fa")) {
+            // If it's a simple word like "heart" or "user", prepend fas fa-
+            iconClass = `fas fa-${iconClass.toLowerCase().replace(/\s+/g, "-")}`;
+          }
+
+          // Return as HTML if it's already HTML or starts with fa (mapped/extracted)
+          if (iconClass.startsWith("fa")) return `<i class="${iconClass}"></i>`;
+          if (iconClass.startsWith("<i")) return iconClass;
+
+          return '<i class="fas fa-th-large"></i>'; // Default fallback
+        };
+
         const mapSubCategories = (subs?: any[]): NavItem[] | undefined => {
           return subs?.map(sub => {
             const children = sub.sub_categories || sub.category_sub_categories || sub.children || childMap[sub.id];
             return {
               title: sub.cate_name,
               href: `/category/${sub.cate_slug}`,
-              icon: "dot", // Mobile icons for subcats are usually dots or similar
+              icon: getIconClass(sub.cate_icon, sub.cate_name),
               children: mapSubCategories(children)
             };
           });
         };
 
         const mappedNavs: NavItem[] = sortedMenus.map((m: any) => ({
-          title: m.category.cate_name,
-          href: `/category/${m.category.cate_slug}`,
-          icon: m.category.cate_icon || "dress", // Use dress as default if missing
-          children: mapSubCategories(m.category.sub_categories || m.category.category_sub_categories || m.category.children || childMap[m.category.id])
+          title: m.category?.cate_name || "Category",
+          href: `/category/${m.category?.cate_slug || ""}`,
+          icon: getIconClass(m.category?.cate_icon, m.category?.cate_name),
+          children: mapSubCategories(m.category?.sub_categories || m.category?.category_sub_categories || m.category?.children || childMap[m.category?.id])
         }));
 
         setNavList(mappedNavs);
@@ -92,9 +124,6 @@ export default function MobileCategoryNav() {
     setCategory(cat);
   };
 
-  // HIDDEN IN LARGE DEVICE
-  if (width > 900) return null;
-
   return (
     <MobileCategoryNavStyle>
       <Header className="header" />
@@ -107,9 +136,10 @@ export default function MobileCategoryNav() {
               className={clsx({ "main-category-box": true, active: category?.href === item.href })}
               onClick={handleCategoryClick(item)}
             >
-              <Icon size="28px" mb="0.5rem">
-                {item.icon}
-              </Icon>
+              <div
+                style={{ fontSize: "28px", marginBottom: "0.5rem", color: category?.href === item.href ? "inherit" : "#7d879c" }}
+                dangerouslySetInnerHTML={{ __html: item.icon }}
+              />
 
               <Typography className="ellipsis" textAlign="center" fontSize="11px" lineHeight="1">
                 {item.title}
@@ -129,7 +159,7 @@ export default function MobileCategoryNav() {
             {subCategoryList.filter(sub => !sub.children || sub.children.length === 0).map((item, ind) => (
               <Grid item lg={1} md={2} sm={3} xs={4} key={ind}>
                 <Link href={item.href}>
-                  <MobileCategoryImageBox title={item.title} imgUrl="/assets/images/products/categories/default.png" />
+                  <MobileCategoryImageBox title={item.title} icon={item.icon} />
                 </Link>
               </Grid>
             ))}
@@ -151,7 +181,7 @@ export default function MobileCategoryNav() {
                   {item.children?.map((subItem: any, subInd: number) => (
                     <Grid item lg={1} md={2} sm={3} xs={4} key={subInd}>
                       <Link href={subItem.href}>
-                        <MobileCategoryImageBox title={subItem.title} imgUrl="/assets/images/products/categories/default.png" />
+                        <MobileCategoryImageBox title={subItem.title} icon={subItem.icon} />
                       </Link>
                     </Grid>
                   ))}

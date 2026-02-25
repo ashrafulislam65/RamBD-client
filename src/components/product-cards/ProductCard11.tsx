@@ -68,7 +68,7 @@ export default function ProductCard11(props: ProductCard11Props) {
               {off}% off
             </Chip>
           )}
-          <NextImage src={imgUrl} width={150} height={150} alt="bonik" />
+          <NextImage src={imgUrl} width={150} height={150} alt={title} />
         </Box>
 
         <Box mb="0.5rem">
