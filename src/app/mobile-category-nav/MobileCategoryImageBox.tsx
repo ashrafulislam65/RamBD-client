@@ -23,24 +23,32 @@ export default function MobileCategoryImageBox({ icon, title, imgUrl }: Props) {
   const isHtmlIcon = icon?.startsWith("<i");
 
   return (
-    <FlexBox flexDirection="column" alignItems="center" justifyContent="center">
+    <FlexBox flexDirection="column" alignItems="center" justifyContent="center" p="0.5rem">
       {imgUrl ? (
         <StyledImage src={imgUrl} width={69} height={60} alt={title} />
       ) : isHtmlIcon ? (
         <div
-          style={{ fontSize: "32px", height: "48px", display: "flex", alignItems: "center", justifyContent: "center", color: "#4B566B" }}
+          style={{
+            fontSize: "24px",
+            height: "40px",
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#4B566B"
+          }}
           dangerouslySetInnerHTML={{ __html: icon }}
         />
       ) : (
-        icon && <Icon size="48px">{icon}</Icon>
+        icon && <Icon size="40px">{icon}</Icon>
       )}
 
       <Typography
         className="ellipsis"
         textAlign="center"
         fontSize="11px"
-        lineHeight="1"
-        mt="0.5rem">
+        lineHeight="1.2"
+        mt="1rem">
         {title || "Category"}
       </Typography>
     </FlexBox>

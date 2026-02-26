@@ -34,50 +34,46 @@ const placeOrder = async (orderData: any) => {
     }
 };
 
+const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
+
 const generateOtp = async (phone: string) => {
     try {
-        // Normalize to 11-digit local format (01XXXXXXXXX)
-        const normalizedPhone = phone.replace(/^(\+88|88)/, "");
-        const apiBaseUrl = "https://admin.unicodeconverter.info";
+        const normalizedPhone = phone.replace(/\D/g, "").slice(-11);
         const url = `${apiBaseUrl}/api/generate-otp`;
 
-        console.log("🚀 Calling Generate OTP API (ABSOLUTE):", url, { phone: normalizedPhone });
+        console.log("🚀 [CHECKOUT] OTP Request:", { url, phone: normalizedPhone });
 
-        // Use standard axios to bypass MockAdapter
         const response = await axios.get(url, {
             params: { phone: normalizedPhone }
         });
 
-        console.log("✅ OTP API Response (ABSOLUTE):", response.data);
+        console.log("✅ [CHECKOUT] OTP Success:", response.data);
         return response.data;
     } catch (error: any) {
-        console.error("❌ OTP API Error (ABSOLUTE):", error.response?.data || error.message);
+        console.error("❌ [CHECKOUT] OTP Error:", error.response?.data || error.message);
         return { success: false, message: error.message };
     }
 };
 
 const getUserByPhone = async (phone: string) => {
     try {
-        // Normalize to 11-digit local format (01XXXXXXXXX)
-        const normalizedPhone = phone.replace(/^(\+88|88)/, "");
-        const apiBaseUrl = "https://admin.unicodeconverter.info";
+        const normalizedPhone = phone.replace(/\D/g, "").slice(-11);
         const url = `${apiBaseUrl}/api/get-user-by-phone`;
 
-        console.log("🔍 Fetching user by phone (ABSOLUTE):", normalizedPhone);
+        console.log("🔍 [CHECKOUT] User Request:", { url, phone: normalizedPhone });
 
-        // Use standard axios to bypass MockAdapter
         const response = await axios.get(url, {
             params: { phone: normalizedPhone }
         });
 
-        console.log("👤 User API Response (ABSOLUTE):", response.data);
+        console.log("👤 [CHECKOUT] User Success:", response.data);
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.status === 404) {
-            console.log("User not found (404), skipping auto-fill.");
-            return { success: false, message: "User not found" };
+            console.log("⚠️ [CHECKOUT] User not found (404)");
+            return { success: false, status: 404, message: "User not found" };
         }
-        console.error("❌ User API Error (ABSOLUTE):", error.response?.data || error.message);
+        console.error("❌ [CHECKOUT] User Error:", error.response?.data || error.message);
         return { success: false, message: "Failed to fetch user" };
     }
 };

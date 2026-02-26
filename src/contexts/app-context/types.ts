@@ -7,6 +7,7 @@ export interface InitialState {
   cart: CartItem[];
   isCartOpen: boolean;
   isHeaderFixed: boolean;
+  user: any | null;
 }
 
 export interface CartItem {
@@ -45,9 +46,20 @@ interface ClearCartActionType {
   type: "CLEAR_CART";
 }
 
+interface SetUserActionType {
+  type: "SET_USER";
+  payload: any;
+}
+
+interface LogoutActionType {
+  type: "LOGOUT";
+}
+
 export type ActionType =
   | CartActionType
   | LayoutActionType
   | RestoreCartActionType
   | ClearCartActionType
-  | ToggleCartActionType;
+  | ToggleCartActionType
+  | SetUserActionType
+  | LogoutActionType;

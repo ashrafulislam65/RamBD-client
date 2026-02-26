@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import clsx from "clsx";
 // GLOBAL CUSTOM COMPONENTS
@@ -31,10 +32,17 @@ interface NavItem {
 // ==============================================================
 
 export default function MobileCategoryNav() {
+  const router = useRouter();
   const width = useWindowSize();
   const [category, setCategory] = useState<NavItem | null>(null);
   const [navList, setNavList] = useState<NavItem[]>([]);
   const [subCategoryList, setSubCategoryList] = useState<NavItem[]>([]);
+
+  useEffect(() => {
+    if (width > 900) {
+      router.push("/");
+    }
+  }, [width, router]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -137,7 +145,14 @@ export default function MobileCategoryNav() {
               onClick={handleCategoryClick(item)}
             >
               <div
-                style={{ fontSize: "28px", marginBottom: "0.5rem", color: category?.href === item.href ? "inherit" : "#7d879c" }}
+                style={{
+                  fontSize: "28px",
+                  marginBottom: "0.5rem",
+                  color: category?.href === item.href ? "inherit" : "#7d879c",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
                 dangerouslySetInnerHTML={{ __html: item.icon }}
               />
 
@@ -157,7 +172,7 @@ export default function MobileCategoryNav() {
         <Box mb="2rem">
           <Grid container spacing={3}>
             {subCategoryList.filter(sub => !sub.children || sub.children.length === 0).map((item, ind) => (
-              <Grid item lg={1} md={2} sm={3} xs={4} key={ind}>
+              <Grid item lg={1} md={2} sm={3} xs={6} key={ind}>
                 <Link href={item.href}>
                   <MobileCategoryImageBox title={item.title} icon={item.icon} />
                 </Link>
@@ -179,7 +194,7 @@ export default function MobileCategoryNav() {
               <Box mb="2rem" mt="0.5rem">
                 <Grid container spacing={3}>
                   {item.children?.map((subItem: any, subInd: number) => (
-                    <Grid item lg={1} md={2} sm={3} xs={4} key={subInd}>
+                    <Grid item lg={1} md={2} sm={3} xs={6} key={subInd}>
                       <Link href={subItem.href}>
                         <MobileCategoryImageBox title={subItem.title} icon={subItem.icon} />
                       </Link>

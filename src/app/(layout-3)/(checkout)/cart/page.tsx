@@ -208,8 +208,8 @@ export default function Cart() {
               </Box>
             )}
 
-            <FlexBox p="1.5rem" style={{ gap: 16 }}>
-              <Box flex={1}>
+            <FlexBox p="1.5rem" flexDirection={{ xs: "column", md: "row" }} style={{ gap: 16 }}>
+              <Box width="100%">
                 <Link href="/" passHref>
                   <Button
                     variant="outlined"
@@ -220,12 +220,12 @@ export default function Cart() {
                     <Icon size="1rem" mr="0.5rem">
                       shopping-cart
                     </Icon>
-                    Continue Shopping
+                    Shop More
                   </Button>
                 </Link>
               </Box>
 
-              <Box flex={1}>
+              <Box width="100%">
                 <Button
                   variant="contained"
                   color="primary"
@@ -236,7 +236,7 @@ export default function Cart() {
                   <Icon size="1rem" mr="0.5rem">
                     delete
                   </Icon>
-                  Clear Shopping Cart
+                  Clear Cart
                 </Button>
               </Box>
             </FlexBox>

@@ -7,7 +7,12 @@ import { ActionType, InitialState, ContextProps } from "./types";
 // DATA
 import { INITIAL_CART } from "./data";
 
-const INITIAL_STATE = { cart: INITIAL_CART, isCartOpen: false, isHeaderFixed: false };
+const INITIAL_STATE = {
+  cart: INITIAL_CART,
+  isCartOpen: false,
+  isHeaderFixed: false,
+  user: null
+};
 
 export const AppContext = createContext<ContextProps>({
   state: INITIAL_STATE,
@@ -16,6 +21,12 @@ export const AppContext = createContext<ContextProps>({
 
 const reducer = (state: InitialState, action: ActionType) => {
   switch (action.type) {
+    case "SET_USER":
+      return { ...state, user: action.payload };
+
+    case "LOGOUT":
+      return { ...state, user: null };
+
     case "TOGGLE_HEADER":
       return { ...state, isHeaderFixed: action.payload };
 
@@ -62,6 +73,11 @@ export function AppProvider({ children }: PropsWithChildren) {
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       dispatch({ type: "RESTORE_CART", payload: JSON.parse(savedCart) });
+    }
+
+    const savedUser = localStorage.getItem("rambd_user");
+    if (savedUser) {
+      dispatch({ type: "SET_USER", payload: JSON.parse(savedUser) });
     }
   }, []);
 

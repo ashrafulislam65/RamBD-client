@@ -14,8 +14,8 @@ export const CarouselBox = styled("div")(({ theme }) => ({
     marginTop: 0,
     position: "absolute",
     "& div": {
-      borderColor: theme.colors.primary.main,
-      "&::after": { backgroundColor: theme.colors.primary.main }
+      borderColor: theme.colors?.primary?.main || "primary.main",
+      "&::after": { backgroundColor: theme.colors?.primary?.main || "primary.main" }
     }
   }
 }));

@@ -1,57 +1,175 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { useState } from "react";
+import Swal from "sweetalert2";
 
 import useVisibility from "./useVisibility";
 
+import Box from "@component/Box";
 import Icon from "@component/icon/Icon";
 import FlexBox from "@component/FlexBox";
 import CheckBox from "@component/CheckBox";
 import TextField from "@component/text-field";
+import Modal from "@component/Modal";
 import { Button, IconButton } from "@component/buttons";
-import { H3, H5, H6, SemiSpan } from "@component/Typography";
+import Typography, { H3, H5, H6, SemiSpan } from "@component/Typography";
+import { useAppContext } from "@context/app-context";
 
 import Divide from "./components/Divide";
 import SocialLinks from "./components/SocialLinks";
 // STYLED COMPONENT
 import { StyledRoot } from "./styles";
+import authApi from "@utils/__api__/auth";
+import Select from "@component/Select";
+import Grid from "@component/grid/Grid";
+import checkoutApi from "@utils/__api__/checkout";
+import { useEffect } from "react";
 
 export default function Signup() {
+  const router = useRouter();
+  const { dispatch } = useAppContext();
   const { passwordVisibility, togglePasswordVisibility } = useVisibility();
+  const [loading, setLoading] = useState(false);
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [sessionUser, setSessionUser] = useState<any>(null);
+
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [allThanas, setAllThanas] = useState<any[]>([]);
+  const [thanas, setThanas] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      const data = await checkoutApi.getDistrictsAndThanas();
+      if (data && Array.isArray(data.district)) {
+        const formattedDistricts = data.district
+          .map((d: any) => ({
+            label: d.district,
+            value: d.id
+          }))
+          .sort((a: any, b: any) => a.label.localeCompare(b.label));
+        setDistricts(formattedDistricts);
+        setAllThanas(data.thana || []);
+      }
+    };
+    fetchLocations();
+  }, []);
 
   const initialValues = {
     name: "",
     email: "",
-    password: "",
-    re_password: "",
-    agreement: false
+    phone_digits: "",
+    gender: 1, // 1: Male, 2: Female, 3: Others
+    district: "",
+    thana: "",
+    agreement: true
   };
 
   const formSchema = yup.object().shape({
-    name: yup.string().required("${path} is required"),
-    email: yup.string().email("invalid email").required("${path} is required"),
-    password: yup.string().required("${path} is required"),
-    re_password: yup
-      .string()
-      .oneOf([yup.ref("password"), null], "Passwords must match")
-      .required("Please re-type password"),
-    agreement: yup
-      .bool()
-      .test(
-        "agreement",
-        "You have to agree with our Terms and Conditions!",
-        (value) => value === true
-      )
-      .required("You have to agree with our Terms and Conditions!")
+    name: yup.string().required("Name is required"),
+    email: yup.string().email("invalid email").nullable(),
+    phone_digits: yup.string().required("Phone is required").length(9, "Enter 9 digits after +8801"),
+    gender: yup.number().required("Gender is required"),
+    district: yup.string().required("District is required"),
+    thana: yup.string().required("Thana is required")
   });
 
   const handleFormSubmit = async (values: any) => {
-    console.log(values);
+    try {
+      setLoading(true);
+      const fullPhone = `+8801${values.phone_digits}`;
+      const payload = {
+        name: values.name,
+        email: values.email,
+        phone: fullPhone,
+        district_id: values.district,
+        thana_id: values.thana,
+        gender: values.gender
+      };
+
+      const response = await authApi.register(payload);
+      setLoading(false);
+
+      if (response && (response.status === 200 || response.success)) {
+        setSessionUser({ phone: fullPhone, name: values.name });
+
+        // Save name mapping for login fallback
+        try {
+          const namesMap = JSON.parse(localStorage.getItem("rambd_phone_names") || "{}");
+          namesMap[fullPhone] = values.name;
+          localStorage.setItem("rambd_phone_names", JSON.stringify(namesMap));
+          console.log("💾 [SIGNUP] Name mapped for fallback:", { [fullPhone]: values.name });
+        } catch (e) { console.error("Error saving name map", e); }
+
+        setIsOtpModalOpen(true);
+        Swal.fire({
+          icon: 'success',
+          title: 'Registration Successful',
+          text: 'Please verify your phone number with the OTP sent.',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000
+        });
+      } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: response?.message || 'Registration failed' });
+      }
+    } catch (error: any) {
+      setLoading(false);
+      Swal.fire({ icon: 'error', title: 'Error', text: error.message || 'Something went wrong!' });
+    }
   };
 
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
+  const handleOtpConfirm = async () => {
+    if (!otp || otp.length !== 6) {
+      setOtpError("OTP must be exactly 6 digits");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      console.log("🔐 [SIGNUP] Confirming OTP:", { phone: sessionUser?.phone, otp });
+      const response = await authApi.verifyPhone(sessionUser.phone, otp);
+      console.log("📨 [SIGNUP] Verify Response:", response);
+      setLoading(false);
+
+      if (response && (response.status === 200 || response.success)) {
+        // SUCCESS: Store user data for session persistence
+        const userData = {
+          ...sessionUser,
+          token: response.token || response.access_token || null,
+          isLoggedIn: true,
+          registrationTime: new Date().toISOString()
+        };
+        localStorage.setItem("rambd_user", JSON.stringify(userData));
+        console.log("💾 [SIGNUP] Session Persisted:", userData);
+
+        dispatch({ type: "SET_USER", payload: userData });
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Verification Successful',
+          text: 'Your account has been verified. Please login with the password sent to your SMS.',
+        }).then(() => {
+          router.push("/login"); // Redirect to Login page per requirements
+        });
+      } else {
+        console.warn("⚠️ [SIGNUP] Verification failed response:", response);
+        setOtpError(response?.message || "Invalid OTP");
+      }
+    } catch (error: any) {
+      setLoading(false);
+      console.error("❌ [SIGNUP] handleOtpConfirm Error:", error);
+      setOtpError(error.message || "Verification failed");
+    }
+  };
+
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue } = useFormik({
     initialValues,
     onSubmit: handleFormSubmit,
     validationSchema: formSchema
@@ -60,109 +178,166 @@ export default function Signup() {
   return (
     <StyledRoot mx="auto" my="2rem" boxShadow="large" borderRadius={8}>
       <form className="content" onSubmit={handleSubmit}>
-        <H3 textAlign="center" mb="0.5rem">
-          Create Your RamBD Account
+        <H3 mb="1.5rem" fontWeight="700">
+          REGISTER / অ্যাকাউন্ট তৈরি করুন
         </H3>
 
-        <H5 fontWeight="600" fontSize="12px" color="gray.800" textAlign="center" mb="2.25rem">
-          Please fill all forms to continued
-        </H5>
+        {/* PHONE FIELD */}
+        <Box mb="1.25rem">
+          <FlexBox alignItems="center" mb="0.5rem">
+            <Typography variant="body1" fontWeight="600" color="text.secondary">
+              Phone / মোবাইল নং *
+            </Typography>
+          </FlexBox>
+          <FlexBox
+            alignItems="center"
+            borderRadius="8px"
+            style={{
+              border: (touched.phone_digits && errors.phone_digits) ? "1px solid #e74c3c" : "1px solid #dee2e6",
+              overflow: "hidden"
+            }}
+          >
+            <Box bg="gray.100" px="15px" py="12px" style={{ borderRight: "1px solid #dee2e6" }}>
+              <Typography fontWeight="700">+8801</Typography>
+            </Box>
+            <input
+              name="phone_digits"
+              type="tel"
+              maxLength={9}
+              placeholder="XXXXXXXXX"
+              value={values.phone_digits}
+              onBlur={handleBlur}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "");
+                setFieldValue("phone_digits", val);
+              }}
+              style={{
+                border: "none",
+                outline: "none",
+                width: "100%",
+                padding: "12px",
+                fontSize: "16px"
+              }}
+            />
+          </FlexBox>
+          {touched.phone_digits && errors.phone_digits && (
+            <Typography color="error.main" fontSize="12px" mt="4px">{errors.phone_digits}</Typography>
+          )}
+        </Box>
 
-        <TextField
+        {/* NAME FIELD */}
+        <Box mb="1.25rem">
+          <Typography variant="body1" fontWeight="600" mb="0.5rem">
+            Name / নাম *
+          </Typography>
+          <TextField
+            fullwidth
+            name="name"
+            placeholder="Enter Your Name"
+            onBlur={handleBlur}
+            value={values.name}
+            onChange={handleChange}
+            errorText={touched.name && errors.name}
+          />
+        </Box>
+
+        {/* EMAIL FIELD */}
+        <Box mb="1.25rem">
+          <Typography variant="body1" fontWeight="600" mb="0.5rem">
+            Email / ইমেইল
+          </Typography>
+          <TextField
+            fullwidth
+            name="email"
+            type="email"
+            placeholder="Enter Your Mail"
+            onBlur={handleBlur}
+            value={values.email}
+            onChange={handleChange}
+            errorText={touched.email && errors.email}
+          />
+        </Box>
+
+        {/* GENDER FIELD */}
+        <Box mb="1.25rem">
+          <Typography variant="body1" fontWeight="600" mb="0.5rem">
+            Gender *
+          </Typography>
+          <FlexBox gridGap="10px">
+            {[{ label: 'Male', value: 1 }, { label: 'Female', value: 2 }, { label: 'Others', value: 3 }].map((g) => (
+              <Button
+                key={g.value}
+                type="button"
+                variant={values.gender === g.value ? "contained" : "outlined"}
+                color={values.gender === g.value ? "primary" : "inherit"}
+                size="small"
+                onClick={() => setFieldValue("gender", g.value)}
+                style={{ flex: 1, borderColor: '#BE7374' }}
+              >
+                {g.label}
+              </Button>
+            ))}
+          </FlexBox>
+        </Box>
+
+        {/* DISTRICT & THANA */}
+        <Grid container spacing={3} mb="1.5rem">
+          <Grid item sm={6} xs={12}>
+            <Typography variant="body1" fontWeight="600" mb="0.5rem">
+              District / জেলা *
+            </Typography>
+            <Select
+              options={districts}
+              value={districts.find((d) => d.value === values.district) || ""}
+              onChange={(opt: any) => {
+                const districtId = opt ? opt.value : "";
+                setFieldValue("district", districtId);
+                setFieldValue("thana", ""); // Reset thana when district changes
+                if (districtId && allThanas.length > 0) {
+                  const filtered = allThanas
+                    .filter((t: any) => t.district_thana_id === districtId)
+                    .map((t: any) => ({ label: t.thana, value: t.id }))
+                    .sort((a: any, b: any) => a.label.localeCompare(b.label));
+                  setThanas(filtered);
+                } else {
+                  setThanas([]);
+                }
+              }}
+              placeholder="Select District"
+            />
+            {touched.district && errors.district && (
+              <Typography color="error.main" fontSize="12px" mt="4px">{errors.district}</Typography>
+            )}
+          </Grid>
+
+          <Grid item sm={6} xs={12}>
+            <Typography variant="body1" fontWeight="600" mb="0.5rem">
+              Thana / থানা *
+            </Typography>
+            <Select
+              options={thanas}
+              value={thanas.find((t) => t.value === values.thana) || ""}
+              onChange={(opt: any) => setFieldValue("thana", opt ? opt.value : "")}
+              placeholder="Select Thana"
+              isDisabled={!values.district}
+            />
+            {touched.thana && errors.thana && (
+              <Typography color="error.main" fontSize="12px" mt="4px">{errors.thana}</Typography>
+            )}
+          </Grid>
+        </Grid>
+
+        <Button
+          mb="1.65rem"
+          variant="contained"
+          type="submit"
           fullwidth
-          name="name"
-          mb="0.75rem"
-          label="Full Name"
-          onBlur={handleBlur}
-          value={values.name}
-          onChange={handleChange}
-          placeholder="Ralph Adwards"
-          errorText={touched.name && errors.name}
-        />
-
-        <TextField
-          fullwidth
-          mb="0.75rem"
-          name="email"
-          type="email"
-          onBlur={handleBlur}
-          value={values.email}
-          onChange={handleChange}
-          placeholder="exmple@mail.com"
-          label="Email or Phone Number"
-          errorText={touched.email && errors.email}
-        />
-
-        <TextField
-          fullwidth
-          mb="0.75rem"
-          name="password"
-          label="Password"
-          placeholder="*********"
-          onBlur={handleBlur}
-          value={values.password}
-          onChange={handleChange}
-          errorText={touched.password && errors.password}
-          type={passwordVisibility ? "text" : "password"}
-          endAdornment={
-            <IconButton
-              p="0.25rem"
-              mr="0.25rem"
-              type="button"
-              color={passwordVisibility ? "gray.700" : "gray.600"}
-              onClick={togglePasswordVisibility}>
-              <Icon variant="small" defaultcolor="currentColor">
-                {passwordVisibility ? "eye-alt" : "eye"}
-              </Icon>
-            </IconButton>
-          }
-        />
-        <TextField
-          mb="1rem"
-          fullwidth
-          name="re_password"
-          placeholder="*********"
-          label="Confirm Password"
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={values.re_password}
-          type={passwordVisibility ? "text" : "password"}
-          errorText={touched.re_password && errors.re_password}
-          endAdornment={
-            <IconButton
-              p="0.25rem"
-              size="small"
-              mr="0.25rem"
-              type="button"
-              onClick={togglePasswordVisibility}
-              color={passwordVisibility ? "gray.700" : "gray.600"}>
-              <Icon variant="small" defaultcolor="currentColor">
-                {passwordVisibility ? "eye-alt" : "eye"}
-              </Icon>
-            </IconButton>
-          }
-        />
-
-        <CheckBox
-          mb="1.75rem"
-          name="agreement"
-          color="secondary"
-          onChange={handleChange}
-          checked={values.agreement}
-          label={
-            <FlexBox>
-              <SemiSpan>By signing up, you agree to</SemiSpan>
-              <a href="/" target="_blank" rel="noreferrer noopener">
-                <H6 ml="0.5rem" borderBottom="1px solid" borderColor="gray.900">
-                  Terms & Condition
-                </H6>
-              </a>
-            </FlexBox>
-          }
-        />
-
-        <Button mb="1.65rem" variant="contained" color="primary" type="submit" fullwidth>
-          Create Account
+          disabled={loading}
+          style={{ backgroundColor: '#2ba56d', padding: '12px', fontSize: '18px', color: 'white' }}
+        >
+          <FlexBox alignItems="center">
+            Register <Icon ml="10px">registration</Icon>
+          </FlexBox>
         </Button>
 
         <Divide />
@@ -178,6 +353,61 @@ export default function Signup() {
           </H6>
         </Link>
       </FlexBox>
+
+      <Modal open={isOtpModalOpen} onClose={() => { setIsOtpModalOpen(false); setOtp(""); setOtpError(""); }}>
+        <Box p="2rem" bg="white" borderRadius="8px" maxWidth="400px" width="100%">
+          <H3 textAlign="center" mb="1rem">Verify Your Phone</H3>
+          <Box mb="1.5rem" p="12px" borderRadius="8px" bg="gray.100" textAlign="center">
+            <SemiSpan color="text.muted" display="block" mb="4px">OTP sent to</SemiSpan>
+            <H6 color="text.primary">{sessionUser?.phone || ""}</H6>
+          </Box>
+
+          <Box mb="1.5rem">
+            <TextField
+              fullwidth
+              type="tel"
+              placeholder="Enter 6-digit OTP"
+              value={otp}
+              onChange={(e) => {
+                const input = e.target.value.replace(/[^0-9]/g, "");
+                if (input.length <= 6) {
+                  setOtp(input);
+                  setOtpError("");
+                }
+              }}
+            />
+            {otpError && (
+              <Typography color="error.main" fontSize="12px" mt="0.5rem">
+                {otpError}
+              </Typography>
+            )}
+          </Box>
+
+          <Button
+            variant="contained"
+            color="primary"
+            fullwidth
+            onClick={handleOtpConfirm}
+            disabled={loading}
+          >
+            {loading ? "Verifying..." : "Verify OTP"}
+          </Button>
+
+          <Button
+            variant="text"
+            color="primary"
+            fullwidth
+            mt="1rem"
+            onClick={() => {
+              authApi.generateOtp(sessionUser?.phone)
+                .then(() => Swal.fire({ icon: 'success', title: 'OTP Resent', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 }))
+                .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to resend OTP' }));
+            }}
+          >
+            Resend OTP
+          </Button>
+        </Box>
+      </Modal>
     </StyledRoot>
   );
 }

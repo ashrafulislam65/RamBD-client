@@ -53,11 +53,32 @@ export default function Header({ isFixed, className }: HeaderProps) {
     </Box>
   );
 
-  const LOGIN_HANDLE = (
+  const LOGIN_HANDLE = state.user ? (
+    <IconButton ml="1rem" bg="gray.200" p="4px 12px" style={{ borderRadius: '20px' }}>
+      <FlexBox alignItems="center">
+        <Icon size="20px">user</Icon>
+        <Typography ml="8px" fontWeight="600" fontSize="14px">
+          {(() => {
+            const parts = state.user.name.split(' ');
+            if ((parts[0].toLowerCase() === 'md.' || parts[0].toLowerCase() === 'md') && parts.length > 1) {
+              return parts.slice(0, 2).join(' ');
+            }
+            return parts[0];
+          })()}
+        </Typography>
+      </FlexBox>
+    </IconButton>
+  ) : (
     <IconButton ml="1rem" bg="gray.200" p="8px">
       <Icon size="28px">user</Icon>
     </IconButton>
   );
+
+  const handleLogout = () => {
+    localStorage.removeItem("rambd_user");
+    dispatch({ type: "LOGOUT" });
+    window.location.href = "/";
+  };
 
   return (
     <StyledHeader className={className}>
@@ -79,11 +100,28 @@ export default function Header({ isFixed, className }: HeaderProps) {
         </FlexBox>
 
         <FlexBox className="header-right" alignItems="center">
-          <UserLoginDialog handle={LOGIN_HANDLE}>
-            <div>
-              <Login />
-            </div>
-          </UserLoginDialog>
+          {state.user ? (
+            <FlexBox alignItems="center">
+              <Link href="/profile">
+                {LOGIN_HANDLE}
+              </Link>
+              <IconButton
+                ml="0.5rem"
+                p="8px"
+                onClick={handleLogout}
+                title="Logout"
+                style={{ color: '#e74c3c' }}
+              >
+                <Icon size="20px">logout</Icon>
+              </IconButton>
+            </FlexBox>
+          ) : (
+            <UserLoginDialog handle={LOGIN_HANDLE}>
+              <div>
+                <Login />
+              </div>
+            </UserLoginDialog>
+          )}
 
           <Sidenav
             open={state.isCartOpen}

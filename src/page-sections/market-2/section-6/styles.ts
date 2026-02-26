@@ -8,7 +8,7 @@ export const ListItem = styled("li")(({ theme }) => ({
   cursor: "pointer",
   padding: "10px 0 0 0",
   transition: "all 0.3s",
-  "&:hover": { color: theme.colors.primary.main }
+  "&:hover": { color: theme.colors?.primary?.main || "primary.main" }
 }));
 
 export const List = styled("ul")({
