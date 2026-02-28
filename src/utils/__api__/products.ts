@@ -78,10 +78,8 @@ const getReviews = cache(async (slug: string, model: string): Promise<any[]> => 
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
     const url = `${apiBaseUrl}/api/products/reviews-data/${slug}/${cleanModel}`;
 
-    const response = await fetch(url, { next: { revalidate: 0 } });
-    if (!response.ok) return [];
-
-    const data = await response.json();
+    const response = await axios.get(url);
+    const data = response.data;
     return data.proReview || [];
   } catch (error) {
     console.error("Failed to fetch reviews:", error);
@@ -101,19 +99,8 @@ const postReview = async (slug: string, model: string, reviewData: { rating: num
       slug: slug
     };
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to post review: ${response.statusText}`);
-    }
-
-    return await response.json();
+    const response = await axios.post(url, body);
+    return response.data;
   } catch (error) {
     console.error("Failed to post review:", error);
     throw error;

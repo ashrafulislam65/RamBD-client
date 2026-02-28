@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useState } from "react";
 import Swal from "sweetalert2";
 
 import useVisibility from "./useVisibility";
@@ -24,7 +23,9 @@ import authApi from "@utils/__api__/auth";
 import Select from "@component/Select";
 import Grid from "@component/grid/Grid";
 import checkoutApi from "@utils/__api__/checkout";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useOtpTimer } from "@hook/useOtpTimer";
+import { formatPhoneInput, validatePhoneNumber, isValidFirstDigit } from "@utils/phoneValidation";
 
 export default function Signup() {
   const router = useRouter();
@@ -35,6 +36,7 @@ export default function Signup() {
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
   const [sessionUser, setSessionUser] = useState<any>(null);
+  const otpTimer = useOtpTimer("signup", 300);
 
   const [districts, setDistricts] = useState<any[]>([]);
   const [allThanas, setAllThanas] = useState<any[]>([]);
@@ -113,6 +115,7 @@ export default function Signup() {
           showConfirmButton: false,
           timer: 3000
         });
+        otpTimer.startTimer();
       } else {
         Swal.fire({ icon: 'error', title: 'Error', text: response?.message || 'Registration failed' });
       }
@@ -190,7 +193,11 @@ export default function Signup() {
             alignItems="center"
             borderRadius="8px"
             style={{
-              border: (touched.phone_digits && errors.phone_digits) ? "1px solid #e74c3c" : "1px solid #dee2e6",
+              border: (() => {
+                const { color } = validatePhoneNumber(values.phone_digits);
+                if (touched.phone_digits && errors.phone_digits) return "1px solid #e74c3c";
+                return `1px solid ${color}`;
+              })(),
               overflow: "hidden"
             }}
           >
@@ -200,12 +207,13 @@ export default function Signup() {
             <input
               name="phone_digits"
               type="tel"
-              maxLength={9}
-              placeholder="XXXXXXXXX"
-              value={values.phone_digits}
+              maxLength={10}
+              placeholder="XXXXX-XXXX"
+              value={formatPhoneInput(values.phone_digits)}
               onBlur={handleBlur}
               onChange={(e) => {
                 const val = e.target.value.replace(/\D/g, "");
+                if (val.length > 0 && !isValidFirstDigit(val[0])) return;
                 setFieldValue("phone_digits", val);
               }}
               style={{
@@ -213,13 +221,23 @@ export default function Signup() {
                 outline: "none",
                 width: "100%",
                 padding: "12px",
-                fontSize: "16px"
+                fontSize: "20px",
+                fontWeight: 700,
+                letterSpacing: "2px"
               }}
             />
           </FlexBox>
-          {touched.phone_digits && errors.phone_digits && (
-            <Typography color="error.main" fontSize="12px" mt="4px">{errors.phone_digits}</Typography>
-          )}
+          {(() => {
+            const { message, color } = validatePhoneNumber(values.phone_digits);
+            if (touched.phone_digits && errors.phone_digits) {
+              return <Typography color="error.main" fontSize="12px" mt="4px">{errors.phone_digits}</Typography>;
+            }
+            return (
+              <Typography color={color} fontSize="12px" mt="4px" fontWeight="600">
+                {message}
+              </Typography>
+            );
+          })()}
         </Box>
 
         {/* NAME FIELD */}
@@ -389,13 +407,29 @@ export default function Signup() {
             color="primary"
             fullwidth
             mt="1rem"
-            onClick={() => {
-              authApi.generateOtp(sessionUser?.phone)
-                .then(() => Swal.fire({ icon: 'success', title: 'OTP Resent', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 }))
-                .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to resend OTP' }));
+            disabled={otpTimer.isActive || loading}
+            onClick={async () => {
+              try {
+                setLoading(true);
+                await authApi.generateOtp(sessionUser?.phone);
+                setLoading(false);
+                otpTimer.startTimer();
+                Swal.fire({
+                  icon: 'success',
+                  title: 'OTP Resent',
+                  text: 'Please check your SMS',
+                  toast: true,
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 3000
+                });
+              } catch (err) {
+                setLoading(false);
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to resend OTP' });
+              }
             }}
           >
-            Resend OTP
+            {otpTimer.isActive ? `Resend OTP in ${otpTimer.formatTime()}` : "Resend OTP"}
           </Button>
         </Box>
       </Modal>

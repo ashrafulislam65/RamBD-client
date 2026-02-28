@@ -14,6 +14,8 @@ import { Button, IconButton } from "@component/buttons";
 import Typography, { H3, SemiSpan } from "@component/Typography";
 import authApi from "@utils/__api__/auth";
 import useVisibility from "../useVisibility";
+import { useOtpTimer } from "@hook/useOtpTimer";
+import { formatPhoneInput, validatePhoneNumber, isValidFirstDigit } from "@utils/phoneValidation";
 
 interface ForgotPasswordModalProps {
     open: boolean;
@@ -24,6 +26,7 @@ export default function ForgotPasswordModal({ open, onClose }: ForgotPasswordMod
     const [step, setStep] = useState(1); // 1: Phone, 2: OTP & New Password
     const [loading, setLoading] = useState(false);
     const { passwordVisibility, togglePasswordVisibility } = useVisibility();
+    const otpTimer = useOtpTimer("forgot_password", 300);
 
     const phoneSchema = yup.object().shape({
         phone_digits: yup.string().required("Phone is required").length(9, "Enter 9 digits after +8801"),
@@ -44,6 +47,7 @@ export default function ForgotPasswordModal({ open, onClose }: ForgotPasswordMod
                 await authApi.forgotPassword(fullPhone);
                 setLoading(false);
                 setStep(2);
+                otpTimer.startTimer();
                 Swal.fire({ icon: "success", title: "OTP Sent", text: "Please check your SMS", timer: 2000, showConfirmButton: false });
             } catch (error: any) {
                 setLoading(false);
@@ -88,23 +92,54 @@ export default function ForgotPasswordModal({ open, onClose }: ForgotPasswordMod
                     <form onSubmit={phoneForm.handleSubmit}>
                         <Box mb="1.5rem">
                             <Typography fontWeight="600" mb="0.5rem">Phone Number *</Typography>
-                            <FlexBox alignItems="center" borderRadius="8px" style={{ border: "1px solid #dee2e6", overflow: "hidden" }}>
+                            <FlexBox
+                                alignItems="center"
+                                borderRadius="8px"
+                                style={{
+                                    border: (() => {
+                                        const { color } = validatePhoneNumber(phoneForm.values.phone_digits);
+                                        if (phoneForm.touched.phone_digits && phoneForm.errors.phone_digits) return "1px solid #e74c3c";
+                                        return `1px solid ${color}`;
+                                    })(),
+                                    overflow: "hidden"
+                                }}
+                            >
                                 <Box bg="gray.100" px="15px" py="12px" style={{ borderRight: "1px solid #dee2e6" }}>
                                     <Typography fontWeight="700">+8801</Typography>
                                 </Box>
                                 <input
                                     name="phone_digits"
                                     type="tel"
-                                    maxLength={9}
-                                    placeholder="XXXXXXXXX"
-                                    value={phoneForm.values.phone_digits}
-                                    onChange={(e) => phoneForm.setFieldValue("phone_digits", e.target.value.replace(/\D/g, ""))}
-                                    style={{ border: "none", outline: "none", width: "100%", padding: "12px", fontSize: "16px" }}
+                                    maxLength={10}
+                                    placeholder="XXXXX-XXXX"
+                                    value={formatPhoneInput(phoneForm.values.phone_digits)}
+                                    onChange={(e) => {
+                                        const val = e.target.value.replace(/\D/g, "");
+                                        if (val.length > 0 && !isValidFirstDigit(val[0])) return;
+                                        phoneForm.setFieldValue("phone_digits", val);
+                                    }}
+                                    style={{
+                                        border: "none",
+                                        outline: "none",
+                                        width: "100%",
+                                        padding: "12px",
+                                        fontSize: "20px",
+                                        fontWeight: 700,
+                                        letterSpacing: "2px"
+                                    }}
                                 />
                             </FlexBox>
-                            {phoneForm.touched.phone_digits && phoneForm.errors.phone_digits && (
-                                <Typography color="error.main" fontSize="12px" mt="4px">{phoneForm.errors.phone_digits}</Typography>
-                            )}
+                            {(() => {
+                                const { message, color } = validatePhoneNumber(phoneForm.values.phone_digits);
+                                if (phoneForm.touched.phone_digits && phoneForm.errors.phone_digits) {
+                                    return <Typography color="error.main" fontSize="12px" mt="4px">{phoneForm.errors.phone_digits}</Typography>;
+                                }
+                                return (
+                                    <Typography color={color} fontSize="12px" mt="4px" fontWeight="600">
+                                        {message}
+                                    </Typography>
+                                );
+                            })()}
                         </Box>
                         <Button variant="contained" color="primary" fullwidth type="submit" disabled={loading}>
                             {loading ? "Processing..." : "Continue"}
@@ -152,7 +187,30 @@ export default function ForgotPasswordModal({ open, onClose }: ForgotPasswordMod
                             {loading ? "Resetting..." : "Reset Password"}
                         </Button>
 
-                        <Button variant="text" color="primary" fullwidth mt="1rem" onClick={() => setStep(1)}>
+                        <Button
+                            variant="text"
+                            color="primary"
+                            fullwidth
+                            mt="1rem"
+                            disabled={otpTimer.isActive || loading}
+                            onClick={async () => {
+                                try {
+                                    setLoading(true);
+                                    const fullPhone = `+8801${phoneForm.values.phone_digits}`;
+                                    await authApi.forgotPassword(fullPhone);
+                                    setLoading(false);
+                                    otpTimer.startTimer();
+                                    Swal.fire({ icon: "success", title: "OTP Sent", text: "Please check your SMS", timer: 2000, showConfirmButton: false });
+                                } catch (err: any) {
+                                    setLoading(false);
+                                    Swal.fire({ icon: "error", title: "Error", text: err.message || "Failed to resend OTP" });
+                                }
+                            }}
+                        >
+                            {otpTimer.isActive ? `Resend OTP in ${otpTimer.formatTime()}` : "Resend OTP"}
+                        </Button>
+
+                        <Button variant="text" color="primary" fullwidth mt="0.5rem" onClick={() => setStep(1)}>
                             Back
                         </Button>
                     </form>

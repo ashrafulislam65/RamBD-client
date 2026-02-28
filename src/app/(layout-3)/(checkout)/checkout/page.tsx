@@ -19,6 +19,7 @@ import CheckoutSummary from "@sections/checkout/CheckoutSummary";
 import { useAppContext } from "@context/app-context";
 import checkoutApi from "@utils/__api__/checkout";
 import { useState } from "react";
+import { useOtpTimer } from "@hook/useOtpTimer";
 
 import Swal from "sweetalert2";
 
@@ -32,6 +33,7 @@ export default function Checkout() {
   const [orderPayload, setOrderPayload] = useState<any>(null);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [newPhoneDigits, setNewPhoneDigits] = useState("");
+  const otpTimer = useOtpTimer("checkout", 300);
 
   const handleFormSubmit = async (values: any) => {
     // scale payload
@@ -88,26 +90,32 @@ export default function Checkout() {
   };
 
   const handleResendOtp = async () => {
-    setLoading(true);
-    const otpResponse = await checkoutApi.generateOtp(orderPayload.order_details.ord_phone);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const otpResponse = await checkoutApi.generateOtp(orderPayload.order_details.ord_phone);
+      setLoading(false);
 
-    if (otpResponse && (otpResponse.status || otpResponse.success)) {
-      Swal.fire({
-        icon: 'success',
-        title: 'OTP Resent',
-        text: 'A new OTP has been sent to your phone.',
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000
-      });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to resend OTP. Please try again.'
-      });
+      if (otpResponse && (otpResponse.status || otpResponse.success)) {
+        otpTimer.startTimer();
+        Swal.fire({
+          icon: 'success',
+          title: 'OTP Resent',
+          text: 'A new OTP has been sent to your phone.',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to resend OTP. Please try again.'
+        });
+      }
+    } catch (error) {
+      setLoading(false);
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong!' });
     }
   };
 
@@ -378,6 +386,7 @@ export default function Checkout() {
                       }));
                       setIsEditingPhone(false);
                       setOtp("");
+                      otpTimer.startTimer();
                       Swal.fire({ icon: 'success', title: 'OTP Sent', text: `OTP sent to ${newPhone}`, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
                     } else {
                       Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to send OTP to new number.' });
@@ -440,9 +449,9 @@ export default function Checkout() {
             color="primary"
             fullwidth
             onClick={handleResendOtp}
-            disabled={loading}
+            disabled={otpTimer.isActive || loading}
           >
-            Resend OTP
+            {otpTimer.isActive ? `Resend OTP in ${otpTimer.formatTime()}` : "Resend OTP"}
           </Button>
         </Box>
       </Modal>

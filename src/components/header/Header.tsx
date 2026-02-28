@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import Login from "@sections/auth/Login";
+
 
 import Box from "@component/Box";
 import Image from "@component/Image";
@@ -21,8 +21,8 @@ import Categories from "@component/categories/Categories";
 import { SearchInputWithCategory } from "@component/search-box";
 import { useAppContext } from "@context/app-context";
 import StyledHeader from "./styles";
-import UserLoginDialog from "./LoginDialog";
-import ChangePasswordModal from "@sections/customer-dashboard/profile/ChangePasswordModal";
+
+
 
 // ====================================================================
 type HeaderProps = { isFixed?: boolean; className?: string };
@@ -31,7 +31,7 @@ type HeaderProps = { isFixed?: boolean; className?: string };
 export default function Header({ isFixed, className }: HeaderProps) {
   const router = useRouter();
   const { state, dispatch } = useAppContext();
-  const [openChangePassword, setOpenChangePassword] = useState(false);
+
 
   const toggleSidenav = () => dispatch({ type: "TOGGLE_CART" });
 
@@ -124,10 +124,12 @@ export default function Header({ isFixed, className }: HeaderProps) {
                   </MenuItem>
                 </Link>
 
-                <MenuItem onClick={() => setOpenChangePassword(true)}>
-                  <Icon size="16px" mr="10px">key</Icon>
-                  Change Password
-                </MenuItem>
+                <Link href="/profile/change-password">
+                  <MenuItem>
+                    <Icon size="16px" mr="10px">key</Icon>
+                    Change Password
+                  </MenuItem>
+                </Link>
 
                 <MenuItem onClick={handleLogout} style={{ color: '#e74c3c' }}>
                   <Icon size="16px" mr="10px">logout</Icon>
@@ -136,12 +138,11 @@ export default function Header({ isFixed, className }: HeaderProps) {
               </Menu>
             </FlexBox>
           ) : (
-            <UserLoginDialog handle={LOGIN_HANDLE}>
-              <div>
-                <Login />
-              </div>
-            </UserLoginDialog>
+            <Link href="/login">
+              {LOGIN_HANDLE}
+            </Link>
           )}
+
 
           <Sidenav
             open={state.isCartOpen}
@@ -154,10 +155,7 @@ export default function Header({ isFixed, className }: HeaderProps) {
         </FlexBox>
       </Container>
 
-      <ChangePasswordModal
-        open={openChangePassword}
-        onClose={() => setOpenChangePassword(false)}
-      />
+
     </StyledHeader>
   );
 }

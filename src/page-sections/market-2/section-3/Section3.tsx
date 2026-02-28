@@ -15,7 +15,7 @@ export default async function Section3() {
   return (
     <Container pt="0px">
       <Grid container spacing={0.5}>
-        {categories.map((item) => (
+        {(categories || []).map((item) => (
           <Grid item lg={1.2} md={2} sm={3} xs={4} key={item.id}>
             <Link href={`/category/${item.slug}`}>
               <CategoryCard style={{

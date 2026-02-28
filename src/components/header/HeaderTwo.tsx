@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-import Login from "@sections/auth/Login";
+
 
 import Icon from "@component/icon/Icon";
 import FlexBox from "@component/FlexBox";
@@ -15,7 +15,7 @@ import { IconButton } from "@component/buttons";
 import Sidenav from "@component/sidenav/Sidenav";
 import { SearchInput } from "@component/search-box";
 import { useAppContext } from "@context/app-context";
-import UserLoginDialog from "./LoginDialog";
+
 import StyledHeader from "./styles";
 
 // ========================================================================
@@ -82,9 +82,10 @@ export default function HeaderTwo({ className }: HeaderProps) {
         </FlexBox>
 
         <FlexBox className="header-right" alignItems="center">
-          <UserLoginDialog handle={LOGIN_HANDLE}>
-            <Login />
-          </UserLoginDialog>
+          <Link href="/login">
+            {LOGIN_HANDLE}
+          </Link>
+
 
           <Sidenav
             open={state.isCartOpen}

@@ -18,14 +18,9 @@ const getCategories = async () => {
   try {
     const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
     const url = `${apiBaseUrl}/home-menu`;
-    console.log(`Fetching categories from: ${url}`);
-    const response = await fetch(url, { next: { revalidate: 0 } });
-    if (!response.ok) {
-      console.error(`getCategories API response not ok: ${response.status} ${response.statusText}`);
-      return [];
-    }
-
-    const data = await response.json();
+    console.log(`[getCategories] Fetching from URL: "${url}"`);
+    const response = await axios.get(url);
+    const data = response.data;
     // Filter and sort to match navbar
     const filteredMenus = (data.menu || []).filter((m: any) => Number(m.checked) === 1);
     const sortedMenus = filteredMenus.sort((a: any, b: any) => Number(a.menu_order) - Number(b.menu_order));
@@ -73,8 +68,12 @@ const getCategories = async () => {
     console.log("Section 3 Categories Fetched:", categories.length, categories.slice(0, 2).map(c => c.name));
     return categories;
   } catch (error: any) {
-    console.error("getCategories face error:", error.message);
-    if (error.cause) console.error("getCategories error cause:", error.cause);
+    console.error("[getCategories] face error:", error.message);
+    console.error("[getCategories] full error:", error);
+    if (error.cause) {
+      console.error("[getCategories] error cause:", error.cause);
+      if (error.cause.message) console.error("[getCategories] error cause message:", error.cause.message);
+    }
     return [];
   }
 };
@@ -84,13 +83,8 @@ const getBrands = async (): Promise<Brand[]> => {
     const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
     const url = `${apiBaseUrl}/brand/getAllBrandsLast`;
     console.log(`Fetching brands from: ${url}`);
-    const response = await fetch(url, { next: { revalidate: 0 } });
-    if (!response.ok) {
-      console.error(`getBrands API response not ok: ${response.status} ${response.statusText}`);
-      return [];
-    }
-
-    const data = await response.json();
+    const response = await axios.get(url);
+    const data = response.data;
     const brands = data.brands || [];
     return brands.map(transformApiBrand);
   } catch (error: any) {
@@ -105,13 +99,8 @@ const getMainCarouselData = async (): Promise<MainCarouselItem[]> => {
     const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
     const url = `${apiBaseUrl}/home`;
     console.log(`Fetching carousel data from: ${url}`);
-    const response = await fetch(url, { next: { revalidate: 0 } });
-    if (!response.ok) {
-      console.error(`getMainCarouselData API response not ok: ${response.status} ${response.statusText}`);
-      return [];
-    }
-
-    const data = await response.json();
+    const response = await axios.get(url);
+    const data = response.data;
     const sliders = data.sliders || [];
 
     // Map API slider items to MainCarouselItem model
@@ -162,11 +151,11 @@ const getLatestProducts = async (): Promise<Product[]> => {
     const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
     const url = `${apiBaseUrl}/LatestProductList/getAllLatestProducts`;
     console.log(`Fetching latest products from: ${url}`);
-    const response = await fetch(url, { next: { revalidate: 0 } });
+    const response = await axios.get(url);
 
     let products = [];
-    if (response.ok) {
-      const data = await response.json();
+    if (response.status === 200) {
+      const data = response.data;
       products = data.products || [];
     }
 
@@ -189,13 +178,8 @@ const getMostPopularProducts = async (): Promise<Product[]> => {
     const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
     const url = `${apiBaseUrl}/most-popular-product`;
     console.log(`Fetching popular products from: ${url}`);
-    const response = await fetch(url, { next: { revalidate: 0 } });
-    if (!response.ok) {
-      console.error(`getMostPopularProducts API response not ok: ${response.status} ${response.statusText}`);
-      return [];
-    }
-
-    const data = await response.json();
+    const response = await axios.get(url);
+    const data = response.data;
     const products = data.populars || [];
     return products.map(transformApiProduct).filter((p: any) => p !== null);
   } catch (error: any) {
@@ -210,13 +194,8 @@ const getTopRatedProducts = async (): Promise<Product[]> => {
     const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
     const url = `${apiBaseUrl}/top-rated-product`;
     console.log(`Fetching top rated products from: ${url}`);
-    const response = await fetch(url, { next: { revalidate: 0 } });
-    if (!response.ok) {
-      console.error(`getTopRatedProducts API response not ok: ${response.status} ${response.statusText}`);
-      return [];
-    }
-
-    const data = await response.json();
+    const response = await axios.get(url);
+    const data = response.data;
     const products = data.products || [];
     return products.map(transformApiProduct).filter((p: any) => p !== null);
   } catch (error: any) {

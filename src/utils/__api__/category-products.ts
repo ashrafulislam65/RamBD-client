@@ -23,22 +23,14 @@ const getProductsByCategory = async (
         if (brand_id) url += `&brand_id=${brand_id}`;
 
         console.log(`Fetching products from: ${url}`);
-        const response = await fetch(url, {
-            next: { revalidate: 0 },
+        const response = await axios.get(url, {
             headers: {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 "Accept": "application/json"
             }
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`API response error: ${response.status}`);
-            console.error(`Error body: ${errorText.substring(0, 200)}`);
-            return { products: [], totalPages: 1, totalProducts: 0 };
-        }
-
-        const data = await response.json();
+        const data = response.data;
 
         // Initial check to see if response data exists
         if (!data || !data.products || !data.products.data) {

@@ -18,6 +18,7 @@ import Modal from "@component/Modal";
 import { Button, IconButton } from "@component/buttons";
 import Typography, { H3, H5, H6, SemiSpan } from "@component/Typography";
 import { useAppContext } from "@context/app-context";
+import { formatPhoneInput, validatePhoneNumber, isValidFirstDigit } from "@utils/phoneValidation";
 
 // STYLED COMPONENT
 import { StyledRoot } from "./styles";
@@ -152,7 +153,11 @@ export default function Login() {
             alignItems="center"
             borderRadius="8px"
             style={{
-              border: touched.phone_digits && errors.phone_digits ? "1px solid #e74c3c" : "1px solid #dee2e6",
+              border: (() => {
+                const { color } = validatePhoneNumber(values.phone_digits);
+                if (touched.phone_digits && errors.phone_digits) return "1px solid #e74c3c";
+                return `1px solid ${color}`;
+              })(),
               overflow: "hidden"
             }}
           >
@@ -162,12 +167,13 @@ export default function Login() {
             <input
               name="phone_digits"
               type="tel"
-              maxLength={9}
-              placeholder="XXXXXXXXX"
-              value={values.phone_digits}
+              maxLength={10}
+              placeholder="XXXXX-XXXX"
+              value={formatPhoneInput(values.phone_digits)}
               onBlur={handleBlur}
               onChange={(e) => {
                 const val = e.target.value.replace(/\D/g, "");
+                if (val.length > 0 && !isValidFirstDigit(val[0])) return;
                 setFieldValue("phone_digits", val);
               }}
               style={{
@@ -175,15 +181,23 @@ export default function Login() {
                 outline: "none",
                 width: "100%",
                 padding: "12px",
-                fontSize: "16px"
+                fontSize: "20px",
+                fontWeight: 700,
+                letterSpacing: "2px"
               }}
             />
           </FlexBox>
-          {touched.phone_digits && errors.phone_digits && (
-            <Typography color="error.main" fontSize="12px" mt="4px">
-              {errors.phone_digits}
-            </Typography>
-          )}
+          {(() => {
+            const { message, color } = validatePhoneNumber(values.phone_digits);
+            if (touched.phone_digits && errors.phone_digits) {
+              return <Typography color="error.main" fontSize="12px" mt="4px">{errors.phone_digits}</Typography>;
+            }
+            return (
+              <Typography color={color} fontSize="12px" mt="4px" fontWeight="600">
+                {message}
+              </Typography>
+            );
+          })()}
         </Box>
 
         {/* PASSWORD FIELD */}
