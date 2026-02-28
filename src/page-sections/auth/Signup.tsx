@@ -19,9 +19,6 @@ import { Button, IconButton } from "@component/buttons";
 import Typography, { H3, H5, H6, SemiSpan } from "@component/Typography";
 import { useAppContext } from "@context/app-context";
 
-import Divide from "./components/Divide";
-import SocialLinks from "./components/SocialLinks";
-// STYLED COMPONENT
 import { StyledRoot } from "./styles";
 import authApi from "@utils/__api__/auth";
 import Select from "@component/Select";
@@ -179,14 +176,14 @@ export default function Signup() {
     <StyledRoot mx="auto" my="2rem" boxShadow="large" borderRadius={8}>
       <form className="content" onSubmit={handleSubmit}>
         <H3 mb="1.5rem" fontWeight="700">
-          REGISTER / অ্যাকাউন্ট তৈরি করুন
+          Register
         </H3>
 
         {/* PHONE FIELD */}
         <Box mb="1.25rem">
           <FlexBox alignItems="center" mb="0.5rem">
             <Typography variant="body1" fontWeight="600" color="text.secondary">
-              Phone / মোবাইল নং *
+              Phone *
             </Typography>
           </FlexBox>
           <FlexBox
@@ -228,7 +225,7 @@ export default function Signup() {
         {/* NAME FIELD */}
         <Box mb="1.25rem">
           <Typography variant="body1" fontWeight="600" mb="0.5rem">
-            Name / নাম *
+            Name *
           </Typography>
           <TextField
             fullwidth
@@ -244,7 +241,7 @@ export default function Signup() {
         {/* EMAIL FIELD */}
         <Box mb="1.25rem">
           <Typography variant="body1" fontWeight="600" mb="0.5rem">
-            Email / ইমেইল
+            Email
           </Typography>
           <TextField
             fullwidth
@@ -269,10 +266,10 @@ export default function Signup() {
                 key={g.value}
                 type="button"
                 variant={values.gender === g.value ? "contained" : "outlined"}
-                color={values.gender === g.value ? "primary" : "inherit"}
+                color={values.gender === g.value ? "secondary" : "inherit"}
                 size="small"
                 onClick={() => setFieldValue("gender", g.value)}
-                style={{ flex: 1, borderColor: '#BE7374' }}
+                style={{ flex: 1 }}
               >
                 {g.label}
               </Button>
@@ -281,10 +278,10 @@ export default function Signup() {
         </Box>
 
         {/* DISTRICT & THANA */}
-        <Grid container spacing={3} mb="1.5rem">
+        <Grid container spacing={3} mb="2rem">
           <Grid item sm={6} xs={12}>
             <Typography variant="body1" fontWeight="600" mb="0.5rem">
-              District / জেলা *
+              District *
             </Typography>
             <Select
               options={districts}
@@ -312,7 +309,7 @@ export default function Signup() {
 
           <Grid item sm={6} xs={12}>
             <Typography variant="body1" fontWeight="600" mb="0.5rem">
-              Thana / থানা *
+              Thana *
             </Typography>
             <Select
               options={thanas}
@@ -327,32 +324,26 @@ export default function Signup() {
           </Grid>
         </Grid>
 
+        <FlexBox justifyContent="center" mb="1rem">
+          <SemiSpan>Already have account?</SemiSpan>
+          <Link href="/login">
+            <H6 ml="0.5rem" borderBottom="1px solid" borderColor="gray.900" color="primary.main">
+              Log in
+            </H6>
+          </Link>
+        </FlexBox>
+
         <Button
           mb="1.65rem"
           variant="contained"
+          color="primary"
           type="submit"
           fullwidth
           disabled={loading}
-          style={{ backgroundColor: '#2ba56d', padding: '12px', fontSize: '18px', color: 'white' }}
         >
-          <FlexBox alignItems="center">
-            Register <Icon ml="10px">registration</Icon>
-          </FlexBox>
+          Register
         </Button>
-
-        <Divide />
-
-        <SocialLinks />
       </form>
-
-      <FlexBox justifyContent="center" bg="gray.200" py="19px">
-        <SemiSpan>Already have account?</SemiSpan>
-        <Link href="/login">
-          <H6 ml="0.5rem" borderBottom="1px solid" borderColor="gray.900">
-            Log in
-          </H6>
-        </Link>
-      </FlexBox>
 
       <Modal open={isOtpModalOpen} onClose={() => { setIsOtpModalOpen(false); setOtp(""); setOtpError(""); }}>
         <Box p="2rem" bg="white" borderRadius="8px" maxWidth="400px" width="100%">

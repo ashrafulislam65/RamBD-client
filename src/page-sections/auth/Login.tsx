@@ -15,7 +15,6 @@ import Divide from "./components/Divide";
 import FlexBox from "@component/FlexBox";
 import TextField from "@component/text-field";
 import Modal from "@component/Modal";
-import SocialLinks from "./components/SocialLinks";
 import { Button, IconButton } from "@component/buttons";
 import Typography, { H3, H5, H6, SemiSpan } from "@component/Typography";
 import { useAppContext } from "@context/app-context";
@@ -24,12 +23,14 @@ import { useAppContext } from "@context/app-context";
 import { StyledRoot } from "./styles";
 import authApi from "@utils/__api__/auth";
 import checkoutApi from "@utils/__api__/checkout";
+import ForgotPasswordModal from "./components/ForgotPasswordModal";
 
 export default function Login() {
   const router = useRouter();
   const { state: appState, dispatch } = useAppContext();
   const { passwordVisibility, togglePasswordVisibility } = useVisibility();
   const [loading, setLoading] = useState(false);
+  const [openForgot, setOpenForgot] = useState(false);
 
   const initialValues = { phone_digits: "", password: "" };
 
@@ -137,14 +138,14 @@ export default function Login() {
     <StyledRoot mx="auto" my="2rem" boxShadow="large" borderRadius={8}>
       <form className="content" onSubmit={handleSubmit}>
         <H3 mb="1.5rem" fontWeight="700">
-          LOGIN / লগইন করুন
+          Login
         </H3>
 
         {/* PHONE FIELD */}
         <Box mb="1.25rem">
           <FlexBox alignItems="center" mb="0.5rem">
             <Typography variant="body1" fontWeight="600" color="text.secondary">
-              Phone / মোবাইল নং *
+              Phone *
             </Typography>
           </FlexBox>
           <FlexBox
@@ -188,7 +189,7 @@ export default function Login() {
         {/* PASSWORD FIELD */}
         <Box mb="1.25rem">
           <Typography variant="body1" fontWeight="600" mb="0.5rem">
-            Password / পাসওয়ার্ড *
+            Password *
           </Typography>
           <TextField
             mb="1rem"
@@ -220,37 +221,35 @@ export default function Login() {
         <Button
           mb="1.65rem"
           variant="contained"
+          color="primary"
           type="submit"
           fullwidth
           disabled={loading}
-          style={{ backgroundColor: "#2ba56d", padding: "12px", fontSize: "18px", color: "white" }}
         >
-          {loading ? "Processing..." : "Login / লগইন"}
+          {loading ? "Processing..." : "Login"}
         </Button>
 
-        <Divide />
-
-        <SocialLinks />
-
-        <FlexBox justifyContent="center" mb="1.25rem">
-          <SemiSpan>Don’t have account?</SemiSpan>
-          <Link href="/signup">
-            <H6 ml="0.5rem" borderBottom="1px solid" borderColor="gray.900">
-              Sign Up
-            </H6>
-          </Link>
+        <FlexBox justifyContent="space-between" alignItems="center" mb="1.25rem" flexWrap="wrap">
+          <FlexBox alignItems="center">
+            <SemiSpan>No account?</SemiSpan>
+            <Link href="/signup">
+              <H6 ml="0.4rem" borderBottom="1px solid" borderColor="gray.900">Sign Up</H6>
+            </Link>
+          </FlexBox>
+          <FlexBox alignItems="center">
+            <SemiSpan>Forgot password?</SemiSpan>
+            <Box
+              ml="0.4rem"
+              style={{ cursor: "pointer", borderBottom: "1px solid #111" }}
+              onClick={() => setOpenForgot(true)}
+            >
+              <H6>Reset</H6>
+            </Box>
+          </FlexBox>
         </FlexBox>
       </form>
 
-      <FlexBox justifyContent="center" bg="gray.200" py="19px">
-        <SemiSpan>Forgot your password?</SemiSpan>
-        <Link href="/">
-          <H6 ml="0.5rem" borderBottom="1px solid" borderColor="gray.900">
-            Reset It
-          </H6>
-        </Link>
-      </FlexBox>
-
+      <ForgotPasswordModal open={openForgot} onClose={() => setOpenForgot(false)} />
     </StyledRoot>
   );
 }

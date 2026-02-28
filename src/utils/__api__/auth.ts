@@ -100,4 +100,67 @@ const login = async (payload: any) => {
     }
 };
 
-export default { register, verifyPhone, generateOtp, login };
+const changePassword = async (payload: any) => {
+    try {
+        const phone = normalizePhone(payload.phone || "");
+        const url = `${apiBaseUrl}/api/set-password-otp/${phone}`;
+        // The user specifically mentioned POST for change password
+        const response = await axios.post(url, payload, {
+            headers: { Authorization: `Bearer ${payload.token}` }
+        });
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || { message: error.message };
+    }
+};
+
+const forgotPassword = async (phone: string) => {
+    try {
+        const digits = normalizePhone(phone);
+        const url = `${apiBaseUrl}/api/set-password-otp/${digits}`;
+        const response = await axios.post(url, { phone: digits });
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || { message: error.message };
+    }
+};
+
+const sendNewPassword = async (payload: any) => {
+    try {
+        const digits = normalizePhone(payload.phone);
+        const url = `${apiBaseUrl}/api/set-new-password/${digits}`;
+        // Reset password (forgot flow) needs PUT according to user feedback
+        const response = await axios.put(url, {
+            phone: digits,
+            email: digits,
+            pincode: payload.otp || payload.pincode,
+            password: payload.password,
+            password_confirmation: payload.password
+        });
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || { message: error.message };
+    }
+};
+
+const updatePassword = async (payload: any) => {
+    try {
+        const digits = normalizePhone(payload.phone);
+        const url = `${apiBaseUrl}/api/set-new-password/${digits}`;
+        // Change password (logged-in flow) - switching to PUT as server rejected POST
+        const response = await axios.put(url, {
+            phone: digits,
+            email: digits,
+            pincode: payload.otp || payload.pincode,
+            password: payload.password,
+            password_confirmation: payload.password
+        }, {
+            headers: { Authorization: `Bearer ${payload.token}` }
+        });
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || { message: error.message };
+    }
+};
+
+export default { register, verifyPhone, generateOtp, login, changePassword, forgotPassword, sendNewPassword, updatePassword };

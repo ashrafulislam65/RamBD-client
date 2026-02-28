@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import Login from "@sections/auth/Login";
 
@@ -9,6 +10,8 @@ import Box from "@component/Box";
 import Image from "@component/Image";
 import Icon from "@component/icon/Icon";
 import FlexBox from "@component/FlexBox";
+import Menu from "@component/Menu";
+import MenuItem from "@component/MenuItem";
 import MiniCart from "@component/mini-cart";
 import Container from "@component/Container";
 import Typography, { H2, H3, Tiny } from "@component/Typography";
@@ -19,13 +22,17 @@ import { SearchInputWithCategory } from "@component/search-box";
 import { useAppContext } from "@context/app-context";
 import StyledHeader from "./styles";
 import UserLoginDialog from "./LoginDialog";
+import ChangePasswordModal from "@sections/customer-dashboard/profile/ChangePasswordModal";
 
 // ====================================================================
 type HeaderProps = { isFixed?: boolean; className?: string };
 // =====================================================================
 
 export default function Header({ isFixed, className }: HeaderProps) {
+  const router = useRouter();
   const { state, dispatch } = useAppContext();
+  const [openChangePassword, setOpenChangePassword] = useState(false);
+
   const toggleSidenav = () => dispatch({ type: "TOGGLE_CART" });
 
   const CART_HANDLE = (
@@ -99,21 +106,34 @@ export default function Header({ isFixed, className }: HeaderProps) {
           <SearchInputWithCategory />
         </FlexBox>
 
-        <FlexBox className="header-right" alignItems="center">
+        <FlexBox className="header-right" alignItems="center" position="relative">
           {state.user ? (
             <FlexBox alignItems="center">
-              <Link href="/profile">
-                {LOGIN_HANDLE}
-              </Link>
-              <IconButton
-                ml="0.5rem"
-                p="8px"
-                onClick={handleLogout}
-                title="Logout"
-                style={{ color: '#e74c3c' }}
-              >
-                <Icon size="20px">logout</Icon>
-              </IconButton>
+              <Menu handler={LOGIN_HANDLE} direction="right">
+                <Link href="/profile">
+                  <MenuItem>
+                    <Icon size="16px" mr="10px">user</Icon>
+                    Profile
+                  </MenuItem>
+                </Link>
+
+                <Link href="/orders">
+                  <MenuItem>
+                    <Icon size="16px" mr="10px">bag</Icon>
+                    Order History
+                  </MenuItem>
+                </Link>
+
+                <MenuItem onClick={() => setOpenChangePassword(true)}>
+                  <Icon size="16px" mr="10px">key</Icon>
+                  Change Password
+                </MenuItem>
+
+                <MenuItem onClick={handleLogout} style={{ color: '#e74c3c' }}>
+                  <Icon size="16px" mr="10px">logout</Icon>
+                  Logout
+                </MenuItem>
+              </Menu>
             </FlexBox>
           ) : (
             <UserLoginDialog handle={LOGIN_HANDLE}>
@@ -133,6 +153,11 @@ export default function Header({ isFixed, className }: HeaderProps) {
           </Sidenav>
         </FlexBox>
       </Container>
+
+      <ChangePasswordModal
+        open={openChangePassword}
+        onClose={() => setOpenChangePassword(false)}
+      />
     </StyledHeader>
   );
 }

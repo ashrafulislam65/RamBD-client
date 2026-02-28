@@ -1,10 +1,15 @@
 import { PropsWithChildren } from "react";
-import FlexBox from "@component/FlexBox";
+import AppLayout from "@component/layout/layout-3/Layout-3";
+import navbarApi from "@utils/__api__/navbar";
+import Container from "@component/Container";
 
-export default function Layout({ children }: PropsWithChildren) {
+export default async function Layout({ children }: PropsWithChildren) {
+  const categories = await navbarApi.getNavbarServices();
   return (
-    <FlexBox minHeight="100vh" alignItems="center" flexDirection="column" justifyContent="center">
-      {children}
-    </FlexBox>
+    <AppLayout categories={categories}>
+      <Container mt="5px" mb="2rem">
+        {children}
+      </Container>
+    </AppLayout>
   );
 }
