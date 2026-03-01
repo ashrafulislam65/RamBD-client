@@ -58,14 +58,24 @@ export default function Login() {
 
         const token = response.token || response.access_token || response.data?.token || null;
 
-        // 1. EXTRA-ROBUST extraction from login response
-        // Try all common nested locations
-        const u = response.data?.user || response.user ||
-          response.data?.customer || response.customer ||
-          response.data?.customer_login || response.customer_login ||
-          response.data?.data || response.data || {};
+        // 1. CORRECT extraction: The API returns data in response.user_info
+        // e.g. { status: 200, message: "...", user_info: { id: 1, name: "...", phone: "...", email: "..." } }
+        const userInfo = response.user_info || {};
 
-        let name = u.name || u.customer_name || u.full_name || u.display_name ||
+        // Also check other possible nested locations as fallback
+        const u = userInfo.id ? userInfo :
+          (response.data?.user || response.user ||
+            response.data?.customer || response.customer ||
+            response.data?.customer_login || response.customer_login ||
+            response.data?.data || response.data || {});
+
+        // Robust ID extraction - try user_info first
+        const userId = userInfo.id || u.id || u.client_id || u.customer_id || u.user_id ||
+          response.id || response.client_id || response.data?.id || null;
+
+        console.log("🆔 [LOGIN] Extracted User ID from user_info:", userId, "Raw user_info:", userInfo);
+
+        let name = userInfo.name || u.name || u.customer_name || u.full_name || u.display_name ||
           u.first_name || response.name || response.data?.name || "";
 
         // If it was at response.data.customer_login.name, u would be response.data.customer_login
@@ -101,6 +111,7 @@ export default function Login() {
         if (!name) name = "User";
 
         const userData = {
+          id: userId,
           name: name,
           phone: fullPhone,
           token: token,
@@ -120,11 +131,25 @@ export default function Login() {
           router.push("/"); // Redirect to Home
         });
       } else {
-        Swal.fire({ icon: 'error', title: 'Login Failed', text: response?.message || 'Invalid credentials' });
+        console.warn("⚠️ [LOGIN] Unexpected Response Format:", response);
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: response?.message || response?.error || 'Invalid credentials'
+        });
       }
     } catch (error: any) {
       setLoading(false);
-      Swal.fire({ icon: 'error', title: 'Error', text: error.message || 'Something went wrong!' });
+      console.error("❌ [LOGIN] Catch Error:", error);
+
+      // Extract the most descriptive error message
+      const errorMessage = error.message || error.error || (typeof error === 'string' ? error : 'Something went wrong!');
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Error',
+        text: errorMessage
+      });
     }
   };
 

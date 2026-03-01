@@ -19,35 +19,51 @@ const getProduct = cache(async (slug: string, categorySlug?: string): Promise<Pr
     // 1. Always try direct fetch first (Most common case)
     console.log(`Directly fetching product for slug: ${slug}`);
     const response = await axios.get("/api/products/slug", { params: { slug } });
-    if (response.data) {
-      // If it's the mock server, it might already be transformed, 
-      // but applying transformApiProduct is safer if it returns raw API format.
-      // We check for id to see if it's already a model.
-      return response.data.pro_title ? transformApiProduct(response.data) : response.data;
+
+    // If we have valid product data, return it immediately
+    if (response.data && response.data.pro_title) {
+      return transformApiProduct(response.data);
+    } else if (response.data && response.data.id) {
+      return response.data;
     }
 
-    // 2. Probing logic as fallback (if direct fetch for some reason doesn't return the full data or is mock-only)
-    const probes: Promise<Product[]>[] = [
+    // 2. Probing logic as fallback (sequentially to avoid socket hang up)
+    console.log(`Probing fallbacks for slug: ${slug}`);
+
+    // Check market-2 APIs one by one if needed (or in smaller batches)
+    const fallbackResults = await Promise.allSettled([
       market2Api.getLatestProducts(),
       market2Api.getMostPopularProducts(),
       market2Api.getTopRatedProducts()
-    ];
+    ]);
 
-    if (categorySlug) {
-      const catRes = await categoryProductApi.getProductsByCategory(categorySlug);
-      probes.push(Promise.resolve(catRes.products));
+    const allRealProducts = fallbackResults
+      .filter(res => res.status === 'fulfilled')
+      .map(res => (res as any).value.products || (res as any).value)
+      .flat();
+
+    let realProduct = allRealProducts.find((p) => (p as any).slug === slug);
+
+    if (!realProduct && categorySlug) {
+      try {
+        const catRes = await categoryProductApi.getProductsByCategory(categorySlug);
+        realProduct = catRes.products.find((p) => (p as any).slug === slug);
+      } catch (e) {
+        console.error("Category fallback probe failed");
+      }
     }
-
-    const results = await Promise.all(probes);
-    const allRealProducts = results.map(res => (res as any).products || res).flat();
-    const realProduct = allRealProducts.find((p) => (p as any).slug === slug);
 
     return realProduct || response.data;
   } catch (error) {
-    console.error("Error in getProduct:", error);
-    // Final fallback
-    const response = await axios.get("/api/products/slug", { params: { slug } });
-    return response.data.pro_title ? transformApiProduct(response.data) : response.data;
+    console.error("Error in getProduct fallback:", error);
+    // Final fallback attempt
+    try {
+      const response = await axios.get("/api/products/slug", { params: { slug } });
+      return response.data.pro_title ? transformApiProduct(response.data) : response.data;
+    } catch (e) {
+      console.error("Final fallback failed:", e);
+      throw error;
+    }
   }
 });
 
@@ -76,7 +92,7 @@ const getReviews = cache(async (slug: string, model: string): Promise<any[]> => 
 
     const cleanModel = model.trim();
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
-    const url = `${apiBaseUrl}/api/products/reviews-data/${slug}/${cleanModel}`;
+    const url = `${apiBaseUrl}/products/reviews-data/${slug}/${cleanModel}`;
 
     const response = await axios.get(url);
     const data = response.data;
@@ -87,22 +103,36 @@ const getReviews = cache(async (slug: string, model: string): Promise<any[]> => 
   }
 });
 
-const postReview = async (slug: string, model: string, reviewData: { rating: number; message: string; client_id: number }): Promise<any> => {
+const postReview = async (slug: string, model: string, reviewData: { rating: number; message: string; client_id: number | string; pro_id?: number | string }): Promise<any> => {
   try {
     const cleanModel = model.trim();
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info';
+    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
+    // POST requires /api prefix while GET does not.
     const url = `${apiBaseUrl}/api/products/reviews-data/${slug}/${cleanModel}`;
 
-    // The API expects 'slug' in the body as well based on user request example
-    const body = {
-      ...reviewData,
+    // Shotgun approach: Send ALL possible field names because the backend is returned nulls for rev_rating/rev_details
+    const body: any = {
+      rev_rating: reviewData.rating,
+      rev_details: reviewData.message,
+      rating: reviewData.rating,
+      comment: reviewData.message,
+      message: reviewData.message,
+      details: reviewData.message,
+      client_id: reviewData.client_id,
       slug: slug
     };
 
+    // Only include pro_id and product_id if it's a numeric value
+    if (reviewData.pro_id && !isNaN(Number(reviewData.pro_id))) {
+      body.pro_id = Number(reviewData.pro_id);
+      body.product_id = Number(reviewData.pro_id);
+    }
+
+    console.log("🚀 [REVIEWS] Submitting review to:", url, body);
     const response = await axios.post(url, body);
     return response.data;
   } catch (error) {
-    console.error("Failed to post review:", error);
+    console.error("❌ [REVIEWS] Failed to post review:", error);
     throw error;
   }
 };

@@ -68,7 +68,14 @@ export default function ProductView({ shops, product, relatedProducts, frequentl
       <Box mb="50px">
         {selectedOption === "specification" && <ProductSpecification />}
         {selectedOption === "description" && <ProductDescription description={product.description} />}
-        {selectedOption === "review" && <ProductReview reviews={product.reviews} slug={product.slug} model={product.model} />}
+        {selectedOption === "review" && (
+          <ProductReview
+            reviews={product.reviews}
+            slug={product.slug}
+            model={product.model}
+            productId={product.id}
+          />
+        )}
       </Box>
 
       {/* FREQUENTLY BOUGHT TOGETHER PRODUCTS */}

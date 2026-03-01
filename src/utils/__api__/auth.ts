@@ -76,27 +76,33 @@ const generateOtp = async (phone: string) => {
 };
 
 const login = async (payload: any) => {
+    const digits = normalizePhone(payload.phone);
+    const normalizedPayload = {
+        email: digits,
+        phone: digits, // Send both for compatibility
+        password: payload.password
+    };
+
     try {
         const url = `${apiBaseUrl}/api/customer-login-page`;
-        const normalizedPayload = {
-            email: normalizePhone(payload.phone),
-            password: payload.password
-        };
-        console.log("🚀 [AUTH] Login Request:", { url, payload: normalizedPayload });
+        console.log("🚀 [AUTH] Login Request:", { url, payload: { ...normalizedPayload, password: "***" } });
         const response = await axios.post(url, normalizedPayload);
         console.log("✅ [AUTH] Login Success:", response.data);
         return response.data;
     } catch (error: any) {
+        const errorData = error.response?.data;
+        const status = error.response?.status;
+        const message = error.message;
+
         console.error("❌ [AUTH] Login Error Context:", {
-            status: error.response?.status,
-            data: error.response?.data,
-            message: error.message,
+            status,
+            message,
             url: error.config?.url,
-            payload: payload
+            errorData: typeof errorData === 'object' ? JSON.stringify(errorData) : errorData
         });
-        // Throw a structured error that won't appear as {} in console.error if possible
-        const errObj = error.response?.data || { message: error.message };
-        throw errObj;
+
+        // Ensure we throw something meaningful
+        throw errorData || { message: message };
     }
 };
 

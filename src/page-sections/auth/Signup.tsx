@@ -139,9 +139,20 @@ export default function Signup() {
       setLoading(false);
 
       if (response && (response.status === 200 || response.success)) {
+        // Robust ID extraction from verification response
+        const u = response.data?.user || response.user ||
+          response.data?.customer || response.customer ||
+          response.data?.data || response.data || {};
+
+        const userId = u.id || u.client_id || u.customer_id || u.user_id ||
+          response.id || response.client_id || response.data?.id || null;
+
+        console.log("🆔 [SIGNUP] Extracted User ID:", userId);
+
         // SUCCESS: Store user data for session persistence
         const userData = {
           ...sessionUser,
+          id: userId,
           token: response.token || response.access_token || null,
           isLoggedIn: true,
           registrationTime: new Date().toISOString()

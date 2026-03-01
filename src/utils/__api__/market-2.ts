@@ -147,9 +147,10 @@ const getWomenFashionProducts = async (): Promise<CategoryBasedProducts> => {
 };
 
 const getLatestProducts = async (): Promise<Product[]> => {
+  const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
+  const url = `${apiBaseUrl}/LatestProductList/getAllLatestProducts`;
+
   try {
-    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.unicodeconverter.info').trim();
-    const url = `${apiBaseUrl}/LatestProductList/getAllLatestProducts`;
     console.log(`Fetching latest products from: ${url}`);
     const response = await axios.get(url);
 
@@ -167,7 +168,8 @@ const getLatestProducts = async (): Promise<Product[]> => {
 
     return products.map(transformApiProduct).filter((p: any) => p !== null);
   } catch (error: any) {
-    console.error("getLatestProducts fallback error:", error.message);
+    console.error(`getLatestProducts error URL: ${url}`, error.message);
+    if (error.code === 'ECONNABORTED') console.error("getLatestProducts Request timed out");
     if (error.cause) console.error("getLatestProducts error cause:", error.cause);
     return getMostPopularProducts();
   }
