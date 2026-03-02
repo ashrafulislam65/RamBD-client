@@ -57,7 +57,9 @@ export default function MobileNavigationBar() {
               {item.icon}
             </Icon>
 
-            {item.title}
+            {item.title === "Account" && state.user
+              ? (state.user.name.split(" ")[0] || "Account")
+              : item.title}
 
             {item.title === "Cart" && !!state.cart.length && (
               <Chip

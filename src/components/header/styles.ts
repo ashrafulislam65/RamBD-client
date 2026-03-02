@@ -129,11 +129,13 @@ const StyledHeader = styled.header`
       grid-column: 3;
     }
 
+
     .rb-search {
       grid-column: 2;
       padding: 0;
     }
   }
+
 `;
 
 export default StyledHeader;

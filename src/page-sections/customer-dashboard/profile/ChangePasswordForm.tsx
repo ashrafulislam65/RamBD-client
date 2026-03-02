@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
@@ -23,10 +23,32 @@ export default function ChangePasswordForm() {
     const { state } = useAppContext();
     const [step, setStep] = useState(1); // 1: Masked Phone/OTP, 2: OTP & New Password
     const [loading, setLoading] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isRestricted, setIsRestricted] = useState(false);
+    const [waitTime, setWaitTime] = useState("");
     const { passwordVisibility, togglePasswordVisibility } = useVisibility();
     const otpTimer = useOtpTimer("change_password", 300);
 
     const phone = state.user?.phone || "";
+
+    useEffect(() => {
+        if (phone) {
+            const lastChange = localStorage.getItem(`last_password_change_${phone}`);
+            if (lastChange) {
+                const lastChangeTime = parseInt(lastChange, 10);
+                const now = Date.now();
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+
+                if (now - lastChangeTime < twentyFourHours) {
+                    setIsRestricted(true);
+                    const remaining = twentyFourHours - (now - lastChangeTime);
+                    const hours = Math.floor(remaining / (60 * 60 * 1000));
+                    const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+                    setWaitTime(`${hours}h ${minutes}m`);
+                }
+            }
+        }
+    }, [phone]);
     const maskedPhone = phone.length > 2
         ? `${phone.substring(0, 5)}XXXXX${phone.substring(phone.length - 2)}`
         : phone;
@@ -65,8 +87,9 @@ export default function ChangePasswordForm() {
                 const response = await authApi.updatePassword(payload);
                 setLoading(false);
                 if (response && (response.status === 200 || response.success)) {
-                    Swal.fire({ icon: "success", title: "Success", text: "Password changed successfully!" });
-                    router.push("/profile");
+                    localStorage.setItem(`last_password_change_${phone}`, Date.now().toString());
+                    setIsSuccess(true);
+                    Swal.fire({ icon: "success", title: "Success", text: "Password changed successfully!", timer: 2000, showConfirmButton: false });
                 } else {
                     Swal.fire({ icon: "error", title: "Error", text: response?.message || "Failed to change password" });
                 }
@@ -82,7 +105,30 @@ export default function ChangePasswordForm() {
             <Card p="2rem" borderRadius="8px" maxWidth="500px" m="0 auto">
                 <H3 mb="2rem" textAlign="center">Change Password</H3>
 
-                {step === 1 ? (
+                {isRestricted ? (
+                    <Box textAlign="center">
+                        <Icon color="primary" size="3rem" mb="1rem">lock</Icon>
+                        <Typography variant="h6" mb="1rem">Security Restriction</Typography>
+                        <Typography mb="2rem" color="text.muted">
+                            You can change your password again after 24 hours. <br />
+                            Please wait for: <strong>{waitTime}</strong>
+                        </Typography>
+                        <Button variant="contained" color="primary" fullwidth onClick={() => router.push("/")}>
+                            Back to Home
+                        </Button>
+                    </Box>
+                ) : isSuccess ? (
+                    <Box textAlign="center" color="#27ae60">
+                        <Icon size="3rem" mb="1rem" color="inherit">check-circle</Icon>
+                        <Typography variant="h5" mb="1rem" color="inherit">Success!</Typography>
+                        <Typography mb="2rem" color="text.muted">
+                            Your password has been updated successfully.
+                        </Typography>
+                        <Button variant="contained" color="primary" fullwidth onClick={() => router.push("/")}>
+                            Back to Home
+                        </Button>
+                    </Box>
+                ) : step === 1 ? (
                     <Box textAlign="center">
                         <Typography mb="1.5rem" color="text.muted">
                             To change your password, we need to verify your identity. An OTP will be sent to your registered number:

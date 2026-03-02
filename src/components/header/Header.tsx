@@ -8,11 +8,13 @@ import { useRouter } from "next/navigation";
 import Icon from "@component/icon/Icon";
 import FlexBox from "@component/FlexBox";
 import MiniCart from "@component/mini-cart";
-import { H3, Tiny } from "@component/Typography";
+import { H3, Tiny, Small } from "@component/Typography";
 import { IconButton } from "@component/buttons";
 import Sidenav from "@component/sidenav/Sidenav";
 import { SearchInputWithCategory } from "@component/search-box";
 import { useAppContext } from "@context/app-context";
+import Menu from "@component/Menu";
+import MenuItem from "@component/MenuItem";
 import MobileNavSidebar from "./MobileNavSidebar";
 import StyledHeader from "./styles";
 
@@ -22,9 +24,16 @@ type HeaderProps = { isFixed?: boolean; className?: string };
 
 export default function Header({ className }: HeaderProps) {
   const { state, dispatch } = useAppContext();
+  const router = useRouter();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const toggleSidenav = () => dispatch({ type: "TOGGLE_CART" });
+
+  const handleLogout = () => {
+    localStorage.removeItem("rambd_user");
+    dispatch({ type: "LOGOUT" });
+    router.push("/login");
+  };
 
   const CART_HANDLE = (
     <FlexBox ml="20px" alignItems="flex-start">
@@ -43,9 +52,14 @@ export default function Header({ className }: HeaderProps) {
   );
 
   const LOGIN_HANDLE = (
-    <IconButton ml="1rem" bg="gray.200" p="8px">
-      <Icon size="28px">user</Icon>
-    </IconButton>
+    <FlexBox alignItems="center" ml="1rem" style={{ cursor: "pointer" }}>
+      <IconButton bg="gray.200" p="8px">
+        <Icon size="28px">user</Icon>
+      </IconButton>
+      <Small fontWeight="600" ml="10px" color="text.secondary">
+        Sign In
+      </Small>
+    </FlexBox>
   );
 
   return (
@@ -59,6 +73,7 @@ export default function Header({ className }: HeaderProps) {
             width={60}
             height={60}
             priority
+            unoptimized
             className="rb-logo-img"
           />
           <H3 color="primary.main" className="rb-logo-text">
@@ -74,9 +89,31 @@ export default function Header({ className }: HeaderProps) {
         {/* DESKTOP SECTION */}
         <div className="rb-desktop">
           {state.user ? (
-            <Link href="/profile">
-              {LOGIN_HANDLE}
-            </Link>
+            <Menu
+              direction="right"
+              handler={
+                <FlexBox alignItems="center" style={{ cursor: "pointer" }} ml="1rem">
+                  <IconButton bg="gray.200" p="8px">
+                    <Icon size="28px">user</Icon>
+                  </IconButton>
+                  {state.user?.name && (
+                    <Small fontWeight="600" ml="10px" color="text.secondary">
+                      {state.user.name}
+                    </Small>
+                  )}
+                </FlexBox>
+              }>
+              <Link href="/profile">
+                <MenuItem>My Profile</MenuItem>
+              </Link>
+              <Link href="/orders">
+                <MenuItem>Order History</MenuItem>
+              </Link>
+              <Link href="/profile/change-password">
+                <MenuItem>Change Password</MenuItem>
+              </Link>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
           ) : (
             <Link href="/login">
               {LOGIN_HANDLE}
@@ -93,6 +130,7 @@ export default function Header({ className }: HeaderProps) {
             <MiniCart toggleSidenav={toggleSidenav} />
           </Sidenav>
         </div>
+
 
         {/* MOBILE HAMBURGER */}
         <button

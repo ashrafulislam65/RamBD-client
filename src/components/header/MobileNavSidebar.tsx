@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
+import { useAppContext } from "@context/app-context";
+import { IconButton } from "@component/buttons";
+import Icon from "@component/icon/Icon";
 
 // ─────────────────────────────────────────────────────
 // Types
@@ -128,6 +131,7 @@ interface Props {
 
 export default function MobileNavSidebar({ open, onClose }: Props) {
     const router = useRouter();
+    const { state, dispatch } = useAppContext();
     const [categories, setCategories] = useState<Category[]>([]);
     const [panelStack, setPanelStack] = useState<PanelLevel[]>([]); // drill-down stack
     const [mounted, setMounted] = useState(false);
@@ -264,6 +268,13 @@ export default function MobileNavSidebar({ open, onClose }: Props) {
         setPanelStack(prev => prev.slice(0, -1));
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("rambd_user");
+        dispatch({ type: "LOGOUT" });
+        onClose();
+        router.push("/login");
+    };
+
     const portal = (
         <div style={overlayStyle}>
             {/* Backdrop */}
@@ -317,7 +328,18 @@ export default function MobileNavSidebar({ open, onClose }: Props) {
                             {/* Extra links */}
                             <div style={{ borderTop: "2px solid #eee", marginTop: 8 }}>
                                 <Link href="/" style={{ ...itemStyle, color: "#D23F57" }} onClick={onClose}>🏠 Home</Link>
-                                <Link href="/login" style={{ ...itemStyle }} onClick={onClose}>👤 Sign In / Account</Link>
+                                {state.user ? (
+                                    <>
+                                        <Link href="/profile" style={{ ...itemStyle }} onClick={onClose}>
+                                            👤 {state.user.name || "My Account"}
+                                        </Link>
+                                        <div style={{ ...itemStyle, color: "#D23F57" }} onClick={handleLogout}>
+                                            🚪 Logout
+                                        </div>
+                                    </>
+                                ) : (
+                                    <Link href="/login" style={{ ...itemStyle }} onClick={onClose}>👤 Sign In / Account</Link>
+                                )}
                             </div>
                         </>
                     ) : (

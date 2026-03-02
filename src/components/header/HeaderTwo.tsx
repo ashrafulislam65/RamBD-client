@@ -2,12 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import Menu from "@component/Menu";
+import MenuItem from "@component/MenuItem";
 import Icon from "@component/icon/Icon";
 import FlexBox from "@component/FlexBox";
 import MiniCart from "@component/mini-cart";
-import { H3, Tiny } from "@component/Typography";
+import { H3, Tiny, Small } from "@component/Typography";
 import { IconButton } from "@component/buttons";
 import Sidenav from "@component/sidenav/Sidenav";
 import { SearchInput } from "@component/search-box";
@@ -19,8 +22,15 @@ type HeaderProps = { className?: string };
 
 export default function HeaderTwo({ className }: HeaderProps) {
   const { state, dispatch } = useAppContext();
+  const router = useRouter();
   const toggleSidenav = () => dispatch({ type: "TOGGLE_CART" });
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("rambd_user");
+    dispatch({ type: "LOGOUT" });
+    router.push("/login");
+  };
 
   const CART_HANDLE = (
     <FlexBox ml="20px" alignItems="flex-start">
@@ -49,6 +59,7 @@ export default function HeaderTwo({ className }: HeaderProps) {
             width={60}
             height={60}
             priority
+            unoptimized
             className="rb-logo-img"
           />
           <H3 color="primary.main" className="rb-logo-text">
@@ -63,11 +74,44 @@ export default function HeaderTwo({ className }: HeaderProps) {
 
         {/* DESKTOP SECTION */}
         <div className="rb-desktop">
-          <Link href="/login">
-            <IconButton ml="1rem" bg="gray.200" p="8px">
-              <Icon size="28px">user</Icon>
-            </IconButton>
-          </Link>
+          {state.user ? (
+            <Menu
+              direction="right"
+              handler={
+                <FlexBox alignItems="center" style={{ cursor: "pointer" }} ml="1rem">
+                  <IconButton bg="gray.200" p="8px">
+                    <Icon size="28px">user</Icon>
+                  </IconButton>
+                  {state.user?.name && (
+                    <Small fontWeight="600" ml="10px" color="text.secondary">
+                      {state.user.name}
+                    </Small>
+                  )}
+                </FlexBox>
+              }>
+              <Link href="/profile">
+                <MenuItem>My Profile</MenuItem>
+              </Link>
+              <Link href="/orders">
+                <MenuItem>Order History</MenuItem>
+              </Link>
+              <Link href="/profile/change-password">
+                <MenuItem>Change Password</MenuItem>
+              </Link>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+          ) : (
+            <Link href="/login">
+              <FlexBox alignItems="center" ml="1rem" style={{ cursor: "pointer" }}>
+                <IconButton bg="gray.200" p="8px">
+                  <Icon size="28px">user</Icon>
+                </IconButton>
+                <Small fontWeight="600" ml="10px" color="text.secondary">
+                  Sign In
+                </Small>
+              </FlexBox>
+            </Link>
+          )}
           <Sidenav
             open={state.isCartOpen}
             width={380}
@@ -78,6 +122,7 @@ export default function HeaderTwo({ className }: HeaderProps) {
             <MiniCart toggleSidenav={toggleSidenav} />
           </Sidenav>
         </div>
+
 
         {/* MOBILE HAMBURGER */}
         <button
