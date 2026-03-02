@@ -80,23 +80,34 @@ const StyledButton = styled.button.withConfig({
           borderColor: color ? `${color}.main` : "text.disabled",
 
           "&:enabled svg path": {
-            fill: color ? `${theme.colors[color]?.main} !important` : "text.primary"
+            fill: color && theme && theme.colors && theme.colors[color]
+              ? `${theme.colors[color]?.main} !important`
+              : "text.primary"
           },
           "&:enabled svg polyline, svg polygon": {
-            color: color ? `${theme.colors[color]?.main} !important` : "text.primary"
+            color: color && theme && theme.colors && theme.colors[color]
+              ? `${theme.colors[color]?.main} !important`
+              : "text.primary"
           },
           "&:focus": {
-            boxShadow: `0px 1px 4px 0px ${theme.colors[color ? color : ""]?.light}`
+            boxShadow:
+              theme && theme.colors && color && theme.colors[color]
+                ? `0px 1px 4px 0px ${theme.colors[color]?.light}`
+                : "none"
           },
           "&:hover:enabled": {
             bg: color && `${color}.main`,
             borderColor: color && `${color}.main`,
             color: color && `${color}.text`,
             "svg path": {
-              fill: color ? `${theme.colors[color]?.text} !important` : "text.primary"
+              fill: color && theme && theme.colors && theme.colors[color]
+                ? `${theme.colors[color]?.text} !important`
+                : "text.primary"
             },
             "svg polyline, svg polygon": {
-              color: color ? `${theme.colors[color]?.text} !important` : "text.primary"
+              color: color && theme && theme.colors && theme.colors[color]
+                ? `${theme.colors[color]?.text} !important`
+                : "text.primary"
             },
             ...(color === "dark" && { color: "white" })
           }
@@ -106,13 +117,20 @@ const StyledButton = styled.button.withConfig({
           color: `${color}.text`,
           bg: `${color}.main`,
           "&:focus": {
-            boxShadow: `0px 1px 4px 0px ${theme.colors[color ? color : ""]?.light}`
+            boxShadow:
+              theme && theme.colors && color && theme.colors[color]
+                ? `0px 1px 4px 0px ${theme.colors[color]?.light}`
+                : "none"
           },
           "&:enabled svg path": {
-            fill: color ? `${theme.colors[color]?.text} !important` : "text.primary"
+            fill: color && theme && theme.colors && theme.colors[color]
+              ? `${theme.colors[color]?.text} !important`
+              : "text.primary"
           },
           "&:enabled svg polyline, svg polygon": {
-            color: color ? `${theme.colors[color]?.text} !important` : "text.primary"
+            color: color && theme && theme.colors && theme.colors[color]
+              ? `${theme.colors[color]?.text} !important`
+              : "text.primary"
           }
         }
       }

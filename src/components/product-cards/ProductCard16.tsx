@@ -30,7 +30,7 @@ const StyledBazaarCard = styled(Card)(({ theme }) => ({
   transition: "all 250ms ease-in-out",
   borderRadius: "0px 10px 10px 10px",
   "&:hover": {
-    boxShadow: theme.shadows[2],
+    boxShadow: theme && theme.shadows ? theme.shadows[2] : "none",
     "& .controller": { right: 10 }
   }
 }));
@@ -43,7 +43,8 @@ const ImageWrapper = styled(Box)({
 
 const ImageBox = styled(Box)(({ theme }) => ({
   padding: "44px 40px",
-  borderBottom: `1px solid ${theme.colors.gray[300]}`
+  borderBottom: `1px solid ${theme && theme.colors && theme.colors.gray ? theme.colors.gray[300] : "#DAE1E7"
+    }`
 }));
 
 const HoverWrapper = styled(FlexBox)(({ theme }) => ({
@@ -59,10 +60,13 @@ const HoverWrapper = styled(FlexBox)(({ theme }) => ({
   alignItems: "center",
   position: "absolute",
   flexDirection: "column",
-  boxShadow: theme.shadows[2],
+  boxShadow: theme && theme.shadows ? theme.shadows[2] : "none",
   justifyContent: "space-between",
   transition: "right 0.3s ease-in-out",
-  "& svg": { fontSize: 18, color: theme.colors.gray[600] },
+  "& svg": {
+    fontSize: 18,
+    color: theme && theme.colors && theme.colors.gray ? theme.colors.gray[600] : "#7D879C"
+  },
   "& span": {
     width: "100%",
     height: "100%",
@@ -92,7 +96,7 @@ const StyledChip = styled(Chip)(({ theme }) => ({
   padding: "3px 12px",
   position: "absolute",
   borderRadius: "0px 50px 50px 0px",
-  background: theme.colors.primary.main
+  background: theme && theme.colors && theme.colors.primary ? theme.colors.primary.main : "#D23F57"
 }));
 
 const ContentWrapper = styled(Box)({
@@ -110,8 +114,11 @@ const ButtonBox = styled(FlexBox)(({ theme }) => ({
   justifyContent: "space-between",
   "& button": {
     color: "#fff",
-    background: theme.colors.primary.main,
-    "&:hover": { background: theme.colors.primary[400] }
+    background: theme && theme.colors && theme.colors.primary ? theme.colors.primary.main : "#D23F57",
+    "&:hover": {
+      background:
+        theme && theme.colors && theme.colors.primary ? theme.colors.primary[400] : "#E3364E"
+    }
   },
   "& button svg path": { fill: "white !important" }
 }));

@@ -10,9 +10,10 @@ type DividerProps = SpaceProps & LayoutProps & ColorProps;
 
 const Divider = styled.div.withConfig({
   shouldForwardProp: (prop: string) => isValidProp(prop)
-})<DividerProps>`
+}) <DividerProps>`
   height: 1px;
-  background-color: ${({ theme }) => theme.colors.gray[200]};
+  background-color: ${({ theme }) =>
+    theme && theme.colors && theme.colors.gray ? theme.colors.gray[200] : "#F3F5F9"};
   ${color}
   ${space}
   ${layout}

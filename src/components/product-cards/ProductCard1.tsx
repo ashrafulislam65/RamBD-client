@@ -285,7 +285,11 @@ export default function ProductCard1({
                 flex={1}
                 p="2px"
                 borderRadius="4px"
-                style={{ border: `1px solid ${theme.colors.gray[300]}`, height: 32 }}>
+                style={{
+                  border: `1px solid ${theme && theme.colors && theme.colors.gray ? theme.colors.gray[300] : "#DAE1E7"
+                    }`,
+                  height: 32
+                }}>
                 <Button
                   variant="text"
                   size="small"

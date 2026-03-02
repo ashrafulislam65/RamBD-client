@@ -32,7 +32,11 @@ export const SyledTextArea = styled.textarea.withConfig({
       "&:focus": {
         outlineColor: "primary.main",
         borderColor: "primary.main",
-        boxShadow: `1px 1px 8px 4px rgba(${convertHexToRGB(props.theme.colors.primary.light)}, 0.1)`
+        boxShadow: `1px 1px 8px 4px rgba(${convertHexToRGB(
+          props.theme && props.theme.colors && props.theme.colors.primary
+            ? props.theme.colors.primary.light
+            : "#E3E9EF"
+        )}, 0.1)`
       }
     }),
   compose(color, border)

@@ -258,7 +258,12 @@ export default function ProductIntro({
                 alignItems="center"
                 justifyContent="space-between"
                 borderRadius="4px"
-                style={{ border: `1px solid ${theme.colors.gray[300]}`, width: 100, height: 40 }}>
+                style={{
+                  border: `1px solid ${theme && theme.colors && theme.colors.gray ? theme.colors.gray[300] : "#E3E9EF"
+                    }`,
+                  width: 100,
+                  height: 40
+                }}>
                 <Button
                   variant="text"
                   size="small"

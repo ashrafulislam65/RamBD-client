@@ -272,7 +272,7 @@ export default function CheckoutForm({ formik }: { formik: any }) {
           onChange={handleChange}
           value={values.special_note}
           errorText={touched.special_note && errors.special_note}
-          placeholder="Enter your full address here"
+          placeholder="Enter any special instructions for your order"
           style={{ marginBottom: "5px" }}
         />
         <FlexBox justifyContent="space-between" alignItems="center">

@@ -15,13 +15,14 @@ interface TableRowProps extends SpaceProps, ColorProps, BorderProps {
 
 const TableRow = styled.div.withConfig({
   shouldForwardProp: (prop: string) => isValidProp(prop)
-})<TableRowProps>`
+}) <TableRowProps>`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   border-radius: 10px;
   background: ${theme.colors.body.paper};
-  box-shadow: ${({ theme, boxShadow }) => theme.shadows[boxShadow || "small"]};
+  box-shadow: ${({ theme, boxShadow }) =>
+    theme && theme.shadows ? theme.shadows[boxShadow || "small"] : "none"};
 
   & > * {
     flex: 1 1 0;

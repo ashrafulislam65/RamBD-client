@@ -25,13 +25,13 @@ import { isValidProp } from "@utils/utils";
 // ==============================================================
 interface BoxProps
   extends LayoutProps,
-    GridProps,
-    ColorProps,
-    SpaceProps,
-    BorderProps,
-    FlexboxProps,
-    PositionProps,
-    TypographyProps {
+  GridProps,
+  ColorProps,
+  SpaceProps,
+  BorderProps,
+  FlexboxProps,
+  PositionProps,
+  TypographyProps {
   cursor?: string;
   transition?: string;
   shadow?: number | null;
@@ -44,7 +44,7 @@ const Box = styled.div.withConfig({
   ({ shadow = 0, cursor = "unset", transition, theme }) => ({
     cursor,
     transition,
-    boxShadow: theme.shadows[shadow]
+    boxShadow: theme && theme.shadows ? theme.shadows[shadow] : "none"
   }),
   compose(layout, space, color, grid, position, flexbox, border, typography)
 );

@@ -94,15 +94,17 @@ const login = async (payload: any) => {
         const status = error.response?.status;
         const message = error.message;
 
+        // Always log the raw error first so it's never empty {}
+        console.error("❌ [AUTH] Login Error (raw):", error);
         console.error("❌ [AUTH] Login Error Context:", {
-            status,
-            message,
-            url: error.config?.url,
-            errorData: typeof errorData === 'object' ? JSON.stringify(errorData) : errorData
+            status: status ?? "no-status",
+            message: message ?? "no-message",
+            url: error.config?.url ?? "no-url",
+            errorData: errorData ? JSON.stringify(errorData) : "no-error-data"
         });
 
         // Ensure we throw something meaningful
-        throw errorData || { message: message };
+        throw errorData || { message: message || "Login failed. Please try again." };
     }
 };
 

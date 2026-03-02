@@ -38,8 +38,11 @@ const getProduct = cache(async (slug: string, categorySlug?: string): Promise<Pr
     ]);
 
     const allRealProducts = fallbackResults
-      .filter(res => res.status === 'fulfilled')
-      .map(res => (res as any).value.products || (res as any).value)
+      .filter((res): res is PromiseFulfilledResult<any> => res.status === 'fulfilled')
+      .map(res => {
+        const val = res.value;
+        return Array.isArray(val) ? val : (val.products || []);
+      })
       .flat();
 
     let realProduct = allRealProducts.find((p) => (p as any).slug === slug);
@@ -74,9 +77,7 @@ const getFrequentlyBought = cache(async (): Promise<Product[]> => {
 const getRelatedProducts = cache(async (categorySlug?: string): Promise<Product[]> => {
   if (categorySlug) {
     const res = await categoryProductApi.getProductsByCategory(categorySlug);
-    if (res.products && res.products.length > 0) {
-      return res.products;
-    }
+    return res.products || [];
   }
   return market2Api.getLatestProducts();
 });

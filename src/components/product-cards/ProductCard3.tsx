@@ -27,7 +27,7 @@ const Wrapper = styled.div`
   .image-holder {
     position: relative;
     text-align: center;
-    display: inlin-block;
+    display: inline-block;
 
     .sale-chip {
       top: 0.625rem;
@@ -142,7 +142,7 @@ export default function ProductCard3(props: ProductCard3Props) {
           <div>
             <Rating
               outof={5}
-              value={3.5}
+              value={rating || 3.5}
               color="warn"
               onChange={(value) => console.log(value, "from rating")}
             />

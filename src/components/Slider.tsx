@@ -6,7 +6,8 @@ const StyledSlider = styled.input`
   width: 100%;
   height: 4px;
   border-radius: 5px;
-  background: ${({ theme }) => theme.colors.primary.light};
+  background: ${({ theme }) =>
+    theme && theme.colors && theme.colors.primary ? theme.colors.primary.light : "#E3E9EF"};
   outline: none;
   opacity: 0.7;
   -webkit-transition: 0.2s;

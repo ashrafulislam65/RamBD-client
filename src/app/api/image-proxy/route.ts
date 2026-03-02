@@ -92,16 +92,14 @@ export async function GET(request: NextRequest) {
             });
 
             if (!res.ok) {
-                console.error(`[image-proxy] Fetch failed for ${url}: ${res.status}`);
-                return new NextResponse(`Failed to fetch image: ${res.status}`, {
-                    status: res.status,
-                });
+                console.warn(`[image-proxy] Upstream fetch failed for ${url}: ${res.status} — redirecting to original`);
+                return NextResponse.redirect(url, { status: 302 });
             }
 
             const contentType = res.headers.get("content-type") || "";
             if (!contentType.startsWith("image/")) {
-                console.error(`[image-proxy] Invalid content type for ${url}: ${contentType}`);
-                return new NextResponse("Not an image", { status: 400 });
+                console.warn(`[image-proxy] Non-image content-type for ${url}: ${contentType} — redirecting to original`);
+                return NextResponse.redirect(url, { status: 302 });
             }
 
             const originalBuffer = Buffer.from(await res.arrayBuffer());
@@ -112,7 +110,6 @@ export async function GET(request: NextRequest) {
             let isOptimized = false;
 
             try {
-                // Optimization Pipeline
                 // Use dynamic import for sharp to avoid loading errors if module is missing
                 const sharpModule = await import("sharp");
                 const sharp = (sharpModule.default || sharpModule) as any;
@@ -143,14 +140,13 @@ export async function GET(request: NextRequest) {
                 }
                 isOptimized = true;
             } catch (sharpError) {
-                console.error("[image-proxy] Sharp optimization failed, falling back to original:", sharpError);
-                // Fallback to original buffer if sharp fails (e.g. missing binaries on cPanel)
+                console.warn("[image-proxy] Sharp failed, serving original:", (sharpError as Error).message);
                 finalBuffer = originalBuffer;
                 finalContentType = contentType;
                 isOptimized = false;
             }
 
-            // 5. Save to Cache (Fire and forget, don't block the response)
+            // 5. Save to Cache (Fire and forget)
             if (isOptimized) {
                 fs.writeFile(cacheFilePath, finalBuffer).catch(err =>
                     console.error("[image-proxy] Cache write error:", err)
@@ -168,10 +164,9 @@ export async function GET(request: NextRequest) {
                 },
             });
         } catch (error) {
-            console.error("[image-proxy] Global Error:", error);
-            return new NextResponse(`Image fetch failed: ${error instanceof Error ? error.message : "Unknown error"}`, {
-                status: 500
-            });
+            // Last-resort: redirect to original URL rather than showing a broken image
+            console.warn("[image-proxy] Fetch/process error, redirecting to original:", url, error);
+            return NextResponse.redirect(url, { status: 302 });
         }
     } catch (globalError) {
         console.error("[image-proxy] Critical Error:", globalError);

@@ -57,7 +57,12 @@ const StyledIconButton = styled.button.withConfig({
           border: "2px solid",
           borderColor: `${props.color}.main`,
           "&:focus": {
-            boxShadow: `0px 1px 4px 0px ${props.theme.colors[props.color as any]?.main}`
+            boxShadow:
+              props.theme &&
+                props.theme.colors &&
+                props.theme.colors[props.color as any]
+                ? `0px 1px 4px 0px ${props.theme.colors[props.color as any]?.main}`
+                : "none"
           }
         },
         contained: {
@@ -66,7 +71,12 @@ const StyledIconButton = styled.button.withConfig({
           color: `${props.color}.text`,
           "&:hover": { bg: `${props.color}.main` },
           "&:focus": {
-            boxShadow: `0px 1px 4px 0px ${props.theme.colors[props.color as any]?.main}`
+            boxShadow:
+              props.theme &&
+                props.theme.colors &&
+                props.theme.colors[props.color as any]
+                ? `0px 1px 4px 0px ${props.theme.colors[props.color as any]?.main}`
+                : "none"
           }
         }
       }

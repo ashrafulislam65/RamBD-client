@@ -23,15 +23,15 @@ const StyledCard = styled("div")(({ theme }) => ({
   overflow: "hidden",
   position: "relative",
   transition: "all 250ms ease-in-out",
-  outline: `2px solid ${theme.colors.gray[200]}`,
+  outline: `2px solid ${theme && theme.colors && theme.colors.gray ? theme.colors.gray[200] : "#F3F5F9"}`,
   "&:hover": {
-    boxShadow: theme.shadows[4],
+    boxShadow: theme && theme.shadows ? theme.shadows[4] : "none",
     "& .controlBox": { display: "block" }
   }
 }));
 
 const ImgBox = styled("div")(({ theme }) => ({
-  background: theme.colors.primary[50]
+  background: theme && theme.colors && theme.colors.primary ? theme.colors.primary[50] : "#F6F9FC"
 }));
 
 const ContentWrapper = styled("div")({
@@ -51,20 +51,22 @@ const StatusChipBox = styled("div")(({ theme }) => ({
   right: "30px",
   fontSize: "12px",
   position: "absolute",
-  backgroundColor: theme.colors.primary.main,
+  backgroundColor: theme && theme.colors && theme.colors.primary ? theme.colors.primary.main : "#D23F57",
   "& .triangle-left": {
     width: 0,
     height: 0,
     borderTop: "0px solid transparent",
     borderBottom: "10px solid transparent",
-    borderLeft: `20px solid ${theme.colors.primary.main}`
+    borderLeft: `20px solid ${theme && theme.colors && theme.colors.primary ? theme.colors.primary.main : "#D23F57"
+      }`
   },
   "& .triangle-right": {
     width: 0,
     height: 0,
     borderTop: "0px solid transparent",
     borderBottom: "10px solid transparent",
-    borderRight: `20px solid ${theme.colors.primary.main}`
+    borderRight: `20px solid ${theme && theme.colors && theme.colors.primary ? theme.colors.primary.main : "#D23F57"
+      }`
   }
 }));
 
@@ -86,7 +88,7 @@ const ColorBox = styled("div")(({ theme }) => ({
     borderRadius: 8,
     "&:hover": {
       cursor: "pointer",
-      outline: `2px solid ${theme.colors.gray[200]}`
+      outline: `2px solid ${theme && theme.colors && theme.colors.gray ? theme.colors.gray[200] : "#F3F5F9"}`
     }
   }
 }));
@@ -96,13 +98,17 @@ const StyledButton = styled(Button)(({ theme }) => ({
   maxHeight: 32,
   borderRadius: 0,
   transition: "all 0.3s",
-  color: theme.colors.primary.main,
-  borderColor: theme.colors.primary.main,
-  "& svg path": { fill: `${theme.colors.primary.main} !important` },
+  color: theme && theme.colors && theme.colors.primary ? theme.colors.primary.main : "#D23F57",
+  borderColor: theme && theme.colors && theme.colors.primary ? theme.colors.primary.main : "#D23F57",
+  "& svg path": {
+    fill: `${theme && theme.colors && theme.colors.primary ? theme.colors.primary.main : "#D23F57"
+      } !important`
+  },
   "&:hover": {
     color: "#fff",
-    background: theme.colors.primary.main,
-    border: `1px solid ${theme.colors.primary.main}`,
+    background: theme && theme.colors && theme.colors.primary ? theme.colors.primary.main : "#D23F57",
+    border: `1px solid ${theme && theme.colors && theme.colors.primary ? theme.colors.primary.main : "#D23F57"
+      }`,
     "& svg path": { fill: `white !important` }
   }
 }));

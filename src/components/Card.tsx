@@ -31,9 +31,11 @@ const Card = styled(Box).withConfig({
   shouldForwardProp: (prop: string) => isValidProp(prop)
 })<Props>(
   ({ theme, hoverEffect = false, boxShadow = "small" }) => ({
-    boxShadow: theme.shadows[boxShadow],
-    backgroundColor: theme.colors.body.paper,
-    ...(hoverEffect && { "&:hover": { boxShadow: theme.shadows.large } })
+    boxShadow: theme && theme.shadows ? theme.shadows[boxShadow] : "none",
+    backgroundColor: theme && theme.colors ? theme.colors.body.paper : "white",
+    ...(hoverEffect &&
+      theme &&
+      theme.shadows && { "&:hover": { boxShadow: theme.shadows.large } })
   }),
   compose(border, color, space, layout)
 );

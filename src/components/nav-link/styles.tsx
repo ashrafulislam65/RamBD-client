@@ -18,15 +18,18 @@ const StyledNavLink = styled.span.withConfig({
     systemCss({
       position: "relative",
       transition: "all 150ms ease-in-out",
-      color: isCurrentRoute ? theme.colors.primary.main : "auto",
+      color: isCurrentRoute && theme?.colors?.primary ? theme.colors.primary.main : "auto",
       "&:hover": {
-        color: `${theme.colors.primary.main} !important`
+        color:
+          theme && theme.colors && theme.colors.primary
+            ? `${theme.colors.primary.main} !important`
+            : "auto"
       },
       "& svg path": {
-        fill: isCurrentRoute ? theme.colors.primary.main : "auto"
+        fill: isCurrentRoute && theme?.colors?.primary ? theme.colors.primary.main : "auto"
       },
       "& svg polyline, svg polygon": {
-        color: isCurrentRoute ? theme.colors.primary.main : "auto"
+        color: isCurrentRoute && theme?.colors?.primary ? theme.colors.primary.main : "auto"
       }
     }),
   compose(space, color)
