@@ -134,7 +134,7 @@ export default function ProductCard15(props: Props) {
       <ImgBox id="imgBox">
         {off !== 0 && <StyledChip color="primary">{off}% off</StyledChip>}
 
-        <Link href={`/product/${slug}`}>
+        <Link href={`/pro/${slug}`}>
           <LazyImage
             src={imgUrl}
             width={200}
@@ -180,7 +180,7 @@ export default function ProductCard15(props: Props) {
           )}
         </FlexBox>
 
-        <Link href={`/product/${slug}`}>
+        <Link href={`/pro/${slug}`}>
           <H3
             my=".5rem"
             title={title}

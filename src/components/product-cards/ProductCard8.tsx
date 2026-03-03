@@ -33,7 +33,7 @@ export default function ProductCard8({
 }: ProductCard8Props) {
   return (
     <Card p="1rem" borderRadius={8} {...props}>
-      <Link href={`/product/${slug}`}>
+      <Link href={`/pro/${slug}`}>
         <HoverBox mb="0.75rem" borderRadius={8} overflow="hidden" position="relative">
           {!!off && (
             <Chip

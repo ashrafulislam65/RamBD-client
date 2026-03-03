@@ -149,7 +149,7 @@ export default function ProductCard12(props: ProductCard12Props) {
         )}
 
         <ImageBox className="hoverImgBox">
-          <Link href={`/product/${slug}`}>
+          <Link href={`/pro/${slug}`}>
             <NextImage alt={title} width={190} height={190} src={imgUrl} />
           </Link>
         </ImageBox>

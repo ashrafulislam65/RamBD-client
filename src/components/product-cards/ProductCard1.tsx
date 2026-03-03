@@ -143,7 +143,7 @@ export default function ProductCard1({
   const { state, dispatch } = useAppContext();
   const theme = useTheme();
   const cartItem = state.cart.find((item) => item.id === id);
-  const productPath = categorySlug ? `/product/${slug}?cat=${categorySlug}` : `/product/${slug}`;
+  const productPath = categorySlug ? `/pro/${slug}?cat=${categorySlug}` : `/pro/${slug}`;
 
   const toggleDialog = useCallback(() => {
     setOpen((open) => !open);

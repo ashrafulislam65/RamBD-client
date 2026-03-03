@@ -59,7 +59,7 @@ export default function MiniCart({ toggleSidenav = () => { } }: MiniCartProps) {
         {state.cart.map((item) => (
           <Fragment key={item.id}>
             <div className="cart-item">
-              <Link href={`/product/${item.slug}`}>
+              <Link href={`/pro/${item.slug}`}>
                 <Avatar
                   size={76}
                   mr="1rem"
@@ -69,7 +69,7 @@ export default function MiniCart({ toggleSidenav = () => { } }: MiniCartProps) {
               </Link>
 
               <div className="product-details">
-                <Link href={`/product/${item.id}`}>
+                <Link href={`/pro/${item.id}`}>
                   <H5 className="title" fontSize="14px">
                     {item.name}
                   </H5>

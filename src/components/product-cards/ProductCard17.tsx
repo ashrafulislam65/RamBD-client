@@ -111,7 +111,7 @@ export default function ProductCard17(props: ProductCard17Props) {
   return (
     <Wrapper>
       <CardMedia>
-        <Link href={`/product/${slug}`}>
+        <Link href={`/pro/${slug}`}>
           {!!off && (
             <Chip
               zIndex={1}

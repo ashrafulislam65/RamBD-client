@@ -51,7 +51,7 @@ export default function ProductCard11(props: ProductCard11Props) {
   const { title, imgUrl, price, regularPrice, rating, slug, off = 0 } = props;
 
   return (
-    <Link href={`/product/${slug}`}>
+    <Link href={`/pro/${slug}`}>
       <StyledProductCard>
         <Box mb="1rem" className="image-holder">
           {!!off && (

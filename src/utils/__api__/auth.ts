@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@lib/axios";
 
 const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
 

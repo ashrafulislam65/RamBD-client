@@ -16,7 +16,7 @@ export default async function LatestProductsSidebar() {
 
                 <Box>
                     {latestProducts?.slice(0, 4).map((item) => (
-                        <Link href={`/product/${item.slug}`} key={item.id}>
+                        <Link href={`/pro/${item.slug}`} key={item.id}>
                             <Box
                                 padding="8px 4px"
                                 mb="10px"

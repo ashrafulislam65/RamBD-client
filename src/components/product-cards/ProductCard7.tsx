@@ -84,7 +84,7 @@ export default function ProductCard7(props: ProductCard7Props) {
         flexDirection="column"
         className="product-details"
         justifyContent="space-between">
-        <Link href={`/product/${slug}`}>
+        <Link href={`/pro/${slug}`}>
           <Typography className="title" fontWeight="600" fontSize="18px" mb="0.5rem">
             {name}
           </Typography>

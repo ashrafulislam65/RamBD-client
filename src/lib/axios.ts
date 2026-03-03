@@ -15,8 +15,14 @@ axiosInstance.interceptors.response.use(
     const { config } = error;
     if (!config || !config.retry) config.retry = 0;
 
-    // Retry up to 2 times for timeouts or server errors
-    if (config.retry < 2 && (error.code === 'ECONNABORTED' || (error.response && error.response.status >= 500))) {
+    // Retry up to 2 times for timeouts, socket errors, or server errors
+    if (config.retry < 2 && (
+      error.code === 'ECONNABORTED' ||
+      error.code === 'ECONNRESET' ||
+      error.code === 'ETIMEDOUT' ||
+      error.message?.includes('socket hang up') ||
+      (error.response && error.response.status >= 500)
+    )) {
       config.retry += 1;
       console.log(`Retrying request (${config.retry}): ${config.url}`);
       return axiosInstance(config);

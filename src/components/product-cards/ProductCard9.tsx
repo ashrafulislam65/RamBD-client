@@ -146,7 +146,7 @@ export default function ProductCard9({
     router.push("/checkout");
   };
 
-  const productPath = categorySlug ? `/product/${slug}?cat=${categorySlug}` : `/product/${slug}`;
+  const productPath = categorySlug ? `/pro/${slug}?cat=${categorySlug}` : `/pro/${slug}`;
 
   return (
     <Wrapper overflow="hidden" width="100%" {...props}>

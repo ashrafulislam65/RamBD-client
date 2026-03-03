@@ -93,7 +93,7 @@ export default function SearchInputWithCategory() {
       {!!resultList.length && (
         <Card position="absolute" top="100%" py="0.5rem" width="100%" boxShadow="large" zIndex={99} style={{ maxHeight: '400px', overflowY: 'auto' }}>
           {resultList.map((item) => (
-            <Link href={`/product/${item.slug}`} key={item.id}>
+            <Link href={`/pro/${item.slug}`} key={item.id}>
               <MenuItem key={item.id}>
                 <img
                   src={item.image}

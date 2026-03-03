@@ -84,23 +84,27 @@ export default function Navbar({ navListOpen, categories: initialData }: NavbarP
       }
 
       // 4. Map to Nav structure recursive
-      const mapSubCategories = (subs?: any[]): Nav[] | undefined => {
+      const mapSubCategories = (subs?: any[], parentPath = ""): Nav[] | undefined => {
         return subs?.map(sub => {
           // Check standard nesting first, then fallback to manual lookup
           const children = sub.sub_categories || sub.category_sub_categories || sub.children || childMap[sub.id];
+          const currentPath = parentPath ? `${parentPath}/${sub.cate_slug}` : sub.cate_slug;
           return {
             title: sub.cate_name,
-            url: `/category/${sub.cate_slug}`,
-            child: mapSubCategories(children)
+            url: `/category/${currentPath}`,
+            child: mapSubCategories(children, currentPath)
           };
         });
       };
 
-      const mappedNavs: Nav[] = sortedMenus.map((m: MenuItemData) => ({
-        title: m.category.cate_name,
-        url: `/category/${m.category.cate_slug}`,
-        child: mapSubCategories(m.category.sub_categories || m.category.category_sub_categories || m.category.children || childMap[m.category.id])
-      }));
+      const mappedNavs: Nav[] = sortedMenus.map((m: MenuItemData) => {
+        const parentPath = m.category.cate_slug;
+        return {
+          title: m.category.cate_name,
+          url: `/category/${parentPath}`,
+          child: mapSubCategories(m.category.sub_categories || m.category.category_sub_categories || m.category.children || childMap[m.category.id], parentPath)
+        };
+      });
 
       console.log("Navbar Items:", mappedNavs);
       setNavItems([{ title: "Home", url: "/", isHome: true }, ...mappedNavs]);

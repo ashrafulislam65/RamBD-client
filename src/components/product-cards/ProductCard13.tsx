@@ -143,7 +143,7 @@ export default function ProductCard13(props: Props) {
 
   return (
     <StyledCard>
-      <Link href={`/product/${slug}`}>
+      <Link href={`/pro/${slug}`}>
         <ImgBox id="imgBox">
           {!!off && (
             <Chip
@@ -191,7 +191,7 @@ export default function ProductCard13(props: Props) {
       <ContentWrapper>
         <FlexBox>
           <Box flex="1 1 0" minWidth="0px" mr={1}>
-            <Link href={`/product/${slug}`}>
+            <Link href={`/pro/${slug}`}>
               <H3
                 mb={1}
                 title={title}

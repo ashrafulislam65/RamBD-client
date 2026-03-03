@@ -124,7 +124,7 @@ export default function ProductReview({ reviews = [], slug, model, productId }: 
             size="small"
             color="primary"
             variant="contained"
-            onClick={() => router.push(`/login?redirectTo=/product/${slug}`)}>
+            onClick={() => router.push(`/login?redirectTo=/pro/${slug}`)}>
             Sign In
           </Button>
         </Box>

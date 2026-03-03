@@ -9,13 +9,46 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     try {
         const catRes = await fetch(`${apiBaseUrl}/home-menu`);
         const catData = await catRes.json();
-        const categories = catData.category || [];
-        categoryEntries = categories.map((cat: any) => ({
-            url: `${baseUrl}/category/${cat.slug}`,
-            lastModified: new Date(),
-            changeFrequency: "weekly",
-            priority: 0.8,
-        }));
+
+        const childMap: Record<string | number, any[]> = {};
+        if (Array.isArray(catData.subCategory)) {
+            catData.subCategory.forEach((sub: any) => {
+                if (sub.parent_id) {
+                    if (!childMap[sub.parent_id]) childMap[sub.parent_id] = [];
+                    childMap[sub.parent_id].push(sub);
+                }
+            });
+        }
+
+        const mapCategories = (cats: any[], parentPath = ""): MetadataRoute.Sitemap => {
+            let entries: MetadataRoute.Sitemap = [];
+            cats.forEach((cat: any) => {
+                const slug = cat.cate_slug || cat.slug;
+                if (!slug) return;
+
+                const currentPath = parentPath ? `${parentPath}/${slug}` : slug;
+                entries.push({
+                    url: `${baseUrl}/category/${currentPath}`,
+                    lastModified: new Date(),
+                    changeFrequency: "weekly",
+                    priority: parentPath ? 0.6 : 0.8,
+                });
+
+                // Find children: either from the category object itself or the childMap
+                const children = cat.sub_categories || cat.category_sub_categories || cat.children || childMap[cat.id];
+                if (children && children.length > 0) {
+                    entries = [...entries, ...mapCategories(children, currentPath)];
+                }
+            });
+            return entries;
+        };
+
+        const mainCategories = (catData.menu || [])
+            .filter((m: any) => Number(m.checked) === 1)
+            .map((m: any) => m.category);
+
+        categoryEntries = mapCategories(mainCategories);
+
     } catch (error) {
         console.error("Sitemap category fetch failed:", error);
     }
@@ -44,7 +77,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }, []);
 
         productEntries = uniqueProducts.map((prod: any) => ({
-            url: `${baseUrl}/product/${prod.slug}`,
+            url: `${baseUrl}/pro/${prod.slug}`,
             lastModified: new Date(),
             changeFrequency: "daily",
             priority: 0.7,

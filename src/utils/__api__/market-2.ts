@@ -21,59 +21,52 @@ const getCategories = async () => {
     console.log(`[getCategories] Fetching from URL: "${url}"`);
     const response = await axios.get(url);
     const data = response.data;
-    // Filter and sort to match navbar
+
+    if (!data || !data.menu) return [];
+
+    // Filter and sort menus
     const filteredMenus = (data.menu || []).filter((m: any) => Number(m.checked) === 1);
     const sortedMenus = filteredMenus.sort((a: any, b: any) => Number(a.menu_order) - Number(b.menu_order));
 
-    const iconMapper: Record<string, string> = {
-      "microphone": "fas fa-microphone",
-      "trypod": "fas fa-video",
-      "gadgets": "fas fa-mobile-screen",
-      "converter": "fas fa-plug",
-      "electronics": "fas fa-laptop",
-      "watch": "fas fa-stopwatch",
-      "camera": "fas fa-camera",
-      "headphones": "fas fa-headphones"
+    // Map children by parent_id
+    const childMap: Record<string | number, any[]> = {};
+    if (Array.isArray(data.subCategory)) {
+      data.subCategory.forEach(sub => {
+        if (sub.parent_id) {
+          if (!childMap[sub.parent_id]) childMap[sub.parent_id] = [];
+          childMap[sub.parent_id].push(sub);
+        }
+      });
+    }
+
+    // Helper to map subcategories recursively
+    const mapSubCategories = (subs?: any[]): any[] | undefined => {
+      const mapped = subs?.map(sub => ({
+        id: sub.id,
+        name: sub.cate_name,
+        slug: sub.cate_slug,
+        children: mapSubCategories(sub.sub_categories || sub.category_sub_categories || sub.children || childMap[sub.id])
+      }));
+      return mapped && mapped.length > 0 ? mapped : undefined;
     };
 
     const categories = sortedMenus.map((m: any) => {
-      let iconClass = m.category.cate_icon || 'fas fa-th-large';
-      const cateNameLower = m.category.cate_name.toLowerCase();
-
-      // If the icon is a full HTML tag like <i class="fas fa-microphone"></i>, extract the class
-      if (typeof iconClass === 'string' && iconClass.includes('<i class=')) {
-        const match = iconClass.match(/class="([^"]+)"/);
-        if (match && match[1]) {
-          iconClass = match[1];
-        }
-      } else if (iconMapper[cateNameLower]) {
-        // Use our predefined mapper for known category names
-        iconClass = iconMapper[cateNameLower];
-      } else if (iconClass && iconClass.length > 0 && !iconClass.startsWith('fa')) {
-        // Fallback: try to guess fa class
-        iconClass = `fas fa-${iconClass.toLowerCase().replace(/\s+/g, '-')}`;
-      }
-
+      const cate = m.category;
       return {
-        id: m.category.id,
-        name: m.category.cate_name,
-        slug: m.category.cate_slug,
-        icon: iconClass || 'fas fa-th-large',
-        image: m.category.cate_img && m.category.cate_img !== 'default.png'
-          ? `https://admin.unicodeconverter.info/storage/app/public/category/${m.category.cate_img}`
+        id: cate.id,
+        name: cate.cate_name,
+        slug: cate.cate_slug,
+        icon: cate.cate_icon || 'fas fa-th-large',
+        children: mapSubCategories(cate.sub_categories || cate.category_sub_categories || cate.children || childMap[cate.id]),
+        image: cate.cate_img && cate.cate_img !== 'default.png'
+          ? `https://admin.unicodeconverter.info/storage/app/public/category/${cate.cate_img}`
           : '/assets/images/categories/camera.png'
       };
     });
 
-    console.log("Section 3 Categories Fetched:", categories.length, categories.slice(0, 2).map(c => c.name));
     return categories;
   } catch (error: any) {
     console.error("[getCategories] face error:", error.message);
-    console.error("[getCategories] full error:", error);
-    if (error.cause) {
-      console.error("[getCategories] error cause:", error.cause);
-      if (error.cause.message) console.error("[getCategories] error cause message:", error.cause.message);
-    }
     return [];
   }
 };

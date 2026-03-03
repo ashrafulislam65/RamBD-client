@@ -137,23 +137,26 @@ export default function ProductFilterCard({
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const handleCategoryChange = (slug: string) => {
-    router.push(`/category/${slug}`);
+  const handleCategoryChange = (path: string) => {
+    router.push(`/category/${path}`);
   };
 
-  const render = (items: any[]) =>
-    items.map((item) => (
-      <Paragraph
-        py="6px"
-        pl="22px"
-        key={item.id || item.slug}
-        fontSize="14px"
-        color="text.muted"
-        className="cursor-pointer"
-        onClick={() => handleCategoryChange(item.slug)}>
-        {item.name || item.title}
-      </Paragraph>
-    ));
+  const render = (items: any[], parentPath: string) =>
+    items.map((item) => {
+      const currentPath = `${parentPath}/${item.slug}`;
+      return (
+        <Paragraph
+          py="6px"
+          pl="22px"
+          key={item.id || item.slug}
+          fontSize="14px"
+          color="text.muted"
+          className="cursor-pointer"
+          onClick={() => handleCategoryChange(currentPath)}>
+          {item.name || item.title}
+        </Paragraph>
+      );
+    });
 
   return (
     <Card p="18px 27px" elevation={5} borderRadius={8}>
@@ -177,7 +180,7 @@ export default function ProductFilterCard({
 
       {categories.map((item) =>
         item.children && item.children.length > 0 ? (
-          <Accordion key={item.id || item.slug} expanded={item.slug === pathname.split("/").pop()}>
+          <Accordion key={item.id || item.slug} expanded={pathname.includes(item.slug)}>
             <AccordionHeader px="0px" py="6px" color="text.muted">
               <SemiSpan
                 className="cursor-pointer"
@@ -190,7 +193,7 @@ export default function ProductFilterCard({
               </SemiSpan>
             </AccordionHeader>
 
-            {render(item.children)}
+            {render(item.children, item.slug)}
           </Accordion>
         ) : (
           <Paragraph

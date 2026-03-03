@@ -95,24 +95,28 @@ export default function MobileCategoryNav() {
           return '<i class="fas fa-th-large"></i>'; // Default fallback
         };
 
-        const mapSubCategories = (subs?: any[]): NavItem[] | undefined => {
+        const mapSubCategories = (subs?: any[], parentPath = ""): NavItem[] | undefined => {
           return subs?.map(sub => {
             const children = sub.sub_categories || sub.category_sub_categories || sub.children || childMap[sub.id];
+            const currentPath = parentPath ? `${parentPath}/${sub.cate_slug}` : sub.cate_slug;
             return {
               title: sub.cate_name,
-              href: `/category/${sub.cate_slug}`,
+              href: `/category/${currentPath}`,
               icon: getIconClass(sub.cate_icon, sub.cate_name),
-              children: mapSubCategories(children)
+              children: mapSubCategories(children, currentPath)
             };
           });
         };
 
-        const mappedNavs: NavItem[] = sortedMenus.map((m: any) => ({
-          title: m.category?.cate_name || "Category",
-          href: `/category/${m.category?.cate_slug || ""}`,
-          icon: getIconClass(m.category?.cate_icon, m.category?.cate_name),
-          children: mapSubCategories(m.category?.sub_categories || m.category?.category_sub_categories || m.category?.children || childMap[m.category?.id])
-        }));
+        const mappedNavs: NavItem[] = sortedMenus.map((m: any) => {
+          const parentPath = m.category?.cate_slug || "";
+          return {
+            title: m.category?.cate_name || "Category",
+            href: `/category/${parentPath}`,
+            icon: getIconClass(m.category?.cate_icon, m.category?.cate_name),
+            children: mapSubCategories(m.category?.sub_categories || m.category?.category_sub_categories || m.category?.children || childMap[m.category?.id], parentPath)
+          };
+        });
 
         setNavList(mappedNavs);
         if (mappedNavs.length > 0) {

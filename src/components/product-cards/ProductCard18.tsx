@@ -35,7 +35,7 @@ type ProductCard18Props = {
 export default function ProductCard18({ image, title, price, slug, rating }: ProductCard18Props) {
   return (
     <StyledFlexBox>
-      <Link href={`/product/${slug}`}>
+      <Link href={`/pro/${slug}`}>
         <Box maxWidth={100} bg="gray.300">
           <Image width="100%" alt="product" src={image} />
         </Box>

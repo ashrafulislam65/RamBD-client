@@ -4,9 +4,10 @@ import CategorySearchResult from "./CategorySearchResult";
 import categoryProductApi from "@utils/__api__/category-products";
 import market2Api from "@utils/__api__/market-2";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
     const { slug } = await params;
-    const categoryName = slug.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+    const lastSlug = slug[slug.length - 1];
+    const categoryName = lastSlug.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 
     return {
         title: `${categoryName} | Felna Tech`,
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 // ==============================================================
 type Props = {
-    params: Promise<{ slug: string }>;
+    params: Promise<{ slug: string[] }>;
     searchParams: Promise<{
         min_price?: string;
         max_price?: string;
@@ -32,11 +33,15 @@ type Props = {
 
 export default async function CategoryProductPage({ params, searchParams }: Props) {
     const { slug } = await params;
+    const lastSlug = slug[slug.length - 1];
+    const categoryName = lastSlug.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
     const sParams = await searchParams;
     const pageNumber = sParams.page ? Number(sParams.page) : 1;
     const { sort, min_price, max_price, in_stock, on_sale, featured, brand_id: brandIds } = sParams;
 
-    // Fetch products based on filters
+    // Pass the full slug array so the API can resolve the correct category ID
+    // This fixes the issue where same-named subcategories (e.g. "rambd") under different
+    // parents (wire-mic vs wireless-mic) were returning identical products.
     const { products, totalPages, totalProducts } = await categoryProductApi.getProductsByCategory(
         slug,
         min_price,
@@ -62,7 +67,7 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
             <CategorySearchResult
                 sortOptions={sortOptions}
                 products={products}
-                categoryName={slug}
+                categoryName={categoryName}
                 totalPages={totalPages}
                 totalProducts={totalProducts}
                 currentPage={pageNumber}

@@ -19,7 +19,7 @@ type ProductCard2Props = {
 
 export default function ProductCard2({ imgUrl, title, price, regularPrice, slug, off = 0 }: ProductCard2Props) {
   return (
-    <Link href={`/product/${slug}`}>
+    <Link href={`/pro/${slug}`}>
       <HoverBox borderRadius={8} mb="0.5rem" display="flex" position="relative">
         {!!off && (
           <Chip

@@ -109,7 +109,7 @@ export default function ProductCard19(props: ProductCard19Props) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const cartItem = state.cart.find((item) => item.slug === slug);
-  const productPath = categorySlug ? `/product/${slug}?cat=${categorySlug}` : `/product/${slug}`;
+  const productPath = categorySlug ? `/pro/${slug}?cat=${categorySlug}` : `/pro/${slug}`;
 
   // handle favorite
   const handleFavorite = () => setIsFavorite((fav) => !fav);

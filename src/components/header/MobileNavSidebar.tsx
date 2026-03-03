@@ -259,7 +259,8 @@ export default function MobileNavSidebar({ open, onClose }: Props) {
         if (hasSubs) {
             setPanelStack(prev => [...prev, { label: sub.cate_name, slug: sub.cate_slug, items: sub.sub_categories! }]);
         } else {
-            router.push(`/category/${sub.cate_slug}`);
+            const path = [...panelStack.map(p => p.slug), sub.cate_slug].join("/");
+            router.push(`/category/${path}`);
             onClose();
         }
     };
@@ -350,7 +351,8 @@ export default function MobileNavSidebar({ open, onClose }: Props) {
                                 style={{ ...itemStyle, background: "#fef6f7", fontWeight: 700, color: "#D23F57" }}
                                 onClick={() => {
                                     if (currentPanel?.slug) {
-                                        router.push(`/category/${currentPanel.slug}`);
+                                        const path = panelStack.map(p => p.slug).join("/");
+                                        router.push(`/category/${path}`);
                                         onClose();
                                     }
                                 }}

@@ -172,7 +172,7 @@ export default function ProductCard10(props: ProductCard10Props) {
           </IconButton>
         </FlexBox>
 
-        <Link href={`/product/${slug}`}>
+        <Link href={`/pro/${slug}`}>
           <NextImage src={imgUrl} width={100} height={100} alt={title} />
         </Link>
       </div>
@@ -180,7 +180,7 @@ export default function ProductCard10(props: ProductCard10Props) {
       <div className="details">
         <FlexBox>
           <Box flex="1 1 0" minWidth="0px" mr="0.5rem">
-            <Link href={`/product/${slug}`}>
+            <Link href={`/pro/${slug}`}>
               <H3
                 mb="6px"
                 title={title}
