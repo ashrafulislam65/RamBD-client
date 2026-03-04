@@ -83,7 +83,8 @@ export const transformApiProduct = (apiProduct: any): any => {
         visitors: apiProduct.visitors || 0,
         pro_meta_key: apiProduct.pro_meta_key || '',
         pro_meta_description: apiProduct.pro_meta_description || apiProduct.pro_meta_sec || '',
-        meta_title: apiProduct.meta_title || ''
+        meta_title: apiProduct.meta_title || '',
+        parentId: apiProduct.category?.parent_id
     };
 };
 

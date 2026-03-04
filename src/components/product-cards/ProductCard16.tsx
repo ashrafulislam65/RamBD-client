@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, useCallback, useState } from "react";
+import { Fragment, useCallback, useState, useEffect } from "react";
 import styled from "styled-components";
 
 import Box from "@component/Box";
@@ -143,6 +143,11 @@ export default function ProductCard16(props: ProductCardProps) {
 
   const { state, dispatch } = useAppContext();
   const [openModal, setOpenModal] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const cartItem = state.cart.find((item) => item.id === id);
 
@@ -236,14 +241,14 @@ export default function ProductCard16(props: ProductCardProps) {
         <ButtonBox>
           <Button
             variant="contained"
-            onClick={handleCartAmountChange(cartItem?.qty ? cartItem.qty - 1 : 1)}
+            onClick={handleCartAmountChange(isMounted && cartItem?.qty ? cartItem.qty - 1 : 1)}
             style={{
               paddingTop: "3px",
               paddingBottom: "3px",
               width: "100%",
               fontSize: "13px"
             }}>
-            {cartItem?.qty ? (
+            {isMounted && cartItem?.qty ? (
               <Fragment>
                 <Icon size="16px">minus</Icon> Remove from Cart
               </Fragment>

@@ -49,7 +49,7 @@ const getProduct = cache(async (slug: string, categorySlug?: string): Promise<Pr
 
     if (!realProduct && categorySlug) {
       try {
-        const catRes = await categoryProductApi.getProductsByCategory(categorySlug);
+        const catRes = await categoryProductApi.getProductsByCategory([categorySlug]);
         realProduct = catRes.products.find((p) => (p as any).slug === slug);
       } catch (e) {
         console.error("Category fallback probe failed");
@@ -74,9 +74,9 @@ const getFrequentlyBought = cache(async (): Promise<Product[]> => {
   return market2Api.getTopRatedProducts();
 });
 
-const getRelatedProducts = cache(async (categorySlug?: string): Promise<Product[]> => {
+const getRelatedProducts = cache(async (categorySlug?: string, parentId?: number): Promise<Product[]> => {
   if (categorySlug) {
-    const res = await categoryProductApi.getProductsByCategory(categorySlug);
+    const res = await categoryProductApi.getProductsByCategory([categorySlug], undefined, undefined, 1, undefined, undefined, parentId);
     return res.products || [];
   }
   return market2Api.getLatestProducts();

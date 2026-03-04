@@ -32,6 +32,7 @@ interface Props {
   model?: string;
   product_code?: string;
   categoryName?: string;
+  category_slug?: string;
   visitors?: number;
   discount?: number;
 }
@@ -48,6 +49,7 @@ export default function ProductIntro({
   model,
   product_code,
   categoryName,
+  category_slug,
   visitors,
   discount
 }: Props) {
@@ -57,9 +59,11 @@ export default function ProductIntro({
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [currentUrl, setCurrentUrl] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
+    setIsMounted(true);
   }, []);
 
   // ZOOM STATE
@@ -118,30 +122,60 @@ export default function ProductIntro({
   const watchingCount = visitors ? (visitors % 15) + 3 : 5;
 
   return (
-    <Box bg="white" p="1.5rem" borderRadius={8} shadow={1} height="100%">
-      <Grid container spacing={6}>
+    <Box bg="white" pt="8px" px="1.5rem" pb="1.5rem" borderRadius={8} shadow={1} height="100%">
+      {/* BREADCRUMBS */}
+      {isMounted && (
+        <FlexBox mb="12px" alignItems="center" style={{ gap: 8 }} flexWrap="wrap">
+          <Link href="/">
+            <SemiSpan color="gray.600" className="cursor-pointer">
+              Home
+            </SemiSpan>
+          </Link>
+          <Icon variant="small">chevron-right</Icon>
+
+          <Link href={category_slug ? `/product/search/${category_slug}` : (categoryName ? `/product/search/${categoryName.toLowerCase().replace(/\s+/g, '-')}` : "#")}>
+            <SemiSpan color="gray.600" className="cursor-pointer">
+              {categoryName || "Category"}
+            </SemiSpan>
+          </Link>
+          <Icon variant="small">chevron-right</Icon>
+
+          <SemiSpan color="primary.main" fontWeight="600">
+            {model || title}
+          </SemiSpan>
+        </FlexBox>
+      )}
+
+      <FlexBox flexWrap="wrap" style={{ gap: 2 }}>
         {/* IMAGE GALLERY */}
-        <Grid item md={7} xs={12}>
+        <Box width="100%" maxWidth={{ md: "550px", xs: "100%" }}>
           <FlexBox
-            mb="20px"
+            mb="2px"
             overflow="hidden"
             borderRadius={8}
             border="1px solid"
             borderColor="gray.300"
             justifyContent="center"
             position="relative"
-            style={{ cursor: "zoom-in" }}
+            bg="white"
+            style={{
+              cursor: "zoom-in",
+              maxWidth: 550,
+              height: 425,
+              width: "100%",
+              marginBottom: "2px"
+            }}
             onMouseEnter={() => setShowZoom(true)}
             onMouseLeave={() => setShowZoom(false)}
             onMouseMove={handleMouseMove}
           >
             <Image
-              width={500}
-              height={500}
+              width={550}
+              height={425}
               src={images[selectedImage]}
               priority
               alt={title}
-              style={{ display: "block", width: "100%", height: "auto", objectFit: "contain" }}
+              style={{ display: "block", width: "100%", height: "100%", objectFit: "contain" }}
             />
 
             {/* ZOOM OVERLAY */}
@@ -166,7 +200,7 @@ export default function ProductIntro({
             )}
           </FlexBox>
 
-          <FlexBox style={{ gap: 10 }} overflow="auto">
+          <FlexBox style={{ gap: 2 }} overflow="auto">
             {images.map((url, ind) => (
               <Box
                 key={ind}
@@ -185,14 +219,14 @@ export default function ProductIntro({
               </Box>
             ))}
           </FlexBox>
-        </Grid>
+        </Box>
 
         {/* PRODUCT INFO */}
-        <Grid item md={5} xs={12}>
+        <Box flex="1 1 0" minWidth={{ md: 300, xs: "100%" }} p="0px" pl="1.5rem">
           <H1
             mb="0.75rem"
             color="secondary.main"
-            fontSize={22}
+            fontSize="20px"
             fontWeight="700"
             style={{
               lineHeight: 1.3,
@@ -277,7 +311,7 @@ export default function ProductIntro({
                   style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                   <FaMinus size={12} />
                 </Button>
-                <H3 fontSize={16} fontWeight="600" style={{ flex: 1, textAlign: 'center' }}>{cartItem?.qty || quantity}</H3>
+                <H3 fontSize={16} fontWeight="600" style={{ flex: 1, textAlign: 'center' }}>{isMounted && cartItem?.qty ? cartItem.qty : quantity}</H3>
                 <Button
                   variant="text"
                   size="small"
@@ -354,8 +388,8 @@ export default function ProductIntro({
               </Box>
             </FlexBox>
           </Box>
-        </Grid>
-      </Grid>
+        </Box>
+      </FlexBox>
     </Box>
   );
 

@@ -4,6 +4,7 @@ import { Chip } from "@component/Chip";
 import Icon from "@component/icon/Icon";
 import NavLink from "@component/nav-link";
 import { useAppContext } from "@context/app-context";
+import { useEffect, useState } from "react";
 import useWindowSize from "@hook/useWindowSize";
 import { getTheme } from "@utils/utils";
 import { layoutConstant } from "@utils/constants";
@@ -47,6 +48,11 @@ const Wrapper = styled.div`
 export default function MobileNavigationBar() {
   const width = useWindowSize();
   const { state } = useAppContext();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   if (width <= 900) {
     return (
@@ -57,11 +63,11 @@ export default function MobileNavigationBar() {
               {item.icon}
             </Icon>
 
-            {item.title === "Account" && state.user
+            {item.title === "Account" && isMounted && state.user
               ? (state.user.name.split(" ")[0] || "Account")
               : item.title}
 
-            {item.title === "Cart" && !!state.cart.length && (
+            {item.title === "Cart" && isMounted && !!state.cart.length && (
               <Chip
                 top="4px"
                 px="0.25rem"

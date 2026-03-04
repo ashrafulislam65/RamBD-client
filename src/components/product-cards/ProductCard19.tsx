@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import styled, { keyframes, css } from "styled-components";
 
 import Box from "@component/Box";
@@ -107,6 +107,11 @@ export default function ProductCard19(props: ProductCard19Props) {
   const [openDialog, setOpenDialog] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const cartItem = state.cart.find((item) => item.slug === slug);
   const productPath = categorySlug ? `/pro/${slug}?cat=${categorySlug}` : `/pro/${slug}`;
@@ -208,7 +213,7 @@ export default function ProductCard19(props: ProductCard19Props) {
           </FlexBox>
 
           <FlexBox style={{ gap: 8 }}>
-            {cartItem?.qty ? (
+            {isMounted && cartItem?.qty ? (
               <FlexBox
                 alignItems="center"
                 justifyContent="space-between"

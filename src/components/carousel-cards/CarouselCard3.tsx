@@ -7,25 +7,29 @@ import { H1, H4, Paragraph, Span } from "@component/Typography";
 import { deviceSize } from "@utils/constants";
 
 // STYLED COMPONENTS
-const CarouselCard = styled("div")({
-  minHeight: 500,
-  display: "flex",
-  alignItems: "center",
-  backgroundColor: "#fff",
-  position: "relative",
-  overflow: "hidden",
+const CarouselCard = styled.div`
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  position: relative;
+  overflow: hidden;
 
-  [`@media(max-width: ${deviceSize.sm}px)`]: {
-    padding: 24,
-    textAlign: "center",
-    justifyContent: "center",
-    "& button": { margin: "auto" }
-  },
-
-  [`@media(min-width: ${deviceSize.sm}px)`]: {
-    "& .hero-content": { paddingLeft: "5rem" }
+  @media (max-width: ${deviceSize.sm}px) {
+    min-height: 200px;
+    padding: 24px;
   }
-});
+
+  @media (max-width: ${deviceSize.xs}px) {
+    min-height: 120px;
+  }
+
+  @media (min-width: ${deviceSize.sm}px) {
+    & .hero-content {
+      padding-left: 5rem;
+    }
+  }
+`;
 
 // =============================================================
 interface Props {

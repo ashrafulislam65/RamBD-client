@@ -11,10 +11,11 @@ type Props = { products: Product[] };
 // ============================================================
 
 export default function RelatedProducts({ products }: Props) {
+  if (!products || products.length === 0) return null;
 
   return (
-    <Box mb="3.75rem">
-      <H3 mb="1.5rem">Related Products</H3>
+    <Box mb="2px" mt="1.5rem">
+      <H3 mb="1.5rem" fontWeight="700">Related Products</H3>
 
       <Carousel
         spaceBetween={2}
@@ -32,7 +33,7 @@ export default function RelatedProducts({ products }: Props) {
           const effectiveSlug = item.slug || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '');
 
           return (
-            <Box pb="1rem" key={item.id} height="100%">
+            <Box p="2px" key={item.id} height="100%">
               <ProductCard1
                 hoverEffect
                 showActionButtons={true}

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useState } from "react";
+import { Fragment, useCallback, useState, useEffect } from "react";
 import styled from "styled-components";
 
 import Box from "../Box";
@@ -129,6 +129,11 @@ export default function ProductCard9({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const { state, dispatch } = useAppContext();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const cartItem = state.cart.find((item) => item.id === id);
 
   const toggleDialog = useCallback(() => setOpen((open) => !open), []);
@@ -202,7 +207,7 @@ export default function ProductCard9({
 
             <Hidden up="sm">
               <FlexBox style={{ gap: 8 }} mt="10px">
-                {cartItem?.qty ? (
+                {isMounted && cartItem?.qty ? (
                   <FlexBox
                     alignItems="center"
                     justifyContent="space-between"
@@ -255,7 +260,7 @@ export default function ProductCard9({
             justifyContent="center">
 
             <FlexBox style={{ gap: 8, width: '100%' }}>
-              {cartItem?.qty ? (
+              {isMounted && cartItem?.qty ? (
                 <FlexBox
                   alignItems="center"
                   justifyContent="space-between"

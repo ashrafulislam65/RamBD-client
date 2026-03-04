@@ -11,12 +11,18 @@ import Typography from "@component/Typography";
 import CheckBox from "@component/CheckBox";
 import Icon from "@component/icon/Icon";
 import { useAppContext } from "@context/app-context";
+import { useEffect, useState } from "react";
 import { currency } from "@utils/utils";
 import { CartItem } from "@context/app-context/types";
 import { theme } from "@utils/theme";
 
 export default function CheckoutSummary({ formik }: { formik: any }) {
   const { state, dispatch } = useAppContext();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const { values, setFieldValue, handleSubmit, handleChange } = formik;
 
   const getTotalPrice = () => {
@@ -57,7 +63,7 @@ export default function CheckoutSummary({ formik }: { formik: any }) {
       <Divider mb="1rem" />
 
       <Box mb="1.5rem">
-        {state.cart.map((item) => (
+        {isMounted && state.cart.map((item) => (
           <FlexBox justifyContent="space-between" alignItems="center" mb="1.5rem" key={item.id}>
             <FlexBox alignItems="center" flex="1" minWidth="0">
               <IconButton
@@ -121,14 +127,14 @@ export default function CheckoutSummary({ formik }: { formik: any }) {
       <FlexBox justifyContent="space-between" alignItems="center" mb="0.75rem">
         <Typography fontSize="14px" fontWeight="600">Subtotal</Typography>
         <Typography fontSize="14px" fontWeight="600">
-          {currency(getTotalOriginalPrice(), 0)}
+          {isMounted ? currency(getTotalOriginalPrice(), 0) : currency(0)}
         </Typography>
       </FlexBox>
 
       <FlexBox justifyContent="space-between" alignItems="center" mb="0.75rem">
         <Typography fontSize="14px" fontWeight="600">Discount</Typography>
         <Typography fontSize="14px" fontWeight="600" color="primary.main">
-          -{currency(totalDiscount, 0)}
+          {isMounted ? `-${currency(totalDiscount, 0)}` : currency(0)}
         </Typography>
       </FlexBox>
 
@@ -144,7 +150,7 @@ export default function CheckoutSummary({ formik }: { formik: any }) {
       <FlexBox justifyContent="space-between" alignItems="center" mb="1.5rem">
         <Typography fontSize="16px" fontWeight="700">Total Payable</Typography>
         <Typography fontSize="16px" fontWeight="700" color="primary.main">
-          {currency(getTotalPrice() + (values.shipping_cost || 0), 0)} TK
+          {isMounted ? `${currency(getTotalPrice() + (values.shipping_cost || 0), 0)} TK` : currency(0)}
         </Typography>
       </FlexBox>
 

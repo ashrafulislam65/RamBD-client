@@ -18,10 +18,12 @@ import CheckoutSummary from "@sections/checkout/CheckoutSummary";
 // CUSTOM HOOK
 import { useAppContext } from "@context/app-context";
 import checkoutApi from "@utils/__api__/checkout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useOtpTimer } from "@hook/useOtpTimer";
 
 import Swal from "sweetalert2";
+
+import Container from "@component/Container";
 
 export default function Checkout() {
   const router = useRouter();
@@ -34,6 +36,11 @@ export default function Checkout() {
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [newPhoneDigits, setNewPhoneDigits] = useState("");
   const otpTimer = useOtpTimer("checkout", 300);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleFormSubmit = async (values: any) => {
     // scale payload
@@ -216,7 +223,7 @@ export default function Checkout() {
     setLoading(false);
   };
 
-  if (state.cart.length === 0) {
+  if (isMounted && state.cart.length === 0) {
     return (
       <Box mb="2rem" textAlign="center" mt="4rem">
         <Typography fontSize="28px" fontWeight="700" mb="1rem">

@@ -5,10 +5,16 @@ import Divider from "@component/Divider";
 import FlexBox from "@component/FlexBox";
 import Typography from "@component/Typography";
 import { useAppContext } from "@context/app-context";
+import { useEffect, useState } from "react";
 import { currency } from "@utils/utils";
 
 export default function CheckoutSummary() {
   const { state } = useAppContext();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const getTotalPrice = () => {
     return state.cart.reduce((accumulator, item) => accumulator + item.price * item.qty, 0) || 0;
@@ -20,7 +26,7 @@ export default function CheckoutSummary() {
         <Typography color="text.hint">Subtotal:</Typography>
 
         <Typography fontSize="18px" fontWeight="600" lineHeight="1">
-          {currency(getTotalPrice())}
+          {isMounted ? currency(getTotalPrice()) : currency(0)}
         </Typography>
       </FlexBox>
 
@@ -51,7 +57,7 @@ export default function CheckoutSummary() {
       <Divider mb="1rem" />
 
       <Typography fontSize="25px" fontWeight="600" lineHeight="1" textAlign="right">
-        {currency(getTotalPrice())}
+        {isMounted ? currency(getTotalPrice()) : currency(0)}
       </Typography>
     </Card1>
   );

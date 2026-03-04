@@ -82,7 +82,8 @@ const getProductsByCategory = async (
     maxPrice?: string | string[],
     page: number = 1,
     sort?: string,
-    brand_id?: string
+    brand_id?: string,
+    providedParentId?: number
 ): Promise<{ products: Product[]; totalPages: number; totalProducts: number }> => {
     try {
         const categoryUrl = (
@@ -90,7 +91,10 @@ const getProductsByCategory = async (
             `${API_BASE()}/product/product-category-items`
         ).trim();
 
-        const { slug, parentId } = await resolveCategoryInfo(slugArray);
+        const { slug, parentId: resolvedParentId } = await resolveCategoryInfo(slugArray);
+
+        // Priority: providedParentId > resolvedParentId
+        const parentId = providedParentId !== undefined ? providedParentId : resolvedParentId;
 
         let url = `${categoryUrl}/${slug}?page=${page}&limit=16`;
 

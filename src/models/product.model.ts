@@ -21,6 +21,7 @@ interface Product {
   images?: string[];
   categories: any[];
   categoryName?: string;
+  category_slug?: string;
   reviews?: Review[];
   published?: boolean;
   description?: string;
@@ -32,6 +33,7 @@ interface Product {
   pro_meta_key?: string;
   pro_meta_description?: string;
   meta_title?: string;
+  parentId?: number;
 }
 
 export default Product;

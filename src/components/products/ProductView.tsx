@@ -8,9 +8,7 @@ import FlexBox from "@component/FlexBox";
 import { H5 } from "@component/Typography";
 import Product from "@models/product.model";
 import ProductReview from "@component/products/ProductReview";
-import AvailableShops from "@component/products/AvailableShops";
 import RelatedProducts from "@component/products/RelatedProducts";
-import FrequentlyBought from "@component/products/FrequentlyBought";
 import ProductDescription from "@component/products/ProductDescription";
 import ProductSpecification from "@component/products/ProductSpecification";
 
@@ -23,14 +21,14 @@ type Props = {
 };
 // ==============================================================
 
-export default function ProductView({ shops, product, relatedProducts, frequentlyBought }: Props) {
+export default function ProductView({ product, relatedProducts }: Omit<Props, "shops" | "frequentlyBought">) {
   console.log("ProductView reviews:", product.reviews);
   const [selectedOption, setSelectedOption] = useState("specification");
   const handleOptionClick = (opt: any) => () => setSelectedOption(opt);
 
   return (
     <>
-      <FlexBox borderBottom="1px solid" borderColor="gray.400" mt="80px" mb="26px">
+      <FlexBox borderBottom="1px solid" borderColor="gray.400" mt="2px" mb="2px">
         <H5
           mr="25px"
           p="4px 10px"
@@ -65,7 +63,7 @@ export default function ProductView({ shops, product, relatedProducts, frequentl
       </FlexBox>
 
       {/* DESCRIPTION AND REVIEW TAB DETAILS */}
-      <Box mb="50px">
+      <Box mb="2px">
         {selectedOption === "specification" && <ProductSpecification />}
         {selectedOption === "description" && <ProductDescription description={product.description} />}
         {selectedOption === "review" && (
@@ -77,12 +75,6 @@ export default function ProductView({ shops, product, relatedProducts, frequentl
           />
         )}
       </Box>
-
-      {/* FREQUENTLY BOUGHT TOGETHER PRODUCTS */}
-      {/* {frequentlyBought && <FrequentlyBought products={frequentlyBought} />} */}
-
-      {/* AVAILABLE SHOPS */}
-      {/* {shops && <AvailableShops shops={shops} />} */}
 
       {/* RELATED PRODUCTS */}
       {relatedProducts && <RelatedProducts products={relatedProducts} />}

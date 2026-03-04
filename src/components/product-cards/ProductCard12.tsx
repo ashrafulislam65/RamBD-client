@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import styled from "styled-components";
 
 import Box from "@component/Box";
@@ -118,6 +118,11 @@ export default function ProductCard12(props: ProductCard12Props) {
 
   const [open, setOpen] = useState(false);
   const { state, dispatch } = useAppContext();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const cartItem = state.cart.find((item) => item.id === id);
 
@@ -175,8 +180,8 @@ export default function ProductCard12(props: ProductCard12Props) {
               variant="outlined"
               borderColor="primary.light"
               className="addCartButton"
-              onClick={handleCartAmountChange(cartItem?.qty ? cartItem?.qty - 1 : 1)}>
-              {cartItem?.qty ? (
+              onClick={handleCartAmountChange(isMounted && cartItem?.qty ? cartItem?.qty - 1 : 1)}>
+              {isMounted && cartItem?.qty ? (
                 <>
                   <Icon variant="small" mr={1}>
                     minus

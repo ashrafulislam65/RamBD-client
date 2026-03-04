@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import Avatar from "@component/avatar";
 import Icon from "@component/icon/Icon";
@@ -19,6 +19,11 @@ type MiniCartProps = { toggleSidenav?: () => void };
 
 export default function MiniCart({ toggleSidenav = () => { } }: MiniCartProps) {
   const { state, dispatch } = useAppContext();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleCartAmountChange = (amount: number, product: any) => () => {
     dispatch({
@@ -37,13 +42,13 @@ export default function MiniCart({ toggleSidenav = () => { } }: MiniCartProps) {
         <FlexBox alignItems="center" m="0px 20px" height="74px">
           <Icon size="1.75rem">bag</Icon>
           <Typography fontWeight={600} fontSize="16px" ml="0.5rem">
-            {state.cart.reduce((acc, item) => acc + item.qty, 0)} items
+            {isMounted ? state.cart.reduce((acc, item) => acc + item.qty, 0) : 0} items
           </Typography>
         </FlexBox>
 
         <Divider />
 
-        {!!!state.cart.length && (
+        {isMounted && !!!state.cart.length && (
           <FlexBox
             alignItems="center"
             flexDirection="column"
@@ -56,7 +61,7 @@ export default function MiniCart({ toggleSidenav = () => { } }: MiniCartProps) {
           </FlexBox>
         )}
 
-        {state.cart.map((item) => (
+        {isMounted && state.cart.map((item) => (
           <Fragment key={item.id}>
             <div className="cart-item">
               <Link href={`/pro/${item.slug}`}>
@@ -125,7 +130,7 @@ export default function MiniCart({ toggleSidenav = () => { } }: MiniCartProps) {
         ))}
       </div>
 
-      {!!state.cart.length && (
+      {isMounted && !!state.cart.length && (
         <div className="actions">
           <Link href="/checkout">
             <Button

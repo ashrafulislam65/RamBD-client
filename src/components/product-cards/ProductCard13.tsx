@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Box from "@component/Box";
@@ -132,6 +132,11 @@ export default function ProductCard13(props: Props) {
   const { off, status, id, title, price, regularPrice, imgUrl, rating, productColors, slug } = props;
 
   const { state, dispatch } = useAppContext();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const cartItem = state.cart.find((item) => item.slug === slug);
 
   const handleCartAmountChange = (qty: number) => () => {
@@ -234,14 +239,14 @@ export default function ProductCard13(props: Props) {
             alignItems="center"
             className="add-cart"
             flexDirection="column-reverse"
-            justifyContent={cartItem?.qty ? "space-between" : "flex-start"}>
+            justifyContent={isMounted && cartItem?.qty ? "space-between" : "flex-start"}>
             <StyledButton
               variant="outlined"
               onClick={handleCartAmountChange((cartItem?.qty || 0) + 1)}>
               <Icon variant="small">plus</Icon>
             </StyledButton>
 
-            {cartItem?.qty && (
+            {isMounted && cartItem?.qty && (
               <Fragment>
                 <Box color="text.primary" fontWeight="600">
                   {cartItem.qty}

@@ -121,6 +121,11 @@ export default function ProductCard10(props: ProductCard10Props) {
   const { id, off, unit, slug, title, price, regularPrice, imgUrl, images } = props;
 
   const [open, setOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   // const [discountPrice, setDiscountPrice] = useState<string>("");
   // const [discountAmount, setDiscountAmount] = useState<string>("");
 
@@ -212,7 +217,7 @@ export default function ProductCard10(props: ProductCard10Props) {
             width="30px"
             alignItems="center"
             flexDirection="column-reverse"
-            justifyContent={!!cartItem ? "space-between" : "flex-start"}>
+            justifyContent={isMounted && !!cartItem ? "space-between" : "flex-start"}>
             <Button
               size="none"
               padding="5px"
@@ -223,7 +228,7 @@ export default function ProductCard10(props: ProductCard10Props) {
               <Icon variant="small">plus</Icon>
             </Button>
 
-            {cartItem?.qty && (
+            {isMounted && cartItem?.qty && (
               <Fragment>
                 <SemiSpan color="text.primary" fontWeight="600">
                   {cartItem.qty}

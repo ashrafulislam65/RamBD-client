@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 // GLOBAL CUSTOM COMPONENTS
 import Box from "@component/Box";
@@ -80,8 +80,15 @@ const StyledSticker = styled(Box)`
   }
 `;
 
+import Container from "@component/Container";
+
 export default function Cart() {
   const { state, dispatch } = useAppContext();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const getTotalPrice = () => {
     return state?.cart?.reduce((accumulator, item) => accumulator + item.price * item.qty, 0) || 0;
@@ -97,8 +104,8 @@ export default function Cart() {
   const cartList = state?.cart || [];
 
   return (
-    <Fragment>
-      <Grid container spacing={6}>
+    <Container mb="2px" mt="2px" p="0" style={{ marginLeft: "2px", padding: 0, maxWidth: "100%" }}>
+      <Grid container spacing={2}>
         <Grid item lg={8} md={8} xs={12}>
           <Box
             bg="white"
@@ -131,7 +138,7 @@ export default function Cart() {
               </Grid>
             </Box>
 
-            {cartList.length > 0 ? (
+            {isMounted && cartList.length > 0 ? (
               cartList.map((item) => (
                 <Box
                   key={item.id}
@@ -200,15 +207,15 @@ export default function Cart() {
                   </Grid>
                 </Box>
               ))
-            ) : (
+            ) : isMounted ? (
               <Box py="2rem" textAlign="center">
                 <Typography fontSize="16px" fontWeight="600" color="gray.600">
                   Cart is Empty
                 </Typography>
               </Box>
-            )}
+            ) : null}
 
-            <FlexBox p="1.5rem" flexDirection={{ xs: "column", md: "row" }} style={{ gap: 16 }}>
+            <FlexBox p="2px" flexDirection={{ xs: "column", md: "row" }} style={{ gap: 2 }}>
               <Box width="100%">
                 <Link href="/" passHref>
                   <Button
@@ -243,7 +250,7 @@ export default function Cart() {
 
             <Divider bg="gray.300" />
 
-            <Box p="1.5rem">
+            <Box p="2px">
               <Box
                 bg="gray.100"
                 p="1px"
@@ -280,44 +287,44 @@ export default function Cart() {
         </Grid>
 
         <Grid item lg={4} md={4} xs={12}>
-          <Card1 borderRadius="8px" p="1.5rem">
-            <Typography fontSize="20px" fontWeight="700" mb="1.5rem">
+          <Card1 borderRadius="8px" p="2px">
+            <Typography fontSize="20px" fontWeight="700" mb="2px">
               Cart Summery
             </Typography>
 
-            <FlexBox justifyContent="space-between" alignItems="center" mb="1rem">
+            <FlexBox justifyContent="space-between" alignItems="center" mb="2px">
               <Typography color="gray.700" fontWeight="600">
                 Order Total
               </Typography>
-              <Typography fontWeight="600">{currency(getTotalPrice())} Tk</Typography>
+              <Typography fontWeight="600">{isMounted ? currency(getTotalPrice()) : currency(0)} Tk</Typography>
             </FlexBox>
 
-            <Divider mb="1rem" bg="gray.300" />
+            <Divider mb="2px" bg="gray.300" />
 
-            <FlexBox justifyContent="space-between" alignItems="center" mb="1rem">
+            <FlexBox justifyContent="space-between" alignItems="center" mb="2px">
               <Typography color="gray.700" fontWeight="600">
                 Discount
               </Typography>
               <Typography fontWeight="600">0 Tk</Typography>
             </FlexBox>
 
-            <Divider mb="1rem" bg="gray.300" />
+            <Divider mb="2px" bg="gray.300" />
 
-            <FlexBox justifyContent="space-between" alignItems="center" mb="1rem">
+            <FlexBox justifyContent="space-between" alignItems="center" mb="2px">
               <Typography color="gray.700" fontWeight="600">
                 Promotion Discount
               </Typography>
               <Typography fontWeight="600">0 Tk</Typography>
             </FlexBox>
 
-            <Divider mb="1rem" bg="gray.300" />
+            <Divider mb="2px" bg="gray.300" />
 
-            <FlexBox justifyContent="space-between" alignItems="center" mb="1.5rem" pt="1rem">
+            <FlexBox justifyContent="space-between" alignItems="center" mb="2px" pt="2px">
               <Typography fontSize="16px" fontWeight="700">
                 Final Total
               </Typography>
               <Typography fontSize="16px" fontWeight="700">
-                {currency(getTotalPrice())} Tk
+                {isMounted ? currency(getTotalPrice()) : currency(0)} Tk
               </Typography>
             </FlexBox>
 
@@ -340,28 +347,31 @@ export default function Cart() {
       </Grid>
 
       {/* Pookie Floating Sticker */}
-      <StyledSticker onClick={() => dispatch({ type: "TOGGLE_CART", payload: true })}>
-        <FlexBox flexDirection="column" alignItems="center">
-          <Box className="items-badge" borderRadius="50%" width="30px" height="30px" display="flex" alignItems="center" justifyContent="center" mb="6px">
-            <Typography fontSize="12px">
-              {cartList.reduce((acc, item) => acc + item.qty, 0)}
-            </Typography>
-          </Box>
+      {
+        isMounted && (
+          <StyledSticker onClick={() => dispatch({ type: "TOGGLE_CART", payload: true })}>
+            <FlexBox flexDirection="column" alignItems="center">
+              <Box className="items-badge" borderRadius="50%" width="30px" height="30px" display="flex" alignItems="center" justifyContent="center" mb="6px">
+                <Typography fontSize="12px">
+                  {cartList.reduce((acc, item) => acc + item.qty, 0)}
+                </Typography>
+              </Box>
 
-          <Icon size="1.75rem" mb="4px" className="cart-icon">shopping-bag</Icon>
+              <Icon size="1.75rem" mb="4px" className="cart-icon">shopping-bag</Icon>
 
-          <Typography fontSize="9px" fontWeight="700" style={{ textTransform: "uppercase", letterSpacing: "1.5px", opacity: 0.9 }}>
-            Cart
-          </Typography>
+              <Typography fontSize="9px" fontWeight="700" style={{ textTransform: "uppercase", letterSpacing: "1.5px", opacity: 0.9 }}>
+                Cart
+              </Typography>
 
-          <Box mt="8px" pt="6px" borderTop="1px solid rgba(255,255,255,0.3)" width="100%" textAlign="center">
-            <Typography fontSize="14px" fontWeight="800">
-              ৳{getTotalPrice()}
-            </Typography>
-          </Box>
-        </FlexBox>
-      </StyledSticker>
-    </Fragment>
+              <Box mt="8px" pt="6px" borderTop="1px solid rgba(255,255,255,0.3)" width="100%" textAlign="center">
+                <Typography fontSize="14px" fontWeight="800">
+                  ৳{getTotalPrice()}
+                </Typography>
+              </Box>
+            </FlexBox>
+          </StyledSticker>
+        )}
+    </Container>
   );
 }
 

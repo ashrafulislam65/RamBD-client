@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Menu from "@component/Menu";
 import MenuItem from "@component/MenuItem";
@@ -25,6 +25,11 @@ export default function HeaderTwo({ className }: HeaderProps) {
   const router = useRouter();
   const toggleSidenav = () => dispatch({ type: "TOGGLE_CART" });
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("rambd_user");
@@ -37,7 +42,7 @@ export default function HeaderTwo({ className }: HeaderProps) {
       <IconButton bg="gray.200" p="12px">
         <Icon size="20px">bag</Icon>
       </IconButton>
-      {!!state.cart.length && (
+      {isMounted && !!state.cart.length && (
         <FlexBox px="5px" py="2px" mt="-9px" ml="-1rem" bg="primary.main"
           alignItems="center" borderRadius="300px" justifyContent="center">
           <Tiny color="white" fontWeight="600">
@@ -74,7 +79,7 @@ export default function HeaderTwo({ className }: HeaderProps) {
 
         {/* DESKTOP SECTION */}
         <div className="rb-desktop">
-          {state.user ? (
+          {isMounted && state.user ? (
             <Menu
               direction="right"
               handler={

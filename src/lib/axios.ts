@@ -31,8 +31,9 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// Remove following 2 lines if you don't want to use MockAdapter
-export const Mock = new MockAdapter(axiosInstance);
+// passThrough: true ensures any request NOT matched by a mock endpoint
+// goes through to the real network instead of getting a Network Error
+export const Mock = new MockAdapter(axiosInstance, { onNoMatch: "passthrough" });
 MockEndPoints(Mock);
 
 export default axiosInstance;

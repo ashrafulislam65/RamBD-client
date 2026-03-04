@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import styled, { useTheme } from "styled-components";
 
 import { useAppContext } from "@context/app-context";
@@ -140,8 +140,14 @@ export default function ProductCard1({
   ...props
 }: ProductCard1Props) {
   const [open, setOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { state, dispatch } = useAppContext();
   const theme = useTheme();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const cartItem = state.cart.find((item) => item.id === id);
   const productPath = categorySlug ? `/pro/${slug}?cat=${categorySlug}` : `/pro/${slug}`;
 
@@ -278,7 +284,7 @@ export default function ProductCard1({
           {/* Buttons moved to details section below */}
 
           <FlexBox mt="10px" style={{ gap: 8 }}>
-            {cartItem?.qty ? (
+            {isMounted && cartItem?.qty ? (
               <FlexBox
                 alignItems="center"
                 justifyContent="space-between"
