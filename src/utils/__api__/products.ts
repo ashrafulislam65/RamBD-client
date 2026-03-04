@@ -46,6 +46,28 @@ const getProduct = cache(async (slug: string, categorySlug?: string): Promise<Pr
       .flat();
 
     let realProduct = allRealProducts.find((p) => (p as any).slug === slug);
+    console.log(`Found in featured lists? ${!!realProduct}`);
+
+    if (!realProduct) {
+      // 3. Search Pro API fallback (Most reliable for arbitrary slugs)
+      try {
+        const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
+        const searchUrl = `${apiBaseUrl}/products/searchpro?search=${slug}`;
+        console.log(`Probing search API for unknown slug: ${searchUrl}`);
+        const searchRes = await fetch(searchUrl, { cache: 'no-store' });
+        if (searchRes.ok) {
+          const searchJson = await searchRes.json();
+          const pData = searchJson.products?.data || (Array.isArray(searchJson.products) ? searchJson.products : []);
+          const match = pData.find((p: any) => p.pro_slug === slug || (p.pro_title && p.pro_title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') === slug));
+          if (match) {
+            console.log(`Matched product found in search API for slug: ${slug}`);
+            return transformApiProduct(match);
+          }
+        }
+      } catch (e) {
+        console.error("Search API probe failed:", e);
+      }
+    }
 
     if (!realProduct && categorySlug) {
       try {

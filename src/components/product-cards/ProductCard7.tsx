@@ -63,7 +63,7 @@ export default function ProductCard7(props: ProductCard7Props) {
   const handleCartAmountChange = (amount: number) => () => {
     dispatch({
       type: "CHANGE_CART_AMOUNT",
-      payload: { qty: amount, name, price, imgUrl, id }
+      payload: { qty: amount, name, price, imgUrl, id, slug }
     });
   };
 
