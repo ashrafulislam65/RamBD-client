@@ -305,9 +305,9 @@ export default function CheckoutSummary({ formik }: { formik: any }) {
               color="#000000"
               sx={{ cursor: "pointer", userSelect: "none", fontWeight: 600, display: "block" }}>
               I have read and agree to the{" "}
-              <span style={{ color: "#000000", textDecoration: "underline" }}>terms and conditions</span>,{" "}
-              <span style={{ color: "#000000", textDecoration: "underline" }}>privacy policy</span> &{" "}
-              <span style={{ color: "#000000", textDecoration: "underline" }}>refund policy</span>
+              <Link href="/terms-and-conditions" style={{ color: "#000000", textDecoration: "underline", fontWeight: 700 }}>terms and conditions</Link>,{" "}
+              <Link href="/privacy-policy" style={{ color: "#000000", textDecoration: "underline", fontWeight: 700 }}>privacy policy</Link> &{" "}
+              <Link href="/refund-policy" style={{ color: "#000000", textDecoration: "underline", fontWeight: 700 }}>refund policy</Link>
             </Typography>
           }
         />

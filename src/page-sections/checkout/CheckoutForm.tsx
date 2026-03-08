@@ -207,6 +207,7 @@ export default function CheckoutForm({ formik }: { formik: any }) {
             District
           </Typography>
           <Select
+            id="district-select"
             isSearchable={true}
             isClearable={true}
             options={districts}
@@ -227,6 +228,7 @@ export default function CheckoutForm({ formik }: { formik: any }) {
             Thana
           </Typography>
           <Select
+            id="thana-select"
             isSearchable={true}
             isClearable={true}
             options={thanas}
