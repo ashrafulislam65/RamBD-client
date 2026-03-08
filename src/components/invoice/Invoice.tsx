@@ -250,9 +250,9 @@ const Invoice = ({ order }: InvoiceProps) => {
           <tr>
             <th style={{ width: "50px" }}>#SL</th>
             <th>Product Details</th>
-            <th style={{ width: "80px" }}>Quantity</th>
-            <th style={{ width: "100px" }}>Unit Price</th>
-            <th style={{ width: "100px" }}>Total</th>
+            <th style={{ width: "80px", textAlign: "center" }}>Quantity</th>
+            <th style={{ width: "100px", textAlign: "center" }}>Unit Price</th>
+            <th style={{ width: "100px", textAlign: "right" }}>Total</th>
           </tr>
         </thead>
         <tbody>
@@ -262,9 +262,9 @@ const Invoice = ({ order }: InvoiceProps) => {
               <td>
                 <span className="product-name">{item.product_name}</span>
               </td>
-              <td className="blue-val">{item.product_quantity}</td>
-              <td className="blue-val">{item.product_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-              <td className="total-val">
+              <td className="blue-val" style={{ textAlign: "center" }}>{item.product_quantity}</td>
+              <td className="blue-val" style={{ textAlign: "center" }}>{item.product_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+              <td className="total-val" style={{ textAlign: "right" }}>
                 ৳{(item.product_price * item.product_quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </td>
             </tr>

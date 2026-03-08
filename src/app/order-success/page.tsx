@@ -256,7 +256,7 @@ export default function OrderSuccess({ params }: { params: Promise<{ id: string 
                     </Icon>
                 </Box>
                 <H1 mt="1rem" color="success.main">
-                    Thank You for Your Order!
+                    Thank You {order.user?.name?.firstName || "Customer"} for Your Order!
                 </H1>
                 <Paragraph fontSize="18px" color="text.muted" mt="0.5rem">
                     Your order has been successfully placed. Order ID: <strong>{order.id.toString().startsWith("RB") ? order.id : `RB${order.id.toString().toUpperCase()}`}</strong>

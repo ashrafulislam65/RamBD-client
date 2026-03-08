@@ -177,6 +177,16 @@ export default function Checkout() {
 
       const completeOrderData = {
         ...response,
+        form_data: {
+          customer_name: finalPayload.order_details.ord_name,
+          phone: finalPayload.order_details.ord_phone,
+          address: finalPayload.order_details.ord_address,
+          district_name: finalPayload.order_details.district_name,
+          thana_name: finalPayload.order_details.thana_name,
+          shipping_cost: finalPayload.order_details.shipping_cost,
+          total_discount: totalDiscount,
+          payment_method: finalPayload.order_details.payment_method
+        },
         products: state.cart.map(item => ({
           id: item.id,
           product_qty: item.qty,
