@@ -7,8 +7,8 @@ import { H3, Span } from "@component/Typography";
 import { deviceSize } from "@utils/constants";
 
 const slideX = keyframes`
-    from { left: 120% }
-    to { left: -100% }
+    from { transform: translateX(100%); }
+    to { transform: translateX(-100%); }
 `;
 
 // STYLED COMPONENTS
@@ -90,10 +90,10 @@ export const AddButton = styled(Button)({
 export const AnimatedText = styled(Span)`
   font-size: inherit;
   font-style: italic;
+  display: inline-block;
   position: relative;
   letter-spacing: 1.3;
   white-space: nowrap;
-  text-overflow: hidden;
-  text-transform: uppercase;
-  animation: ${slideX} 30s infinite linear 1s;
+  animation: ${slideX} 40s infinite linear;
+  padding-left: 20px;
 `;

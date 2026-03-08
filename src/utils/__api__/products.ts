@@ -15,19 +15,26 @@ const getSlugs = async (): Promise<{ slug: string }[]> => {
 
 // get product based on slug
 const getProduct = cache(async (slug: string, categorySlug?: string): Promise<Product> => {
+  let productData = null;
+
   try {
     // 1. Always try direct fetch first (Most common case)
     console.log(`Directly fetching product for slug: ${slug}`);
     const response = await axios.get("/api/products/slug", { params: { slug } });
 
-    // If we have valid product data, return it immediately
-    if (response.data && response.data.pro_title) {
-      return transformApiProduct(response.data);
-    } else if (response.data && response.data.id) {
-      return response.data;
+    // If we have valid product data, set it
+    if (response.data && (response.data.pro_title || response.data.id)) {
+      productData = response.data.pro_title ? transformApiProduct(response.data) : response.data;
     }
+  } catch (error) {
+    console.log(`Initial fetch failed for slug: ${slug}, continuing to fallbacks...`);
+  }
 
-    // 2. Probing logic as fallback (sequentially to avoid socket hang up)
+  // If we found it already, return it
+  if (productData) return productData;
+
+  // 2. Probing logic as fallback
+  try {
     console.log(`Probing fallbacks for slug: ${slug}`);
 
     // Check market-2 APIs one by one if needed (or in smaller batches)
@@ -48,48 +55,76 @@ const getProduct = cache(async (slug: string, categorySlug?: string): Promise<Pr
     let realProduct = allRealProducts.find((p) => (p as any).slug === slug);
     console.log(`Found in featured lists? ${!!realProduct}`);
 
-    if (!realProduct) {
-      // 3. Search Pro API fallback (Most reliable for arbitrary slugs)
-      try {
-        const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
-        const searchUrl = `${apiBaseUrl}/products/searchpro?search=${slug}`;
-        console.log(`Probing search API for unknown slug: ${searchUrl}`);
-        const searchRes = await fetch(searchUrl, { cache: 'no-store' });
+    if (realProduct) return realProduct;
+
+    // 3. Search Pro API fallback (Most reliable for arbitrary slugs)
+    try {
+      const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
+      // Try searching with original slug first
+      let searchUrl = `${apiBaseUrl}/products/searchpro?search=${slug}`;
+      console.log(`Probing search API for unknown slug: ${searchUrl}`);
+      let searchRes = await fetch(searchUrl, { cache: 'no-store' });
+      let pData: any[] = [];
+
+      if (searchRes.ok) {
+        const searchJson = await searchRes.json();
+        pData = searchJson.products?.data || (Array.isArray(searchJson.products) ? searchJson.products : []);
+      }
+
+      // If no match, try searching with hyphens replaced by spaces
+      if (!pData.length && slug.includes('-')) {
+        const spacedSlug = slug.replace(/-/g, ' ');
+        searchUrl = `${apiBaseUrl}/products/searchpro?search=${spacedSlug}`;
+        console.log(`Probing search API with spaced slug: ${searchUrl}`);
+        searchRes = await fetch(searchUrl, { cache: 'no-store' });
         if (searchRes.ok) {
           const searchJson = await searchRes.json();
-          const pData = searchJson.products?.data || (Array.isArray(searchJson.products) ? searchJson.products : []);
-          const match = pData.find((p: any) => p.pro_slug === slug || (p.pro_title && p.pro_title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') === slug));
-          if (match) {
-            console.log(`Matched product found in search API for slug: ${slug}`);
-            return transformApiProduct(match);
+          pData = searchJson.products?.data || (Array.isArray(searchJson.products) ? searchJson.products : []);
+        }
+      }
+
+      if (pData.length) {
+        const match = pData.find((p: any) => p.pro_slug === slug || (p.pro_title && p.pro_title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') === slug));
+        if (match) {
+          console.log(`Matched product found in search API for slug: ${slug}`);
+          return transformApiProduct(match);
+        }
+      }
+
+      // Final fallback: If still no match, try searching for the first 3 words of the slug
+      if (slug.includes('-')) {
+        const firstWords = slug.split('-').slice(0, 3).join(' ');
+        searchUrl = `${apiBaseUrl}/products/searchpro?search=${encodeURIComponent(firstWords)}`;
+        console.log(`Final probing search API with keywords: ${searchUrl}`);
+        const finalRes = await fetch(searchUrl, { cache: 'no-store' });
+        if (finalRes.ok) {
+          const finalJson = await finalRes.json();
+          const finalPData = finalJson.products?.data || (Array.isArray(finalJson.products) ? finalJson.products : []);
+          const finalMatch = finalPData.find((p: any) => p.pro_slug === slug || (p.pro_title && p.pro_title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') === slug));
+          if (finalMatch) {
+            console.log(`Final matched product found in search API for slug: ${slug}`);
+            return transformApiProduct(finalMatch);
           }
         }
-      } catch (e) {
-        console.error("Search API probe failed:", e);
       }
+    } catch (e) {
+      console.error("Search API probe failed:", e);
     }
 
-    if (!realProduct && categorySlug) {
+    if (categorySlug) {
       try {
         const catRes = await categoryProductApi.getProductsByCategory([categorySlug]);
-        realProduct = catRes.products.find((p) => (p as any).slug === slug);
+        const match = catRes.products.find((p) => (p as any).slug === slug);
+        if (match) return match;
       } catch (e) {
         console.error("Category fallback probe failed");
       }
     }
-
-    return realProduct || response.data;
   } catch (error) {
-    console.error("Error in getProduct fallback:", error);
-    // Final fallback attempt
-    try {
-      const response = await axios.get("/api/products/slug", { params: { slug } });
-      return response.data.pro_title ? transformApiProduct(response.data) : response.data;
-    } catch (e) {
-      console.error("Final fallback failed:", e);
-      throw error;
-    }
+    console.error("Error in getProduct fallback probing:", error);
   }
+
+  return productData; // Might be null, handles Not Found
 });
 
 const getFrequentlyBought = cache(async (): Promise<Product[]> => {
@@ -97,9 +132,13 @@ const getFrequentlyBought = cache(async (): Promise<Product[]> => {
 });
 
 const getRelatedProducts = cache(async (categorySlug?: string, parentId?: number): Promise<Product[]> => {
-  if (categorySlug) {
-    const res = await categoryProductApi.getProductsByCategory([categorySlug], undefined, undefined, 1, undefined, undefined, parentId);
-    return res.products || [];
+  try {
+    if (categorySlug) {
+      const res = await categoryProductApi.getProductsByCategory([categorySlug], undefined, undefined, 1, undefined, undefined, parentId);
+      return res.products || [];
+    }
+  } catch (e) {
+    console.error("Related products category fetch failed:", e);
   }
   return market2Api.getLatestProducts();
 });

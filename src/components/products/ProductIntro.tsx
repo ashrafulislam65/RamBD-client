@@ -35,6 +35,7 @@ interface Props {
   category_slug?: string;
   visitors?: number;
   discount?: number;
+  slug: string;
 }
 // ========================================
 
@@ -51,7 +52,8 @@ export default function ProductIntro({
   categoryName,
   category_slug,
   visitors,
-  discount
+  discount,
+  slug
 }: Props) {
   const router = useRouter();
   const param = useParams();
@@ -78,7 +80,7 @@ export default function ProductIntro({
   };
 
   const routerId = param.slug as string;
-  const cartItem = state.cart.find((item) => item.id === id || item.id === routerId);
+  const cartItem = state.cart.find((item) => item.id === id || item.slug === slug);
 
   // Sync quantity with cart
   useEffect(() => {
@@ -102,8 +104,8 @@ export default function ProductIntro({
         qty: amount,
         name: title,
         imgUrl: images[0],
-        id: id || routerId,
-        slug: param.slug as string
+        id: id,
+        slug: slug
       }
     });
   };
@@ -131,14 +133,14 @@ export default function ProductIntro({
               Home
             </SemiSpan>
           </Link>
-          <Icon variant="small">chevron-right</Icon>
+          <SemiSpan color="gray.600" mx="4px">\</SemiSpan>
 
           <Link href={category_slug ? `/product/search/${category_slug}` : (categoryName ? `/product/search/${categoryName.toLowerCase().replace(/\s+/g, '-')}` : "#")}>
             <SemiSpan color="gray.600" className="cursor-pointer">
               {categoryName || "Category"}
             </SemiSpan>
           </Link>
-          <Icon variant="small">chevron-right</Icon>
+          <SemiSpan color="gray.600" mx="4px">\</SemiSpan>
 
           <SemiSpan color="primary.main" fontWeight="600">
             {model || title}

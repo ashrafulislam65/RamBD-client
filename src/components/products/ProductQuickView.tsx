@@ -28,6 +28,7 @@ export default function ProductQuickView({ open, onClose, product }: Props) {
       <Card p="1rem" width="100%" maxWidth="800px" borderRadius={8} position="relative">
         <ProductIntro
           id={product.id}
+          slug={product.slug}
           title={product.title}
           price={product.price}
           regularPrice={product.regularPrice}

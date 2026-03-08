@@ -259,7 +259,7 @@ export default function OrderSuccess({ params }: { params: Promise<{ id: string 
                     Thank You for Your Order!
                 </H1>
                 <Paragraph fontSize="18px" color="text.muted" mt="0.5rem">
-                    Your order has been successfully placed. Order ID: <strong>RB{order.id.substring(0, 10).toUpperCase()}</strong>
+                    Your order has been successfully placed. Order ID: <strong>{order.id.toString().startsWith("RB") ? order.id : `RB${order.id.toString().toUpperCase()}`}</strong>
                 </Paragraph>
                 <Paragraph fontSize="16px" color="text.muted" mt="0.5rem">
                     We'll send you a confirmation shortly.
@@ -281,23 +281,22 @@ export default function OrderSuccess({ params }: { params: Promise<{ id: string 
                     </Button>
                 )}
 
+                <Link href="/">
+                    <Button variant="outlined" color="primary" px="30px">
+                        Back to Home
+                    </Button>
+                </Link>
+
                 {/* Guest and Logged-in users see Download Invoice */}
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={handleDownload}
+                    px="30px"
                 >
                     Download Invoice
                 </Button>
             </FlexBox>
-
-            <Box mt="2rem" className="hide-from-print">
-                <Link href="/">
-                    <Button variant="text" color="primary">
-                        Continue Shopping
-                    </Button>
-                </Link>
-            </Box>
 
             {/* Developer Alert for testing */}
             {!isLoggedIn && (

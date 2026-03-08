@@ -219,7 +219,7 @@ const Invoice = ({ order }: InvoiceProps) => {
             </Box>
           </FlexBox>
           <Box textAlign="right">
-            <Typography fontSize="11px" fontWeight="600" color="#333">RB{format(new Date(), "yyyyMMdd")}</Typography>
+            <Typography fontSize="11px" fontWeight="600" color="#333">{format(new Date(), "yyyyMMdd")}</Typography>
           </Box>
         </FlexBox>
       </Box>
@@ -227,7 +227,7 @@ const Invoice = ({ order }: InvoiceProps) => {
       {/* Meta Info */}
       <Box className="meta-section">
         <Box className="meta-column">
-          <Paragraph mb="2px"><strong>Order ID:</strong> RB{order.id.substring(0, 10).toUpperCase()}</Paragraph>
+          <Paragraph mb="2px"><strong>Order ID:</strong> {order.id.toString().startsWith("RB") ? order.id : `RB${order.id.toString().toUpperCase()}`}</Paragraph>
           <Paragraph mb="2px"><strong>Customer:</strong> {order.user?.name?.firstName || "Customer"}</Paragraph>
           <Paragraph mb="2px"><strong>Contact:</strong> {order.user?.phone || "N/A"}</Paragraph>
           <Paragraph mb="2px"><strong>Address:</strong> {order.shippingAddress || "N/A"}</Paragraph>
@@ -236,7 +236,7 @@ const Invoice = ({ order }: InvoiceProps) => {
           )}
         </Box>
         <Box className="meta-column" textAlign="right">
-          <Paragraph mb="2px"><strong>Invoice No::</strong> RB{order.id.substring(0, 10).toUpperCase()}</Paragraph>
+          <Paragraph mb="2px"><strong>Invoice No::</strong> {order.id.toString().startsWith("RB") ? order.id : `RB${order.id.toString().toUpperCase()}`}</Paragraph>
           <Paragraph mb="2px"><strong>Order Date:</strong> {format(new Date(order.createdAt), "yyyy-MM-dd hh:mm:ss a")}</Paragraph>
           <Paragraph mb="2px"><strong>Delivery Date:</strong> N/A</Paragraph>
           <Paragraph mb="2px"><strong>Sales Person:</strong> RamBD</Paragraph>

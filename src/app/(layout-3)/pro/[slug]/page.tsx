@@ -28,6 +28,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     const metaTitle = product.meta_title || `${product.title} | Felna Tech`;
     const metaKeywords = product.pro_meta_key || "";
 
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const ogImageUrl = `${baseUrl}/og/${slug}`;
+
     return {
         title: metaTitle,
         description: plainDescription,
@@ -35,7 +38,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         openGraph: {
             title: product.title,
             description: plainDescription,
-            images: product.images && product.images.length > 0 ? [product.images[0]] : [],
+            images: [{ url: ogImageUrl, width: 1200, height: 630 }],
         },
     };
 }
@@ -74,6 +77,7 @@ export default async function ProductDetails({ params, searchParams }: Props) {
                         <Box flex="1 1 0" minWidth={300}>
                             <ProductIntro
                                 id={product.id}
+                                slug={slug}
                                 price={product.price}
                                 regularPrice={product.regularPrice}
                                 title={product.title}

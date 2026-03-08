@@ -35,11 +35,16 @@ export default function Checkout() {
   const [orderPayload, setOrderPayload] = useState<any>(null);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [newPhoneDigits, setNewPhoneDigits] = useState("");
-  const otpTimer = useOtpTimer("checkout", 300);
+  const expiryTimer = useOtpTimer("checkout_expiry", 300);
+  const resendTimer = useOtpTimer("checkout_resend", 60);
   const [isMounted, setIsMounted] = useState(false);
+  const [cartSettled, setCartSettled] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    // Give localStorage cart restoration a tick to settle before checking empty
+    const t = setTimeout(() => setCartSettled(true), 300);
+    return () => clearTimeout(t);
   }, []);
 
   const handleFormSubmit = async (values: any) => {
@@ -78,6 +83,7 @@ export default function Checkout() {
 
     if (otpResponse && (otpResponse.status || otpResponse.success)) {
       setIsOtpModalOpen(true);
+      expiryTimer.startTimer();
       Swal.fire({
         icon: 'success',
         title: 'OTP Sent',
@@ -103,7 +109,8 @@ export default function Checkout() {
       setLoading(false);
 
       if (otpResponse && (otpResponse.status || otpResponse.success)) {
-        otpTimer.startTimer();
+        expiryTimer.startTimer();
+        resendTimer.startTimer();
         Swal.fire({
           icon: 'success',
           title: 'OTP Resent',
@@ -170,20 +177,13 @@ export default function Checkout() {
 
       const completeOrderData = {
         ...response,
-        form_data: {
-          phone: finalPayload?.order_details?.ord_phone || "",
-          address: finalPayload?.order_details?.ord_address || "",
-          customer_name: finalPayload?.order_details?.ord_name || "",
-          district_id: finalPayload?.order_details?.district_id || "",
-          district_name: finalPayload?.order_details?.district_name || "",
-          thana_id: finalPayload?.order_details?.thana_id || "",
-          thana_name: finalPayload?.order_details?.thana_name || "",
-          special_note: finalPayload?.order_details?.ord_note || "",
-          payment_method: finalPayload?.order_details?.payment_method || "cod",
-          total_discount: totalDiscount,
-          shipping_cost: finalPayload?.order_details?.shipping_cost || 0,
-          products: finalPayload?.product_details || []
-        }
+        products: state.cart.map(item => ({
+          id: item.id,
+          product_qty: item.qty,
+          sale_price: item.price,
+          product_name: item.name || "Product",
+          product_img: item.imgUrl || ""
+        }))
       };
       sessionStorage.setItem("lastOrderData", JSON.stringify(completeOrderData));
       console.log("✅ Stored order data in sessionStorage:", completeOrderData);
@@ -197,11 +197,10 @@ export default function Checkout() {
         title: 'Order Placed!',
         text: 'Your order has been successfully placed.',
         showConfirmButton: true,
-        confirmButtonText: 'View Invoice'
+        confirmButtonText: 'OK'
       }).then(() => {
         router.push("/order-success");
       });
-
     } else {
       // Handle API errors (including incorrect OTP)
       console.error("❌ API Error Response:", response);
@@ -223,7 +222,7 @@ export default function Checkout() {
     setLoading(false);
   };
 
-  if (isMounted && state.cart.length === 0) {
+  if (isMounted && cartSettled && state.cart.length === 0) {
     return (
       <Box mb="2rem" textAlign="center" mt="4rem">
         <Typography fontSize="28px" fontWeight="700" mb="1rem">
@@ -294,8 +293,51 @@ export default function Checkout() {
         )}
       </Formik>
 
-      <Modal open={isOtpModalOpen} onClose={() => { setIsOtpModalOpen(false); setIsEditingPhone(false); setNewPhoneDigits(""); setOtp(""); setOtpError(""); }}>
-        <Box p="2rem" bg="white" borderRadius="8px" maxWidth="400px" width="100%">
+      <Modal
+        open={isOtpModalOpen}
+        closeOnBackdropClick={false}
+        onClose={() => {
+          setIsOtpModalOpen(false);
+          setIsEditingPhone(false);
+          setNewPhoneDigits("");
+          setOtp("");
+          setOtpError("");
+        }}
+      >
+        <Box p="2rem" bg="white" borderRadius="8px" maxWidth="400px" width="100%" position="relative" style={{ boxShadow: "0px 10px 30px rgba(0,0,0,0.1)" }}>
+          {/* Close Button */}
+          <Box
+            position="absolute"
+            top="-12px"
+            right="-12px"
+            cursor="pointer"
+            zIndex={1001}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOtpModalOpen(false);
+              setIsEditingPhone(false);
+              setNewPhoneDigits("");
+              setOtp("");
+              setOtpError("");
+            }}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            width="32px"
+            height="32px"
+            borderRadius="50%"
+            bg="primary.main"
+            style={{
+              transition: "all 0.2s",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "16px",
+              boxShadow: "0px 4px 10px rgba(0,0,0,0.2)"
+            }}
+          >
+            ✕
+          </Box>
+
           <Typography fontSize="22px" fontWeight="700" mb="1rem" textAlign="center">
             Verify Your Phone
           </Typography>
@@ -393,7 +435,8 @@ export default function Checkout() {
                       }));
                       setIsEditingPhone(false);
                       setOtp("");
-                      otpTimer.startTimer();
+                      expiryTimer.startTimer();
+                      resendTimer.startTimer();
                       Swal.fire({ icon: 'success', title: 'OTP Sent', text: `OTP sent to ${newPhone}`, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
                     } else {
                       Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to send OTP to new number.' });
@@ -433,11 +476,16 @@ export default function Checkout() {
                 borderWidth: otpError ? "2px" : undefined
               }}
             />
-            {otpError && (
-              <Typography fontSize="12px" fontWeight="600" color="#e74c3c" mt="6px">
-                ⚠ {otpError}
+            <FlexBox justifyContent="space-between" mt="8px">
+              <Typography fontSize="12px" fontWeight="600" color={expiryTimer.isActive ? "text.muted" : "#e74c3c"}>
+                {expiryTimer.isActive ? `OTP expires in: ${expiryTimer.formatTime()}` : "OTP has expired"}
               </Typography>
-            )}
+              {otpError && (
+                <Typography fontSize="12px" fontWeight="600" color="#e74c3c">
+                  ⚠ {otpError}
+                </Typography>
+              )}
+            </FlexBox>
           </Box>
 
           <Button
@@ -456,9 +504,9 @@ export default function Checkout() {
             color="primary"
             fullwidth
             onClick={handleResendOtp}
-            disabled={otpTimer.isActive || loading}
+            disabled={resendTimer.isActive || loading}
           >
-            {otpTimer.isActive ? `Resend OTP in ${otpTimer.formatTime()}` : "Resend OTP"}
+            {resendTimer.isActive ? `Resend OTP in ${resendTimer.formatTime()}` : "Resend OTP"}
           </Button>
         </Box>
       </Modal>

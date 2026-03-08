@@ -33,16 +33,17 @@ type ModalProps = {
   open?: boolean;
   onClose?: () => void;
   children?: ReactElement;
+  closeOnBackdropClick?: boolean;
 };
 // ===============================================================
 
-export default function Modal({ children, open = false, onClose }: ModalProps) {
+export default function Modal({ children, open = false, onClose, closeOnBackdropClick = true }: ModalProps) {
   const handleModalContentClick = (e: any) => {
     e.stopPropagation();
   };
 
   const handleBackdropClick = () => {
-    if (onClose) onClose();
+    if (closeOnBackdropClick && onClose) onClose();
   };
 
   if (globalThis.document && open) {
@@ -55,14 +56,19 @@ export default function Modal({ children, open = false, onClose }: ModalProps) {
     }
 
     return createPortal(
-      <StyledModal
-        open={open}
-        alignItems="center"
-        flexDirection="column"
-        onClick={handleBackdropClick}>
-        <div className="container">
-          <FlexBox justifyContent="center" m="0.5rem">
-            {children && cloneElement(children, { onClick: handleModalContentClick })}
+      <StyledModal open={open}>
+        <div
+          style={{ position: "absolute", inset: 0, background: "rgba(0, 0, 0, 0.7)", zIndex: -1 }}
+          onClick={handleBackdropClick}
+        />
+        <div className="container" onClick={handleModalContentClick}>
+          <FlexBox justifyContent="center" m="0.5rem" onClick={handleModalContentClick}>
+            {children && cloneElement(children, {
+              onClick: (e: any) => {
+                e.stopPropagation();
+                if (children.props.onClick) children.props.onClick(e);
+              }
+            })}
           </FlexBox>
         </div>
       </StyledModal>,

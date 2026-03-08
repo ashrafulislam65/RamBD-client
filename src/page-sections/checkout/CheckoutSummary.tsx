@@ -277,6 +277,7 @@ export default function CheckoutSummary({ formik }: { formik: any }) {
                 alt="bkash"
                 width={30}
                 height={13}
+                unoptimized
                 style={{ objectFit: "contain" }}
                 onError={(e: any) => (e.target.style.display = "none")}
               />

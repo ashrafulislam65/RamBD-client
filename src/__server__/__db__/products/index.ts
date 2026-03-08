@@ -33,7 +33,8 @@ export const productApiEndpoints = (Mock: MockAdapter) => {
     try {
       if (config?.params?.slug) {
         const product = uniqueProudcts.find((item) => item.slug === config.params.slug);
-        return [200, product];
+        if (product) return [200, product];
+        return [404, { message: "Product not found in mock" }];
       }
 
       return [200, shuffle(uniqueProudcts)[0]];
