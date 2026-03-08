@@ -28,8 +28,15 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     const metaTitle = product.meta_title || `${product.title} | Felna Tech`;
     const metaKeywords = product.pro_meta_key || "";
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const ogImageUrl = `${baseUrl}/og/${slug}`;
+    // Use the direct CDN image URL for OG — Facebook crawler doesn't follow redirects
+    const storageBaseUrl = process.env.NEXT_PUBLIC_STORAGE_BASE_URL || "https://admin.unicodeconverter.info/storage/app/public/products";
+    const ogImages = (product.images && product.images.length > 0)
+        ? product.images.slice(0, 3).map((imgUrl: string) => {
+            // If already full URL, use directly; if just filename, prepend base
+            const fullUrl = imgUrl.startsWith("http") ? imgUrl : `${storageBaseUrl}/${imgUrl}`;
+            return { url: fullUrl, width: 1200, height: 630, type: "image/png" };
+        })
+        : [{ url: `${process.env.NEXT_PUBLIC_APP_URL || "https://felna-tech.com"}/assets/images/rambd_logo.webp`, width: 400, height: 400 }];
 
     return {
         title: metaTitle,
@@ -38,7 +45,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         openGraph: {
             title: product.title,
             description: plainDescription,
-            images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+            images: ogImages,
+            type: "website",
         },
     };
 }
