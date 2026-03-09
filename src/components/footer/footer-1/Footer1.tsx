@@ -25,7 +25,7 @@ export default function Footer1() {
                   alt="RamBD Logo"
                   mb="1.25rem"
                   src="/assets/images/rambd_logo.webp"
-                  height={40}
+                  height={80}
                 />
               </Link>
               <Typography py="0.3rem" mb="1rem" color="gray.500">

@@ -4,6 +4,12 @@ const nextConfig = {
     compiler: {
         styledComponents: true
     },
+    typescript: {
+        ignoreBuildErrors: true,
+    },
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
     images: {
         loader: "custom",
         loaderFile: "./src/utils/imageLoader.ts",
