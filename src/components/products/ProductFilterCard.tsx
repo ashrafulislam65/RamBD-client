@@ -318,12 +318,12 @@ export default function ProductFilterCard({
       <Divider my="24px" />
 
       {/* COLORS FILTER */}
-      <H6 mb="16px">Colors</H6>
+      {/* <H6 mb="16px">Colors</H6>
       <FlexBox mb="1rem">
         {colorList.map((item, ind) => (
           <Avatar key={ind} bg={item} size={25} mr="10px" style={{ cursor: "pointer" }} />
         ))}
-      </FlexBox>
+      </FlexBox> */}
     </Card>
   );
 }
