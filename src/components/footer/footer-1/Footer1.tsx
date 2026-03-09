@@ -128,7 +128,7 @@ export default function Footer1() {
 
           <Typography color="gray.500" textAlign="center" fontSize={14} mt="5px">
             A Concern of{" "}
-            <a href="https://iglgroup.com.bd/" target="_blank" rel="noreferrer" style={{ color: "inherit", fontWeight: 600 }}>
+            <a href="https://iglgroup.org/" target="_blank" rel="noreferrer" style={{ color: "inherit", fontWeight: 600 }}>
               IGL Group
             </a>
           </Typography>

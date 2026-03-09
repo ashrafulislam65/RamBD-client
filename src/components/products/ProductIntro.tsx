@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 // REACT ICONS
-import { FaFacebookF, FaWhatsapp, FaTelegramPlane, FaLink, FaPhoneAlt, FaPlus, FaMinus } from "react-icons/fa";
+import { FaFacebookF, FaWhatsapp, FaTelegramPlane, FaLink, FaPhoneAlt, FaPlus, FaMinus, FaYoutube, FaInstagram } from "react-icons/fa";
 import { IoCartOutline, IoBagCheckOutline } from "react-icons/io5";
 
 import Box from "@component/Box";
@@ -383,6 +383,16 @@ export default function ProductIntro({
               <a href={`https://t.me/share/url?url=${encodeURIComponent(currentUrl)}`} target="_blank" rel="noreferrer">
                 <Box cursor="pointer" bg="#0088CC" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center">
                   <FaTelegramPlane size={18} color="white" />
+                </Box>
+              </a>
+              <a href="https://www.youtube.com/@RamBDLtd" target="_blank" rel="noreferrer">
+                <Box cursor="pointer" bg="#FF0000" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center">
+                  <FaYoutube size={18} color="white" />
+                </Box>
+              </a>
+              <a href="https://www.instagram.com/RamBDLtd" target="_blank" rel="noreferrer">
+                <Box cursor="pointer" bg="#E4405F" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center">
+                  <FaInstagram size={18} color="white" />
                 </Box>
               </a>
               <Box cursor="pointer" bg="#7f8c8d" borderRadius="50%" width={35} height={35} display="flex" alignItems="center" justifyContent="center" onClick={copyToClipboard}>
