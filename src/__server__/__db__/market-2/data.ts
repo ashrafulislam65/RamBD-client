@@ -517,28 +517,34 @@ export const products = [
 // services
 export const serviceList = [
   {
-    id: "ee272e30-0309-4e8a-966c-f63410c58289",
+    id: "ee272e30-0309-4e8a-966c-f63410c58281",
     icon: "truck",
-    title: "Fast Delivery",
-    description: "Start from $10",
+    title: "Free Delivery",
+    description: "Enjoy free delivery!",
   },
   {
-    id: "1f30c35b-5b76-42c0-822f-83ecbfb64869",
-    icon: "money-guarantee",
-    title: "Money Guarantee",
-    description: "7 Days Back",
+    id: "1f30c35b-5b76-42c0-822f-83ecbfb64862",
+    icon: "credit-card",
+    title: "Safe Payment",
+    description: "Secure payment options.",
   },
   {
-    id: "a4c3968e-93ba-444b-a68f-2e6dd9a5eb1a",
+    id: "a4c3968e-93ba-444b-a68f-2e6dd9a5eb13",
+    icon: "customer-service",
+    title: "Customer Support",
+    description: "24/7 customer support.",
+  },
+  {
+    id: "87379ae9-5e25-4d53-8d7d-7cc3f971dd64",
     icon: "alarm-clock",
-    title: "365 Days",
-    description: "For free return",
+    title: "Monthly Installment",
+    description: "Easy payment plans.",
   },
   {
-    id: "87379ae9-5e25-4d53-8d7d-7cc3f971dd67",
-    icon: "payment",
-    title: "Payment",
-    description: "Secure system",
+    id: "87379ae9-5e25-4d53-8d7d-7cc3f971dd65",
+    icon: "done",
+    title: "Easy Returns",
+    description: "Hassle-free returns.",
   },
 ];
 

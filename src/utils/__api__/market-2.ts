@@ -52,11 +52,31 @@ const getCategories = async () => {
 
     const categories = sortedMenus.map((m: any) => {
       const cate = m.category;
+      let iconClass = cate.cate_icon || 'fas fa-th-large';
+      if (iconClass.includes('<i') && iconClass.includes('class=')) {
+        const match = iconClass.match(/class=(['"])(.*?)\1/);
+        if (match && match[2]) {
+          iconClass = match[2];
+        } else {
+          // fallback if regex fails but it is still an html tag
+          const match2 = iconClass.match(/class=([^ >]+)/);
+          if (match2 && match2[1]) iconClass = match2[1].replace(/['"]/g, '');
+        }
+      }
+
+      if (iconClass.length > 0 && !iconClass.includes(' ') && !iconClass.startsWith('fa-') && !iconClass.startsWith('fas ') && !iconClass.startsWith('fab ')) {
+        // e.g. "tripod" -> "fas fa-tripod"
+        iconClass = `fas fa-${iconClass.toLowerCase()}`;
+        if (iconClass === 'fas fa-trypod' || iconClass === 'fas fa-tripod') {
+          iconClass = 'fas fa-camera'; // Fallback as FA free lacks tripod
+        }
+      }
+
       return {
         id: cate.id,
         name: cate.cate_name,
         slug: cate.cate_slug,
-        icon: cate.cate_icon || 'fas fa-th-large',
+        icon: iconClass,
         children: mapSubCategories(cate.sub_categories || cate.category_sub_categories || cate.children || childMap[cate.id]),
         image: cate.cate_img && cate.cate_img !== 'default.png'
           ? `https://admin.unicodeconverter.info/storage/app/public/category/${cate.cate_img}`

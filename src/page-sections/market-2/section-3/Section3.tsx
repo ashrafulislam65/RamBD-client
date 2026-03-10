@@ -41,7 +41,7 @@ export default async function Section3() {
         ))}
 
         <Grid item xs={12}>
-          <Box style={{ backgroundColor: "#434343", position: "relative", overflow: "hidden", color: "#fff", display: "flex", alignItems: "center", marginTop: "1rem", borderRadius: "8px", border: "1px solid #555" }}>
+          {/* <Box style={{ backgroundColor: "#434343", position: "relative", overflow: "hidden", color: "#fff", display: "flex", alignItems: "center", marginTop: "1rem", borderRadius: "8px", border: "1px solid #555" }}>
             <Box style={{ zIndex: 10, fontSize: 18, padding: "12px 24px", position: "relative", backgroundColor: "#e0e0e0", color: "#000", fontWeight: "bold", minWidth: "fit-content", display: "flex", alignItems: "center", justifyContent: "center", borderRight: "4px solid #e3364e", textTransform: "uppercase" }}>
               NOTICE
             </Box>
@@ -63,7 +63,7 @@ export default async function Section3() {
                 </AddButton>
               </Link>
             </Box>
-          </Box>
+          </Box> */}
         </Grid>
       </Grid>
     </Container>

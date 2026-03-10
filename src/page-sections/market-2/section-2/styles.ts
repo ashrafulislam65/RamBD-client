@@ -8,10 +8,10 @@ export const Wrapper = styled("div")({
   display: "grid",
   padding: "2rem 0",
   backgroundColor: "#fff",
-  gridTemplateColumns: "repeat(4, 1fr)",
+  gridTemplateColumns: "repeat(5, 1fr)",
   [`@media (max-width: ${deviceSize.md}px)`]: {
     gap: 30,
-    gridTemplateColumns: "repeat(2, 1fr)"
+    gridTemplateColumns: "repeat(3, 1fr)"
   },
 
   [`@media (max-width: ${deviceSize.sm}px)`]: {
