@@ -135,12 +135,37 @@ export default function ProductIntro({
           </Link>
           <SemiSpan color="gray.500" mx="2px">/</SemiSpan>
 
-          <Link href={category_slug ? `/product/search/${category_slug}` : (categoryName ? `/product/search/${categoryName.toLowerCase().replace(/\s+/g, '-')}` : "#")}>
-            <SemiSpan color="gray.600" className="cursor-pointer">
-              {categoryName ? categoryName.replace(/\/+\s*$/, "").trim() : "Category"}
-            </SemiSpan>
-          </Link>
-          <SemiSpan color="gray.500" mx="2px">/</SemiSpan>
+          {categoryName ? (
+            categoryName.split("/").map((catName, idx, arr) => {
+              const trimmedCatName = catName.trim();
+              if (!trimmedCatName) return null;
+
+              const isLast = idx === arr.length - 1;
+              const linkTarget = (isLast && category_slug)
+                ? `/product/search/${category_slug}`
+                : `/product/search/${trimmedCatName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')}`;
+
+              return (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                  <Link href={linkTarget}>
+                    <SemiSpan color="gray.600" className="cursor-pointer">
+                      {trimmedCatName}
+                    </SemiSpan>
+                  </Link>
+                  <SemiSpan color="gray.500" mx="2px">/</SemiSpan>
+                </div>
+              );
+            })
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Link href={category_slug ? `/product/search/${category_slug}` : "#"}>
+                <SemiSpan color="gray.600" className="cursor-pointer">
+                  Category
+                </SemiSpan>
+              </Link>
+              <SemiSpan color="gray.500" mx="2px">/</SemiSpan>
+            </div>
+          )}
 
           <SemiSpan color="gray.900" fontWeight="600">
             {model || title}

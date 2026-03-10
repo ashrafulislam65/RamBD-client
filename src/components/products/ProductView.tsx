@@ -69,7 +69,7 @@ export default function ProductView({ product, relatedProducts }: Omit<Props, "s
         {selectedOption === "review" && (
           <ProductReview
             reviews={product.reviews}
-            slug={product.slug}
+            slug={product.pro_slug || product.slug}
             model={product.model}
             productId={product.id}
           />

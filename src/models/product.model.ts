@@ -4,6 +4,7 @@ import Review from "./Review.model";
 interface Product {
   unit?: any;
   slug: string;
+  pro_slug?: string;
   model?: string;
   price: number;
   title: string;

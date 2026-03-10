@@ -103,36 +103,59 @@ const StyledHeader = styled.header`
     }
   }
 
+  .rb-mobile-profile {
+    display: none;
+  }
+
   /* Specific Mobile adjustments */
   @media only screen and (max-width: 768px) {
-    height: ${layoutConstant.mobileHeaderHeight};
+    height: auto;
+    padding-top: 8px;
+    padding-bottom: 8px;
 
     .rb-nav-row {
       padding: 0 8px;
-      gap: 8px;
+      gap: 12px;
       display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-content: center;
+      grid-template-columns: 1fr auto auto;
+      grid-template-rows: auto auto;
+      align-items: center;
     }
 
     .rb-logo-img {
-      width: 28px !important;
-      height: 28px !important;
+      width: 44px !important;
+      height: 44px !important;
     }
 
     .rb-logo-text {
-      font-size: 14px !important;
-      margin-left: 4px !important;
+      font-size: 22px !important;
+      margin-left: 8px !important;
+    }
+
+    .rb-logo-wrap {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+    }
+
+    .rb-mobile-profile {
+      display: block;
+      grid-column: 2;
+      grid-row: 1;
+      align-self: center;
     }
 
     .rb-hamburger {
       grid-column: 3;
+      grid-row: 1;
+      align-self: center;
     }
 
-
     .rb-search {
-      grid-column: 2;
+      grid-column: 1 / span 3;
+      grid-row: 2;
       padding: 0;
+      width: 100%;
     }
   }
 

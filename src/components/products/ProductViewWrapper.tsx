@@ -12,7 +12,7 @@ export default async function ProductViewWrapper({ product, effectiveCat }: Prop
     // Fetch non-critical data in parallel using allSettled to be more resilient
     const results = await Promise.allSettled([
         api.getRelatedProducts(effectiveCat, product.parentId),
-        product.model ? api.getReviews(product.slug, product.model) : Promise.resolve([])
+        product.model ? api.getReviews(product.pro_slug || product.slug, product.model) : Promise.resolve([])
     ]);
 
     const relatedProducts = results[0].status === 'fulfilled' ? results[0].value : [];

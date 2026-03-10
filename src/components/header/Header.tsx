@@ -145,6 +145,29 @@ export default function Header({ className }: HeaderProps) {
         </div>
 
 
+        {/* MOBILE PROFILE (AVATAR) */}
+        {isMounted && (
+          <div className="rb-mobile-profile">
+            {state.user ? (
+              <Link href="/profile">
+                <div style={{ width: 34, height: 34, borderRadius: "50%", overflow: "hidden", background: "#eee", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {state.user.avatar ? (
+                    <img src={state.user.avatar} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <Icon size="20px">user</Icon>
+                  )}
+                </div>
+              </Link>
+            ) : (
+              <Link href="/login">
+                <div style={{ width: 34, height: 34, borderRadius: "50%", overflow: "hidden", background: "#eee", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Icon size="20px">user</Icon>
+                </div>
+              </Link>
+            )}
+          </div>
+        )}
+
         {/* MOBILE HAMBURGER */}
         <button
           className="rb-hamburger"

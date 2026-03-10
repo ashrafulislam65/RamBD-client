@@ -58,7 +58,8 @@ export const transformApiProduct = (apiProduct: any): any => {
 
     return {
         id: String(apiProduct.id),
-        slug: apiProduct.pro_slug || generatedSlug || '',
+        slug: generatedSlug || apiProduct.pro_slug || '',
+        pro_slug: apiProduct.pro_slug,
         model: parsedModel || apiProduct.pro_model || apiProduct.model || '',
         title: rawTitle,
         price: finalPrice, // Corrected: This is now the actual selling price
