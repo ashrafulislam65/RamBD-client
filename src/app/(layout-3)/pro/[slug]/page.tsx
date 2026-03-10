@@ -101,7 +101,7 @@ export default async function ProductDetails({ params, searchParams }: Props) {
                             />
                         </Box>
 
-                        <Suspense fallback={<Box width="160px" bg="white" p="8px" borderRadius={8} height="100%" shadow={1} />}>
+                        <Suspense fallback={<Box width="220px" bg="white" p="8px" borderRadius={8} height="100%" shadow={1} />}>
                             <LatestProductsSidebar />
                         </Suspense>
                     </FlexBox>

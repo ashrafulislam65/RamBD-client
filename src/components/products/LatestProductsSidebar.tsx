@@ -10,7 +10,7 @@ export default async function LatestProductsSidebar() {
     const latestProducts = await market2Api.getProducts();
 
     return (
-        <Box width="160px" flexShrink={0}>
+        <Box width="220px" flexShrink={0}>
             <Box bg="white" p="8px" borderRadius={8} shadow={1} textAlign="center" height="100%">
                 <H4 fontSize={11} mb="12px" color="text.muted" style={{ lineHeight: 1.2 }}>Latest Products</H4>
 
@@ -24,8 +24,8 @@ export default async function LatestProductsSidebar() {
                             >
                                 <Box mb="5px" display="flex" justifyContent="center">
                                     <Image
-                                        width={120}
-                                        height={120}
+                                        width={180}
+                                        height={180}
                                         alt={item.title}
                                         src={item.thumbnail}
                                         style={{ objectFit: "contain", borderRadius: 4 }}

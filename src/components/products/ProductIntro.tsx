@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 // REACT ICONS
-import { FaFacebookF, FaWhatsapp, FaTelegramPlane, FaLink, FaPhoneAlt, FaPlus, FaMinus, FaYoutube, FaInstagram } from "react-icons/fa";
+import { FaFacebookF, FaWhatsapp, FaTelegramPlane, FaLink, FaPhoneAlt, FaPlus, FaMinus, FaYoutube, FaInstagram, FaChevronRight } from "react-icons/fa";
 import { IoCartOutline, IoBagCheckOutline } from "react-icons/io5";
 
 import Box from "@component/Box";
@@ -133,16 +133,16 @@ export default function ProductIntro({
               Home
             </SemiSpan>
           </Link>
-          <SemiSpan color="gray.600" mx="4px">\</SemiSpan>
+          <SemiSpan color="gray.500" mx="2px">/</SemiSpan>
 
           <Link href={category_slug ? `/product/search/${category_slug}` : (categoryName ? `/product/search/${categoryName.toLowerCase().replace(/\s+/g, '-')}` : "#")}>
             <SemiSpan color="gray.600" className="cursor-pointer">
-              {categoryName || "Category"}
+              {categoryName ? categoryName.replace(/\/+\s*$/, "").trim() : "Category"}
             </SemiSpan>
           </Link>
-          <SemiSpan color="gray.600" mx="4px">\</SemiSpan>
+          <SemiSpan color="gray.500" mx="2px">/</SemiSpan>
 
-          <SemiSpan color="primary.main" fontWeight="600">
+          <SemiSpan color="gray.900" fontWeight="600">
             {model || title}
           </SemiSpan>
         </FlexBox>
