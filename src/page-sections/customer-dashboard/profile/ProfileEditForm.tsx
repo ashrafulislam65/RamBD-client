@@ -1,7 +1,8 @@
 "use client";
 import * as yup from "yup";
 import { Formik } from "formik";
-import { format } from "date-fns";
+import { useState, useRef, useEffect } from "react";
+import Swal from "sweetalert2";
 
 import Box from "@component/Box";
 import Hidden from "@component/hidden";
@@ -11,33 +12,122 @@ import Grid from "@component/grid/Grid";
 import FlexBox from "@component/FlexBox";
 import { Button } from "@component/buttons";
 import TextField from "@component/text-field";
-import User from "@models/user.model";
+import { useAppContext } from "@context/app-context";
+import { useRouter } from "next/navigation";
 
-export default function ProfileEditForm({ user }: { user: User }) {
+export default function ProfileEditForm() {
+  const { state, dispatch } = useAppContext();
+  const router = useRouter();
+
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>(
+    state.user?.avatar || "/assets/images/faces/propic.png"
+  );
+  const [loading, setLoading] = useState(false);
+
+  // If user is not ready yet, we can either return null or empty form
+  const user = state.user || {};
+
   const INITIAL_VALUES = {
-    first_name: user.name.firstName || "",
-    last_name: user.name.lastName || "",
+    name: user.name || "",
     email: user.email || "",
-    contact: user.phone || "",
-    birth_date: format(new Date(user.dateOfBirth), "yyyy-MM-dd") || ""
+    phone: user.phone || ""
   };
 
   const VALIDATION_SCHEMA = yup.object().shape({
-    first_name: yup.string().required("required"),
-    last_name: yup.string().required("required"),
-    email: yup.string().email("invalid email").required("required"),
-    contact: yup.string().required("required"),
-    birth_date: yup.date().required("invalid date")
+    name: yup.string().required("Name is required"),
+    email: yup.string().email("Invalid email"),
+    phone: yup.string().required("Phone is required")
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfileImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleFormSubmit = async (values: typeof INITIAL_VALUES) => {
-    console.log(values);
+    if (!user.id) {
+      Swal.fire("Error", "User not logged in or missing ID", "error");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("email", values.email);
+      formData.append("phone", values.phone);
+
+      if (profileImage) {
+        formData.append("client_profile_image", profileImage);
+      }
+
+      const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
+      const response = await fetch(`${apiBaseUrl}/client/update-profile/${user.id}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok || data.success) {
+        let newAvatarUrl = user.avatar;
+
+        // Extract avatar URL from different possible API response structures
+        if (data.user_info?.client_profile_image) newAvatarUrl = data.user_info.client_profile_image;
+        else if (data.client_profile_image) newAvatarUrl = data.client_profile_image;
+        else if (data.data?.client_profile_image) newAvatarUrl = data.data.client_profile_image;
+        else if (data.avatar) newAvatarUrl = data.avatar;
+
+        if (newAvatarUrl && !newAvatarUrl.startsWith("http")) {
+          const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
+          const cleanAvatar = newAvatarUrl.replace(/^\/*/, "");
+          // Check if the backend already included the full storage path, if not, prepend it
+          if (cleanAvatar.includes('storage/app/public')) {
+            newAvatarUrl = `${apiBaseUrl}/${cleanAvatar}`;
+          } else {
+            newAvatarUrl = `${apiBaseUrl}/storage/app/public/profiles/${cleanAvatar}`;
+          }
+        }
+        console.log("📸 [PROFILE-UPDATE] API Data:", data);
+        console.log("📸 [PROFILE-UPDATE] Final Avatar URL:", newAvatarUrl);
+
+        // Update user state and localStorage
+        const updatedUser = {
+          ...user,
+          name: values.name,
+          phone: values.phone,
+          email: values.email,
+          avatar: newAvatarUrl
+        };
+        dispatch({ type: "SET_USER", payload: updatedUser });
+        localStorage.setItem("rambd_user", JSON.stringify(updatedUser));
+
+        Swal.fire({
+          icon: "success",
+          title: "Profile Updated",
+          text: "Your profile has been updated successfully!",
+        }).then(() => {
+          router.push("/profile");
+        });
+      } else {
+        Swal.fire("Error", data.message || "Failed to update profile", "error");
+      }
+    } catch (error: any) {
+      console.error(error);
+      Swal.fire("Error", error.message || "An error occurred", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       <FlexBox alignItems="flex-end" mb="22px">
-        <Avatar src="/assets/images/faces/ralph.png" size={64} />
+        <Avatar src={imagePreview} size={64} />
 
         <Box ml="-20px" zIndex={1}>
           <label htmlFor="profile-image">
@@ -58,14 +148,14 @@ export default function ProfileEditForm({ user }: { user: User }) {
           <input
             type="file"
             accept="image/*"
-            className="hidden"
             id="profile-image"
-            onChange={(e) => console.log(e.target.files)}
+            onChange={handleImageChange}
           />
         </Hidden>
       </FlexBox>
 
       <Formik
+        enableReinitialize
         onSubmit={handleFormSubmit}
         initialValues={INITIAL_VALUES}
         validationSchema={VALIDATION_SCHEMA}>
@@ -76,24 +166,12 @@ export default function ProfileEditForm({ user }: { user: User }) {
                 <Grid item md={6} xs={12}>
                   <TextField
                     fullwidth
-                    name="first_name"
-                    label="First Name"
+                    name="name"
+                    label="Full Name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.first_name}
-                    errorText={touched.first_name && errors.first_name}
-                  />
-                </Grid>
-
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    fullwidth
-                    name="last_name"
-                    label="Last Name"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.last_name}
-                    errorText={touched.last_name && errors.last_name}
+                    value={values.name}
+                    errorText={touched.name && errors.name}
                   />
                 </Grid>
 
@@ -114,31 +192,18 @@ export default function ProfileEditForm({ user }: { user: User }) {
                   <TextField
                     fullwidth
                     label="Phone"
-                    name="contact"
+                    name="phone"
                     onBlur={handleBlur}
-                    value={values.contact}
+                    value={values.phone}
                     onChange={handleChange}
-                    errorText={touched.contact && errors.contact}
-                  />
-                </Grid>
-
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    fullwidth
-                    type="date"
-                    name="birth_date"
-                    label="Birth Date"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.birth_date}
-                    errorText={touched.birth_date && errors.birth_date}
+                    errorText={touched.phone && errors.phone}
                   />
                 </Grid>
               </Grid>
             </Box>
 
-            <Button type="submit" variant="contained" color="primary">
-              Save Changes
+            <Button type="submit" variant="contained" color="primary" disabled={loading}>
+              {loading ? "Saving..." : "Save Changes"}
             </Button>
           </form>
         )}

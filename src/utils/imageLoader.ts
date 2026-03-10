@@ -2,9 +2,17 @@
 // Routes external images through /api/image-proxy for optimization
 // Local/relative images are passed through unchanged
 
+const baseHost = (() => {
+    try {
+        return new URL(process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").hostname;
+    } catch {
+        return "admin.unicodeconverter.info";
+    }
+})();
+
 const EXTERNAL_HOSTS = [
+    baseHost,
     "admin.unicodeconverter.info",
-    "admin.felnatech.com",
     "rambd.com",
 ];
 

@@ -107,14 +107,26 @@ export default function Login() {
           } catch (e) { }
         }
 
-        // Final fallback
-        if (!name) name = "User";
+        // 4. Extract Avatar URL
+        let avatar = userInfo.client_profile_image || u.client_profile_image || u.avatar || response.avatar || null;
+        if (avatar && !avatar.startsWith("http")) {
+          const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
+          const cleanAvatar = avatar.replace(/^\/*/, "");
+          // Check if the backend already included the full storage path, if not, prepend it
+          if (cleanAvatar.includes('storage/app/public')) {
+            avatar = `${apiBaseUrl}/${cleanAvatar}`;
+          } else {
+            avatar = `${apiBaseUrl}/storage/app/public/profiles/${cleanAvatar}`;
+          }
+        }
+        console.log("📸 [LOGIN] Final Avatar URL:", avatar);
 
         const userData = {
           id: userId,
           name: name,
           phone: fullPhone,
           token: token,
+          avatar: avatar,
           isLoggedIn: true,
           loginTime: new Date().toISOString()
         };

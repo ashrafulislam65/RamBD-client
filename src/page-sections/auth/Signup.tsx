@@ -149,10 +149,25 @@ export default function Signup() {
 
         console.log("🆔 [SIGNUP] Extracted User ID:", userId);
 
+        // 4. Extract Avatar URL
+        let avatar = u.client_profile_image || u.avatar || response.avatar || null;
+        if (avatar && !avatar.startsWith("http")) {
+          const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://admin.unicodeconverter.info").trim();
+          const cleanAvatar = avatar.replace(/^\/*/, "");
+          // Check if the backend already included the full storage path, if not, prepend it
+          if (cleanAvatar.includes('storage/app/public')) {
+            avatar = `${apiBaseUrl}/${cleanAvatar}`;
+          } else {
+            avatar = `${apiBaseUrl}/storage/app/public/profiles/${cleanAvatar}`;
+          }
+        }
+        console.log("📸 [SIGNUP] Final Avatar URL:", avatar);
+
         // SUCCESS: Store user data for session persistence
         const userData = {
           ...sessionUser,
           id: userId,
+          avatar: avatar,
           token: response.token || response.access_token || null,
           isLoggedIn: true,
           registrationTime: new Date().toISOString()

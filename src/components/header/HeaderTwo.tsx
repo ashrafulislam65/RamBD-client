@@ -84,8 +84,16 @@ export default function HeaderTwo({ className }: HeaderProps) {
               direction="right"
               handler={
                 <FlexBox alignItems="center" style={{ cursor: "pointer" }} ml="1rem">
-                  <IconButton bg="gray.200" p="8px">
-                    <Icon size="28px">user</Icon>
+                  <IconButton bg="gray.200" p="4px" style={{ overflow: "hidden", width: "44px", height: "44px" }}>
+                    {state.user?.avatar ? (
+                      <img
+                        src={state.user.avatar}
+                        alt="User"
+                        style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <Icon size="28px">user</Icon>
+                    )}
                   </IconButton>
                   {state.user?.name && (
                     <Small fontWeight="600" ml="10px" color="text.secondary">

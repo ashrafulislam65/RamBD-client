@@ -19,7 +19,7 @@ export default async function ProfileEditor() {
       />
 
       <Card1 borderRadius={8}>
-        <ProfileEditForm user={user as any} />
+        <ProfileEditForm />
       </Card1>
     </Fragment>
   );

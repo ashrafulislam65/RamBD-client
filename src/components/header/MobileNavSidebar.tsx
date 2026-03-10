@@ -331,8 +331,15 @@ export default function MobileNavSidebar({ open, onClose }: Props) {
                                 <Link href="/" style={{ ...itemStyle, color: "#D23F57" }} onClick={onClose}>🏠 Home</Link>
                                 {state.user ? (
                                     <>
-                                        <Link href="/profile" style={{ ...itemStyle }} onClick={onClose}>
-                                            👤 {state.user.name || "My Account"}
+                                        <Link href="/profile" style={{ ...itemStyle, display: "flex", alignItems: "center", gap: 8 }} onClick={onClose}>
+                                            <div style={{ width: 32, height: 32, borderRadius: "50%", overflow: "hidden", background: "#f0f0f0" }}>
+                                                {state.user.avatar ? (
+                                                    <img src={state.user.avatar} alt="User" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                                ) : (
+                                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 16 }}>👤</div>
+                                                )}
+                                            </div>
+                                            <span>{state.user.name || "My Account"}</span>
                                         </Link>
                                         <div style={{ ...itemStyle, color: "#D23F57" }} onClick={handleLogout}>
                                             🚪 Logout
