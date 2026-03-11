@@ -1,5 +1,6 @@
 "use client";
 
+import styled from "styled-components";
 import { useCallback, useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
@@ -24,6 +25,7 @@ type Props = {
     sortOptions: { label: string; value: string }[];
     products: Product[];
     categoryName?: string;
+    categoryDescription?: string | null;
     totalPages: number;
     totalProducts: number;
     currentPage: number;
@@ -34,10 +36,91 @@ type Props = {
 };
 // ==============================================================
 
+const ArticleWrapper = styled.div`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 17px;
+
+  h1, .fallback-title {
+    font-size: 36px;
+    margin-bottom: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #d23f57;
+    text-transform: capitalize;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 26px;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    border-bottom: 2px solid rgba(210, 63, 87, 0.1);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+  }
+
+  h3 {
+    font-size: 22px;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+    color: ${({ theme }) => theme.colors.gray[700]};
+    text-align: justify;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  ul, ol {
+    margin-left: 2.5rem;
+    margin-bottom: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  li {
+    margin-bottom: 0.75rem;
+    color: ${({ theme }) => theme.colors.gray[700]};
+  }
+
+  strong {
+    color: ${({ theme }) => theme.colors.gray[900]};
+    font-weight: 700;
+  }
+
+  a {
+    color: #d23f57 !important;
+    text-decoration: underline !important;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+    text-decoration-color: rgba(210, 63, 87, 0.3);
+    font-weight: 700 !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+
+    &:hover {
+      color: #e3364e !important;
+      text-decoration-color: #d23f57;
+      background-color: rgba(210, 63, 87, 0.05);
+      border-radius: 4px;
+      padding-left: 4px;
+      padding-right: 4px;
+      margin-left: -4px;
+      margin-right: -4px;
+    }
+  }
+`;
+
 export default function CategorySearchResult({
     sortOptions,
     products: initialProducts,
     categoryName,
+    categoryDescription,
     totalPages,
     totalProducts,
     currentPage,
@@ -230,6 +313,43 @@ export default function CategorySearchResult({
                     )}
                 </Grid>
             </Grid>
+
+            {categoryDescription && (
+                <Card 
+                    elevation={10} 
+                    p="1.5rem 2rem" 
+                    mt="5rem" 
+                    mb="4rem"
+                    borderRadius={20} 
+                    style={{ 
+                        lineHeight: 1.9, 
+                        width: "100%",
+                        background: "linear-gradient(135deg, #ffffff 0%, #fdfdff 100%)",
+                        boxShadow: "0px 10px 40px rgba(0, 0, 0, 0.05)",
+                        border: "1px solid #ebf2f7",
+                        position: "relative",
+                        overflow: "hidden"
+                    }}
+                >
+                    {/* Decorative Accent */}
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: "8px",
+                            backgroundColor: "#d23f57", // Primary red
+                            backgroundImage: "linear-gradient(180deg, #d23f57 0%, #f16279 100%)",
+                            borderRadius: "10px 0 0 10px"
+                        }}
+                    />
+
+                    <ArticleWrapper
+                        dangerouslySetInnerHTML={{ __html: categoryDescription }}
+                    />
+                </Card>
+            )}
         </>
     );
 }

@@ -133,10 +133,34 @@ export default function CheckoutForm({ formik }: { formik: any }) {
                       const user = userData.data;
                       if (user.name) setFieldValue("full_name", user.name);
                       if (user.address) setFieldValue("address", user.address);
-                      // Attempt to match district/thana if IDs or names are provided
-                      // This might require more logic depending on API response format
-                      if (user.district_id) setFieldValue("district", user.district_id);
-                      if (user.thana_id) setFieldValue("thana", user.thana_id);
+
+                      // Auto-fill district and thana
+                      if (user.district_id) {
+                        const districtId = String(user.district_id);
+                        const districtObj = districts.find((d) => String(d.value) === districtId);
+
+                        if (districtObj) {
+                          setFieldValue("district", districtObj.value);
+                          setFieldValue("district_name", districtObj.label);
+
+                          // Only attempt to set thana if district matches
+                          if (user.thana_id) {
+                            const thanaId = String(user.thana_id);
+                            // We need to wait for thanas to be filtered by the useEffect,
+                            // but since we are in an event handler, we might need to filter manually
+                            // to find the label for the thana_name field.
+                            const filteredThanas = allThanas
+                              .filter((t: any) => String(t.district_thana_id) === districtId);
+
+                            const thanaObj = filteredThanas.find((t: any) => String(t.id) === thanaId);
+
+                            if (thanaObj) {
+                              setFieldValue("thana", thanaObj.id);
+                              setFieldValue("thana_name", thanaObj.thana);
+                            }
+                          }
+                        }
+                      }
                     }
                   } catch (err) {
                     console.error("Auto-fill error", err);

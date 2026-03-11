@@ -45,6 +45,7 @@ const getCategories = async () => {
         id: sub.id,
         name: sub.cate_name,
         slug: sub.cate_slug,
+        description: sub.cate_desc || null,
         children: mapSubCategories(sub.sub_categories || sub.category_sub_categories || sub.children || childMap[sub.id])
       }));
       return mapped && mapped.length > 0 ? mapped : undefined;
@@ -77,6 +78,7 @@ const getCategories = async () => {
         name: cate.cate_name,
         slug: cate.cate_slug,
         icon: iconClass,
+        description: cate.cate_desc || null,
         children: mapSubCategories(cate.sub_categories || cate.category_sub_categories || cate.children || childMap[cate.id]),
         image: cate.cate_img && cate.cate_img !== 'default.png'
           ? `https://admin.unicodeconverter.info/storage/app/public/category/${cate.cate_img}`

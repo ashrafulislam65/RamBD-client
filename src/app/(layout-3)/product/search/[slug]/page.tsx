@@ -18,8 +18,8 @@ export async function generateMetadata({ params: paramsPromise }: { params: Prom
 
       if (category) {
         return {
-          title: category.meta_title || `${category.cate_name} | Felna Tech`,
-          description: category.meta_description || category.cate_desc?.replace(/<[^>]*>/g, '').slice(0, 160) || `Buy ${category.cate_name} at Felna Tech`,
+          title: category.meta_title || `${category.cate_name} | RamBD`,
+          description: category.meta_description || category.cate_desc?.replace(/<[^>]*>/g, '').slice(0, 160) || `Buy ${category.cate_name} at RamBD`,
           keywords: category.cat_meta_keys || ""
         };
       }
@@ -29,8 +29,8 @@ export async function generateMetadata({ params: paramsPromise }: { params: Prom
   }
 
   return {
-    title: `${slug.charAt(0).toUpperCase() + slug.slice(1)} | Felna Tech`,
-    description: `Browse ${slug} at the best price from Felna Tech.`
+    title: `${slug.charAt(0).toUpperCase() + slug.slice(1)} | RamBD`,
+    description: `Browse ${slug} at the best price from RamBD.`
   };
 }
 

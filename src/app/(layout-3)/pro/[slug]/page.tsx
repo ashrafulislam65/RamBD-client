@@ -16,16 +16,16 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
     if (!product) {
         return {
-            title: "Product Not Found | Felna Tech",
+            title: "Product Not Found | RamBD",
             description: "The product you are looking for does not exist."
         };
     }
 
     const plainDescription = product.pro_meta_description || (product.description
         ? product.description.replace(/<[^>]*>/g, '').slice(0, 160) + "..."
-        : `Buy ${product.title} at the best price from Felna Tech.`);
+        : `Buy ${product.title} at the best price from RamBD.`);
 
-    const metaTitle = product.meta_title || `${product.title} | Felna Tech`;
+    const metaTitle = product.meta_title || `${product.title} | RamBD`;
     const metaKeywords = product.pro_meta_key || "";
 
     // Use the direct CDN image URL for OG — Facebook crawler doesn't follow redirects

@@ -10,8 +10,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const categoryName = lastSlug.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 
     return {
-        title: `${categoryName} | Felna Tech`,
-        description: `Browse the best collection of ${categoryName} at Felna Tech. Best prices and fastest delivery.`
+        title: `${categoryName} | RamBD`,
+        description: `Browse the best collection of ${categoryName} at RamBD. Best prices and fastest delivery.`
     };
 }
 
@@ -57,6 +57,48 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
         market2Api.getBrands()
     ]);
 
+    // Find current category info
+    const findCategoryInfo = (cats: any[], slugArray: string[]): { name: string, description: string | null } | null => {
+        let currentLevel = cats;
+        let lastFound = null;
+
+        for (let i = 0; i < slugArray.length; i++) {
+            const slug = slugArray[i];
+            const cat = currentLevel.find(c => c.slug === slug);
+            if (!cat) return lastFound; // Return parent if child not found? No, should be exact.
+            
+            if (i === slugArray.length - 1) {
+                return { 
+                    name: cat.name, 
+                    description: cat.description || cat.cate_desc || null 
+                };
+            }
+            currentLevel = cat.children || [];
+        }
+        return null;
+    };
+
+    const categoryInfo = findCategoryInfo(categories, slug);
+    
+    // Check if description is missing or just a placeholder like "no description"
+    const isPlaceholder = (desc: string | null) => {
+        if (!desc) return true;
+        const normalized = desc.toLowerCase().replace(/[!.\s]+/g, ' ').trim();
+        const placeholders = ["no description", "null", "undefined", "empty", "no desc"];
+        
+        const isMatch = placeholders.some(p => normalized.includes(p)) || normalized === "";
+        
+        // Also check for HTML wrapped placeholders
+        const stripped = desc.replace(/<[^>]*>?/gm, '').toLowerCase().replace(/[!.\s]+/g, ' ').trim();
+        const isStrippedMatch = placeholders.some(p => stripped.includes(p)) || stripped === "";
+        
+        return isMatch || isStrippedMatch;
+    };
+
+    const resolvedDescription = !isPlaceholder(categoryInfo?.description) 
+        ? categoryInfo?.description 
+        : (categoryInfo ? `<h1 class="fallback-title">${categoryInfo.name}</h1>` : null);
+
     // Calculate min/max price from products if not provided
     const productPrices = products.map(p => p.price).filter(p => p > 0);
     const minPriceDynamic = productPrices.length > 0 ? Math.min(...productPrices) : 0;
@@ -68,6 +110,7 @@ export default async function CategoryProductPage({ params, searchParams }: Prop
                 sortOptions={sortOptions}
                 products={products}
                 categoryName={categoryName}
+                categoryDescription={resolvedDescription}
                 totalPages={totalPages}
                 totalProducts={totalProducts}
                 currentPage={pageNumber}
