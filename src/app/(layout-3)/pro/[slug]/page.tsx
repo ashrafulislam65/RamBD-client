@@ -58,6 +58,8 @@ type Props = {
 };
 // ==============================================================
 
+import RelatedProductsWrapper from "@component/products/RelatedProductsWrapper";
+
 export default async function ProductDetails({ params, searchParams }: Props) {
     const { slug } = await params;
     const { cat } = await searchParams;
@@ -82,7 +84,8 @@ export default async function ProductDetails({ params, searchParams }: Props) {
             <Container mb="1rem" mt="10px" p="0">
                 <Box overflow="hidden" p="0">
                     <FlexBox flexWrap="wrap" alignItems="stretch" style={{ gap: 2 }}>
-                        <Box flex="1 1 0" minWidth={300}>
+                        {/* LEFT COLUMN: INTRO + TABS */}
+                        <Box flex="1 1 0" minWidth={300} display="flex" flexDirection="column" style={{ gap: 2 }}>
                             <ProductIntro
                                 id={product.id}
                                 slug={slug}
@@ -99,18 +102,29 @@ export default async function ProductDetails({ params, searchParams }: Props) {
                                 visitors={product.visitors}
                                 discount={product.discount}
                             />
+
+                            <Box flex="1" display="flex" flexDirection="column">
+                                <Suspense fallback={<Box bg="white" p="2rem" borderRadius={8} shadow={1} textAlign="center" flex="1">Loading details...</Box>}>
+                                    <ProductViewWrapper product={product} />
+                                </Suspense>
+                            </Box>
                         </Box>
 
-                        <Suspense fallback={<Box width="220px" bg="white" p="8px" borderRadius={8} height="100%" shadow={1} />}>
-                            <LatestProductsSidebar />
-                        </Suspense>
+                        {/* RIGHT COLUMN: SIDEBAR */}
+                        <Box width="220px">
+                            <Suspense fallback={<Box width="220px" bg="white" p="8px" borderRadius={8} height="100%" shadow={1} />}>
+                                <LatestProductsSidebar />
+                            </Suspense>
+                        </Box>
                     </FlexBox>
                 </Box>
             </Container>
 
-            <Suspense fallback={<Container><Box p="2rem" textAlign="center">Loading details...</Box></Container>}>
-                <ProductViewWrapper product={product} effectiveCat={effectiveCat} />
-            </Suspense>
+            <Container mb="1rem" p="0">
+                <Suspense fallback={<Box p="2rem" textAlign="center">Loading related products...</Box>}>
+                    <RelatedProductsWrapper effectiveCat={effectiveCat} parentId={product.parentId} />
+                </Suspense>
+            </Container>
         </Fragment>
     );
 }

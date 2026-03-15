@@ -21,50 +21,56 @@ type Props = {
 };
 // ==============================================================
 
-export default function ProductView({ product, relatedProducts }: Omit<Props, "shops" | "frequentlyBought">) {
+export default function ProductView({ product }: Omit<Props, "shops" | "frequentlyBought" | "relatedProducts">) {
   console.log("ProductView reviews:", product.reviews);
   const [selectedOption, setSelectedOption] = useState("specification");
   const handleOptionClick = (opt: any) => () => setSelectedOption(opt);
 
   return (
-    <>
-      <FlexBox borderBottom="1px solid" borderColor="gray.400" mt="2px" mb="2px">
+    <Box bg="white" p="1.5rem" borderRadius={8} shadow={1} flex="1">
+      <FlexBox borderBottom="1px solid" borderColor="gray.300" mb="1.5rem">
         <H5
           mr="25px"
-          p="4px 10px"
+          p="8px 10px"
           className="cursor-pointer"
           borderColor="primary.main"
           onClick={handleOptionClick("specification")}
-          borderBottom={selectedOption === "specification" ? "2px solid" : ""}
-          color={selectedOption === "specification" ? "primary.main" : "text.muted"}>
+          borderBottom={selectedOption === "specification" ? "3px solid" : ""}
+          color={selectedOption === "specification" ? "primary.main" : "text.muted"}
+          transition="all 0.2s"
+          fontWeight={selectedOption === "specification" ? "700" : "500"}>
           Specification
         </H5>
 
         <H5
           mr="25px"
-          p="4px 10px"
+          p="8px 10px"
           className="cursor-pointer"
           borderColor="primary.main"
           onClick={handleOptionClick("description")}
-          borderBottom={selectedOption === "description" ? "2px solid" : ""}
-          color={selectedOption === "description" ? "primary.main" : "text.muted"}>
+          borderBottom={selectedOption === "description" ? "3px solid" : ""}
+          color={selectedOption === "description" ? "primary.main" : "text.muted"}
+          transition="all 0.2s"
+          fontWeight={selectedOption === "description" ? "700" : "500"}>
           Description
         </H5>
 
         <H5
-          p="4px 10px"
+          p="8px 10px"
           className="cursor-pointer"
           borderColor="primary.main"
           onClick={handleOptionClick("review")}
-          borderBottom={selectedOption === "review" ? "2px solid" : ""}
-          color={selectedOption === "review" ? "primary.main" : "text.muted"}>
+          borderBottom={selectedOption === "review" ? "3px solid" : ""}
+          color={selectedOption === "review" ? "primary.main" : "text.muted"}
+          transition="all 0.2s"
+          fontWeight={selectedOption === "review" ? "700" : "500"}>
           Review ({product.reviews?.length || 0})
         </H5>
       </FlexBox>
 
       {/* DESCRIPTION AND REVIEW TAB DETAILS */}
-      <Box mb="2px">
-        {selectedOption === "specification" && <ProductSpecification />}
+      <Box pb="1rem">
+        {selectedOption === "specification" && <ProductSpecification product={product} />}
         {selectedOption === "description" && <ProductDescription description={product.description} />}
         {selectedOption === "review" && (
           <ProductReview
@@ -75,9 +81,6 @@ export default function ProductView({ product, relatedProducts }: Omit<Props, "s
           />
         )}
       </Box>
-
-      {/* RELATED PRODUCTS */}
-      {relatedProducts && <RelatedProducts products={relatedProducts} />}
-    </>
+    </Box>
   );
 }

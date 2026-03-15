@@ -124,7 +124,7 @@ export default function ProductIntro({
   const watchingCount = visitors ? (visitors % 15) + 3 : 5;
 
   return (
-    <Box bg="white" pt="8px" px="1.5rem" pb="1.5rem" borderRadius={8} shadow={1} height="100%">
+    <Box bg="white" pt="8px" px="1.5rem" pb="1.5rem" borderRadius={8} shadow={1}>
       {/* BREADCRUMBS */}
       {isMounted && (
         <FlexBox mb="12px" alignItems="center" style={{ gap: 8 }} flexWrap="wrap">

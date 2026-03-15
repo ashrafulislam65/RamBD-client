@@ -8,21 +8,11 @@ interface Props {
     effectiveCat?: string;
 }
 
-export default async function ProductViewWrapper({ product, effectiveCat }: Props) {
-    // Fetch non-critical data in parallel using allSettled to be more resilient
-    const results = await Promise.allSettled([
-        api.getRelatedProducts(effectiveCat, product.parentId),
-        product.model ? api.getReviews(product.pro_slug || product.slug, product.model) : Promise.resolve([])
-    ]);
-
-    const relatedProducts = results[0].status === 'fulfilled' ? results[0].value : [];
-    const reviews = results[1].status === 'fulfilled' ? results[1].value : [];
-
-    if (results.some(r => r.status === 'rejected')) {
-        console.warn("Some non-critical product data failed to load:",
-            results.map((r, i) => r.status === 'rejected' ? `Index ${i}` : null).filter(Boolean)
-        );
-    }
+export default async function ProductViewWrapper({ product }: Props) {
+    // Fetch non-critical data
+    const reviews = product.model 
+        ? await api.getReviews(product.pro_slug || product.slug, product.model).catch(() => [])
+        : [];
 
     // Attach reviews to product
     if (reviews) {
@@ -30,11 +20,6 @@ export default async function ProductViewWrapper({ product, effectiveCat }: Prop
     }
 
     return (
-        <Container mb="1rem" mt="10px" p="0">
-            <ProductView
-                product={product}
-                relatedProducts={relatedProducts}
-            />
-        </Container>
+        <ProductView product={product} />
     );
 }

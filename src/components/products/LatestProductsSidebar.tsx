@@ -15,7 +15,7 @@ export default async function LatestProductsSidebar() {
                 <H4 fontSize={11} mb="12px" color="text.muted" style={{ lineHeight: 1.2 }}>Latest Products</H4>
 
                 <Box>
-                    {latestProducts?.slice(0, 4).map((item) => (
+                    {latestProducts?.slice(0, 5).map((item) => (
                         <Link href={`/pro/${item.slug}`} key={item.id}>
                             <Box
                                 padding="8px 4px"

@@ -102,3 +102,47 @@ export function currency(price: number, fraction: number = 2) {
 
   return `৳${formatCurrency.format(price)}`;
 }
+
+/**
+ * Extract specifications from the beginning of a description string
+ * Patterns like <p>Key: Value</p> are moved to specs list
+ * Returns both specs and the cleaned description
+ */
+export function extractSpecifications(description: string = "") {
+  const specs: { label: string; value: string }[] = [];
+  let cleanedDescription = description;
+
+  if (!description) return { specs, cleanedDescription };
+
+  // Regex to match leading <p>Key: Value</p> or <div>Key: Value</div> patterns
+  // Using a more flexible regex to handle potential formatting variations
+  const pattern = /^(?:<p>|<div>)(.*?):\s*(.*?)(?:<\/p>|<\/div>)/i;
+
+  let iterations = 0;
+  const maxIterations = 50; // Safety break
+
+  while (iterations < maxIterations) {
+    const match = cleanedDescription.trim().match(pattern);
+    if (!match) break;
+
+    const label = match[1].replace(/<[^>]*>/g, "").trim();
+    const value = match[2].replace(/<[^>]*>/g, "").trim();
+
+    // Check if it really looks like a key-value or if it's just text with a colon
+    if (label.length > 30 || label.includes("<") || value.length > 500) break;
+
+    specs.push({ label, value });
+    
+    // Remove the matched part including leading whitespace
+    const matchIndex = cleanedDescription.indexOf(match[0]);
+    cleanedDescription = (cleanedDescription.slice(0, matchIndex) + cleanedDescription.slice(matchIndex + match[0].length)).trim();
+    
+    // STOP CONDITION: If we reached "Availability", this is usually the end of the specs block
+    const lowerLabel = label.toLowerCase();
+    if (lowerLabel.includes("availability") || lowerLabel.includes("status")) break;
+
+    iterations++;
+  }
+
+  return { specs, cleanedDescription };
+}
