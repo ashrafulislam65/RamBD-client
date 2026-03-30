@@ -281,7 +281,7 @@ const Invoice = ({ order }: InvoiceProps) => {
           </Box>
           <Box className="summary-row">
             <Typography>Promotion discount : </Typography>
-            <Typography>৳{order.discount?.toLocaleString(undefined, { minimumFractionDigits: 2 }) || "0.00"}</Typography>
+            <Typography>৳0.00</Typography>
           </Box>
           <Box className="summary-row">
             <Typography>VAT : </Typography>
@@ -293,7 +293,7 @@ const Invoice = ({ order }: InvoiceProps) => {
           </Box>
           <Box className="summary-row total">
             <Typography>Total Payable Amount:</Typography>
-            <Typography>৳{(order.totalPrice + (order.shippingCost || 0) - (order.discount || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Typography>
+            <Typography>৳{(order.totalPrice + (order.shippingCost || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Typography>
           </Box>
         </Box>
       </Box>
